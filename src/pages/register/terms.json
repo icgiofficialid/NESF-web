@@ -1,0 +1,22 @@
+{
+  "offline": [
+    "All data submitted by participants cannot be modified after the payment deadline. Please review your registration carefully.",
+    "Participants who do not submit required documents (Full Paper, poster) after two reminders will be considered to have resigned automatically.",
+    "Participants must use a title and Full Paper that match the category they are participating in. International participants must use English for all required documents.",
+    "Participants are required to bring an A0-sized poster, the product, and a hard copy of their Full Paper during the judging session.",
+    "Awards will be given in accordance with the event schedule. Participants are not allowed to request awards before their turn.",
+    "Participants are required to follow the entire series of activities according to the set schedule.",
+    "Plagiarism is strictly prohibited. If proven, registration will be cancelled without a refund.",
+    "All jury decisions are final and cannot be contested.",
+    "Registration fees that have been paid are non-refundable under any circumstances."
+  ],
+  "online": [
+    "All data submitted by participants cannot be modified after the payment deadline.",
+    "Participants must ensure a stable internet connection during the online presentation session.",
+    "Participants who do not submit required documents after two reminders will be considered to have resigned automatically.",
+    "All submissions must be original work. Plagiarism will result in disqualification without refund.",
+    "International participants must use English for all required documents.",
+    "All jury decisions are final and cannot be contested.",
+    "Registration fees that have been paid are non-refundable under any circumstances."
+  ]
+}
