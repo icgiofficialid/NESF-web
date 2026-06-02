@@ -144,14 +144,14 @@ const LanguageContext = createContext<{
   toggle: () => void;
   tr: (key: TranslationKey) => string;
 }>({
-  lang: "en",
+  lang: "id",
   toggle: () => {},
   tr: (k) => k,
 });
 
 export const LanguageProvider = ({ children }: { children: React.ReactNode }) => {
   const [lang, setLang] = useState<Language>(
-    () => (localStorage.getItem("lang") as Language) || "en"
+    () => (localStorage.getItem("lang") as Language) || "id"
   );
 
   const toggle = () => {

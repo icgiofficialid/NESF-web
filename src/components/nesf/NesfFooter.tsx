@@ -75,18 +75,19 @@ const NesfFooter = () => {
               Mendorong inovasi, penelitian, dan rekayasa di kalangan pelajar dan inovator muda Indonesia.
             </p>
 
-            <div className="flex flex-wrap gap-2">
+            {/* <div className="flex flex-wrap gap-2">
               {socialItems.map((Icon, i) => (
                 <NavLink
                   key={i}
-                  to="/contact"
+                  to={footerLinkMap[lang] ?? "/"}
+                  target="_blank"
                   className="w-9 h-9 rounded-lg flex items-center justify-center transition-all hover:scale-110 border border-border bg-surface text-muted-foreground"
                   style={{ ["--hover-color" as string]: "hsl(195 100% 50%)" }}
                 >
                   <Icon className="h-3.5 w-3.5" />
                 </NavLink>
               ))}
-            </div>
+            </div> */}
           </motion.div>
 
           {/* Links grid */}

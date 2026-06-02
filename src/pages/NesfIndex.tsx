@@ -9,6 +9,7 @@ import NesfShell from "@/components/nesf/NesfShell";
 import SectionReveal from "@/components/nesf/SectionReveal";
 import { useLang } from "@/components/LanguageProvider";
 import { useRef, useEffect, useState } from "react";
+import { newsItems } from "@/config/newsData";
 import {
   competitionCategories,
   highlights,
@@ -16,6 +17,7 @@ import {
   itinerary,
   judgingCriteria,
 } from "@/components/nesf/NesfData";
+import { useNavigate } from "react-router-dom";
 
 // ── Atom SVG Mark ──
 const AtomMark = ({ size = 20 }: { size?: number }) => (
@@ -209,6 +211,7 @@ const CategoryCard = ({
 // ================================================================
 const NesfIndex = () => {
   const { lang } = useLang();
+  const navigate = useNavigate();
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
@@ -400,7 +403,6 @@ const NesfIndex = () => {
             transition={{ delay: 1.2 }}
             className="absolute bottom-10 right-4 md:right-12 hidden sm:flex flex-col items-end gap-1"
           >
-            <span className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground">Est.</span>
             <span
               className="font-display text-7xl font-black opacity-[0.06] leading-none"
               style={{ color: C.cyan, fontSize: "clamp(4rem, 10vw, 8rem)" }}
@@ -408,22 +410,6 @@ const NesfIndex = () => {
               NESF
             </span>
           </motion.div>
-        </motion.div>
-
-        {/* Scroll indicator */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
-          className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
-        >
-          <span className="text-[9px] uppercase tracking-[0.3em] text-muted-foreground">Scroll</span>
-          <motion.div
-            animate={{ y: [0, 8, 0] }}
-            transition={{ duration: 1.4, repeat: Infinity }}
-            className="w-px h-8"
-            style={{ background: `linear-gradient(to bottom, ${C.cyan}, transparent)` }}
-          />
         </motion.div>
       </section>
 
@@ -728,7 +714,69 @@ const NesfIndex = () => {
           </motion.div>
         </SectionReveal>
       </section>
+          {/* ── SECTION 4: LATEST NEWS ──────────────────────────────── */}
+      <section className="container pb-20 md:pb-28">
+        <SectionReveal className="mb-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2">
+              <svg width="10" height="10" viewBox="0 0 40 40" fill="none">
+                <path d="M20 0 L22.5 17.5 L40 20 L22.5 22.5 L20 40 L17.5 22.5 L0 20 L17.5 17.5 Z" fill="#C4C4C4"/>
+              </svg>
+              <motion.p
+              className="text-xs uppercase tracking-[0.35em] text-muted-400 font-semibold"
+              animate={{ opacity: [0.6, 1, 0.6] }}
+              transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+            >
+              Latest Updates
+            </motion.p>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground">News & Announcements</h2>
+          </div>
+          <button
+            onClick={() => navigate("/news")}
+            className="self-start sm:self-auto flex items-center gap-2 rounded-xl border border-border px-4 py-2 text-sm font-semibold text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all"
+          >
+            All news <ArrowRight className="h-4 w-4" />
+          </button>
+        </SectionReveal>
 
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {newsItems.slice(0, 3).map((item, i) => (
+            <SectionReveal key={item.slug} delay={i * 0.08} className="h-full">
+              <motion.article
+                whileHover={{ y: -6 }}
+                transition={{ duration: 0.25 }}
+                onClick={() => navigate(`/news/${item.slug}`)}
+                className="tech-shell rounded-2xl overflow-hidden cursor-pointer group h-full flex flex-col"
+              >
+                <div className="h-36 bg-gradient-to-br from-primary/10 to-primary/5 flex items-center justify-center overflow-hidden">
+                  {item.coverImage ? (
+                    <img src={item.coverImage} alt={item.title} className="w-full h-full object-cover opacity-70 group-hover:scale-105 transition-transform duration-500" />
+                  ) : (
+                    <svg className="w-8 h-8 text-primary/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                    </svg>
+                  )}
+                </div>
+                <div className="p-5 flex flex-col flex-1">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary border border-primary/30 rounded-full px-2.5 py-0.5">
+                      {item.category}
+                    </span>
+                    <span className="text-[11px] text-muted-foreground">{item.date}</span>
+                  </div>
+                  <h3 className="font-bold text-foreground text-sm leading-snug mb-2 group-hover:text-primary transition-colors flex-1">
+                    {item.title}
+                  </h3>
+                  <div className="flex items-center gap-1 text-xs text-primary font-semibold mt-2">
+                    Read more <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+              </motion.article>
+            </SectionReveal>
+          ))}
+        </div>
+      </section>
     </NesfShell>
   );
 };

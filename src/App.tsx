@@ -17,6 +17,9 @@ import NesfAbout         from "./pages/NesfAbout";
 import NesfFaq           from "./pages/NesfFaq";
 import NesfContact       from "./pages/NesfContact";
 import NesfUpcomingEvents from "./pages/NesfUpcomingEvents";
+import News from "@/pages/News";
+import NewsDetailPage from "@/pages/NewsDetailPage";
+
 
 // Shared pages (reuse from ICC project if needed)
 import PastEvents        from "./pages/PastEvents";
@@ -55,6 +58,8 @@ const App = () => (
               <Route path="/register"    element={<NesfRegister />} />
 
               <Route path="*"            element={<NotFound />} />
+              <Route path="/news"         element= {<News />} />
+              <Route path="/news/:slug"         element= {<NewsDetailPage />} />
             </Routes>
           </BrowserRouter>
         </TooltipProvider>

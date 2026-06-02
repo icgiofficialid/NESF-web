@@ -37,18 +37,6 @@ const ThemeToggle = () => {
   );
 };
 
-const LangToggle = () => {
-  const { lang, toggle } = useLang();
-  return (
-    <button onClick={toggle} className="flex items-center gap-1.5 p-2 rounded-lg hover:bg-muted transition-colors text-sm font-semibold text-muted-foreground">
-      {lang === "en" ? (
-        <><img src="https://flagcdn.com/w20/gb.png" alt="EN" className="w-5 h-4 rounded-sm object-cover" /><span className="text-xs">EN</span></>
-      ) : (
-        <><img src="https://flagcdn.com/w20/id.png" alt="ID" className="w-5 h-4 rounded-sm object-cover" /><span className="text-xs">ID</span></>
-      )}
-    </button>
-  );
-};
 
 const NesfNavbar = () => {
   const [open, setOpen] = useState(false);
@@ -148,7 +136,6 @@ const NesfNavbar = () => {
           className="hidden items-center gap-1 lg:flex"
         >
           <ThemeToggle />
-          <LangToggle />
           <NavLink
             to="/register"
             className="ml-2 flex items-center gap-2 rounded-lg px-5 py-2 text-sm font-semibold tracking-wide transition-all hover:scale-[1.04] hover:shadow-lg active:scale-[0.97]"
@@ -190,17 +177,7 @@ const NesfNavbar = () => {
               ))}
               <div className="flex items-center gap-1 pt-1 border-t border-border/40 mt-1">
                 <ThemeToggle />
-                <LangToggle />
               </div>
-              <NavLink
-                to="/register"
-                onClick={() => setOpen(false)}
-                className="flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-semibold mt-1 text-white"
-                style={{ background: "linear-gradient(135deg, hsl(195 100% 40%), hsl(220 90% 50%))" }}
-              >
-                <AtomMark size={13} />
-                Register Now
-              </NavLink>
             </div>
           </motion.div>
         )}

@@ -48,8 +48,8 @@ const NesfAbout = () => {
               </h1>
               <p className="max-w-2xl leading-8 text-muted-foreground">
                 {lang === "en"
-                  ? "NESF (National Engineering Science Fair) is ICGI's national-level competition platform. Unlike YIESF which opens to international participants, NESF focuses on Indonesia's domestic students and innovators — providing an accessible national stage before the world stage."
-                  : "NESF (National Engineering Science Fair) adalah platform kompetisi tingkat nasional ICGI. Berbeda dengan YIESF yang terbuka untuk peserta internasional, NESF berfokus pada pelajar dan inovator domestik Indonesia — menyediakan panggung nasional yang mudah diakses sebelum ke panggung dunia."}
+                  ? "NESF (National Engineering Science Fair) is ICGI's national-level competition platform. Unlike IESF which opens to international participants, NESF focuses on Indonesia's domestic students and innovators — providing an accessible national stage before the world stage."
+                  : "NESF (National Engineering Science Fair) adalah platform kompetisi tingkat nasional ICGI. Berbeda dengan IESF yang terbuka untuk peserta internasional, NESF berfokus pada pelajar dan inovator domestik Indonesia — menyediakan panggung nasional yang mudah diakses sebelum ke panggung dunia."}
               </p>
             </div>
           </div>
@@ -82,12 +82,12 @@ const NesfAbout = () => {
                 active: true,
               },
               {
-                name: "YIESF",
-                full: { en: "Yogyakarta International Engineering Science Fair", id: "Yogyakarta International Engineering Science Fair" },
+                name: "IESF",
+                full: { en: "International Engineering Science Fair", id: "International Engineering Science Fair" },
                 desc: { en: "International academic innovation platform for global participants", id: "Platform inovasi akademik internasional untuk peserta global" },
                 color: "from-blue-500 to-violet-600",
                 icon: "🌐",
-                href: "https://iesf.icgi.or.id",
+                href: "https://iesfofficial.or.id",
                 active: false,
               },
             ].map((portal, i) => (
