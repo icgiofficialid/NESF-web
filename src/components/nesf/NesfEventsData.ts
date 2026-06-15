@@ -7,15 +7,15 @@
 //    Lokasi NESF masih TBA — update melalui Dashboard ICGI.
 // ================================================================
 
-import type { ICCEvent } from "@/lib/gasClient";
+import type { NESFEvent } from "@/lib/gasClient";
 
-export type { ICCEvent, EventType, EventStatus } from "@/lib/gasClient";
+export type { NESFEvent, EventType, EventStatus } from "@/lib/gasClient";
 
 // ── LOCAL FALLBACK DATA ───────────────────────────────────────────
-export const localNesfEvents: ICCEvent[] = [
+export const localNesfEvents: NESFEvent[] = [
   {
     id:                   "nesf-2026",
-    slug:                 "nesf",
+    slug:                 "dscf-2026",
     type:                 "Competition",
     status:               "upcoming",
     title:                "National Engineering Science Fair",

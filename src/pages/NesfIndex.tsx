@@ -3,7 +3,7 @@
 // Redesigned: premium animations, responsive, dramatic layout
 // ================================================================
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
-import { ArrowRight, ChevronRight, Atom, Microscope, Code2, FlaskConical, Cpu, Zap, Globe, Star } from "lucide-react";
+import { ArrowRight, ChevronRight, Atom, Microscope, Code2, FlaskConical, Cpu, Zap, Globe, Star, MapPin, Calendar } from "lucide-react";
 import { NavLink } from "@/components/NavLink";
 import NesfShell from "@/components/nesf/NesfShell";
 import SectionReveal from "@/components/nesf/SectionReveal";
@@ -18,6 +18,7 @@ import {
   judgingCriteria,
 } from "@/components/nesf/NesfData";
 import { useNavigate } from "react-router-dom";
+import { useEvents } from "@/hooks/useEvents";
 
 // ── Atom SVG Mark ──
 const AtomMark = ({ size = 20 }: { size?: number }) => (
@@ -216,6 +217,12 @@ const NesfIndex = () => {
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
   const heroOpacity = useTransform(scrollYProgress, [0, 0.7], [1, 0]);
+
+  // Upcoming events (termasuk event baru yang didaftarkan di eventRegistry, mis. DSCF)
+  const { events: upcomingEvents, loading: eventsLoading } = useEvents("nesf");
+  const featuredEvents = upcomingEvents
+    .filter(e => e.status === "upcoming" || e.status === "ongoing")
+    .slice(0, 3);
 
   return (
     <NesfShell>
@@ -507,6 +514,74 @@ const NesfIndex = () => {
           </div>
         </div>
       </section>
+
+      {/* ══════════════════════════════════════════
+          UPCOMING EVENTS (termasuk DSCF dari registry)
+      ══════════════════════════════════════════ */}
+      {!eventsLoading && featuredEvents.length > 0 && (
+        <section className="container py-24">
+          <SectionReveal className="mb-10 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+            <div className="space-y-1.5">
+              <p className="text-[10px] uppercase tracking-[0.35em] font-bold" style={{ color: C.cyan }}>
+                {lang === "en" ? "What's Next" : "Akan Datang"}
+              </p>
+              <h2
+                className="font-display font-bold leading-tight"
+                style={{ fontSize: "clamp(1.8rem, 4vw, 2.8rem)" }}
+              >
+                {lang === "en" ? "Upcoming Events" : "Event Mendatang"}
+              </h2>
+            </div>
+            <button
+              onClick={() => navigate("/events")}
+              className="self-start sm:self-auto flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold transition-all hover:bg-surface"
+              style={{ borderColor: "hsl(195 100% 50% / 0.28)", color: C.cyan }}
+            >
+              {lang === "en" ? "All events" : "Semua event"} <ArrowRight className="h-4 w-4" />
+            </button>
+          </SectionReveal>
+
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {featuredEvents.map((event, i) => (
+              <SectionReveal key={event.id} delay={i * 0.08} className="h-full">
+                <motion.div
+                  whileHover={{ y: -6 }}
+                  transition={{ duration: 0.22 }}
+                  onClick={() => navigate(`/events/${event.slug}`)}
+                  className="group relative h-full cursor-pointer rounded-2xl overflow-hidden border border-border/70 bg-panel shadow-sm hover:shadow-xl transition-shadow duration-300"
+                >
+                  <div className={`relative h-44 bg-gradient-to-br ${event.coverGradient} flex items-end p-0`}>
+                    {event.coverImage && (
+                      <img
+                        src={event.coverImage}
+                        alt=""
+                        className="absolute inset-0 w-full h-full object-cover opacity-20"
+                      />
+                    )}
+                    <div className="absolute top-3 left-3 flex items-center gap-1.5 rounded-full bg-white/15 backdrop-blur-md border border-white/20 px-3 py-1 text-xs font-semibold text-white">
+                      <span className="w-1.5 h-1.5 rounded-full" style={{ background: C.cyan }} />
+                      {event.type}
+                    </div>
+                    <div className="absolute top-3 right-3 text-white/40 text-[10px] tracking-widest font-bold">NESF</div>
+                    <div className="w-full bg-gradient-to-t from-black/70 to-transparent px-4 pb-4 pt-8">
+                      <p className="text-white/60 text-[10px] uppercase tracking-[0.2em] mb-1">{event.subtitle}</p>
+                      <h3 className="text-white text-sm font-bold leading-tight line-clamp-2 font-display">{event.title}</h3>
+                    </div>
+                  </div>
+                  <div className="p-4 space-y-2">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <MapPin className="h-3 w-3" /><span>{event.location}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                      <Calendar className="h-3 w-3" /><span>{event.dateRange}</span>
+                    </div>
+                  </div>
+                </motion.div>
+              </SectionReveal>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* ══════════════════════════════════════════
           COMPETITION CATEGORIES

@@ -1,9 +1,14 @@
 // ================================================================
-// gasClient.ts — icc-event-web
+// gasClient.ts — nesf-event-web
+//
+// ⚠️ UPDATE: menambahkan alias `NESFEvent` dan tipe "Education"
+//    agar kompatibel dengan NesfUpcomingEvents.tsx & NesfIndex.tsx
+//    yang sudah meng-import { NESFEvent, EventType } dari sini.
+//    Tidak ada perubahan pada ICCEvent / fetch logic yang sudah ada.
 // ================================================================
 
-export type EventType   = "Competition" | "Workshop" | "Exhibition";
-export type EventStatus = "upcoming" | "past";
+export type EventType   = "Competition" | "Education" | "Workshop" | "Exhibition";
+export type EventStatus = "upcoming" | "past" | "ongoing";
 
 export interface ICCEvent {
   id:                   string;
@@ -29,7 +34,13 @@ export interface ICCEvent {
   date_display?:        string;
   is_active?:           boolean;
   sort_order?:          number;
+  coverImage?:          string;
 }
+
+// ── Alias — dipakai oleh halaman NESF (UpcomingEvents, Index, dll) ─
+// NESFEvent === ICCEvent secara struktur. Alias ini hanya untuk
+// penamaan yang lebih sesuai konteks NESF tanpa duplikasi tipe.
+export type NESFEvent = ICCEvent;
 
 const GAS_API_URL = import.meta.env.VITE_GAS_PUBLIC_API_URL as string | undefined;
 
@@ -42,6 +53,9 @@ function mapGasRowToEvent(row: Record<string, string>): ICCEvent {
   if (endDate) {
     const end = new Date(endDate);
     if (!isNaN(end.getTime()) && end < new Date()) status = "past";
+  }
+  if (row["status"] === "ongoing" || row["status"] === "past" || row["status"] === "upcoming") {
+    status = row["status"] as EventStatus;
   }
 
   let dateRange = "TBA";
@@ -56,7 +70,7 @@ function mapGasRowToEvent(row: Record<string, string>): ICCEvent {
 
   const tags = row["tags"]
     ? row["tags"].split(",").map(t => t.trim()).filter(Boolean)
-    : ["Culture", "International"];
+    : ["Science", "Culture", "National"];
 
   return {
     id:                   row["event_id"]              ?? "",
@@ -65,16 +79,16 @@ function mapGasRowToEvent(row: Record<string, string>): ICCEvent {
     status,
     title:                row["event_name"]            ?? "",
     subtitle:             row["subtitle"]              || row["event_id"] || "",
-    location:             row["location"]              || "Yogyakarta, Indonesia",
+    location:             row["location"]              || "Depok, Indonesia",
     country:              row["country"]               || "Indonesia",
     dateRange,
     year:                 startDate ? new Date(startDate).getFullYear() : new Date().getFullYear(),
     registrationDeadline: row["registration_deadline"] || "TBA",
-    coverGradient:        row["cover_gradient"]        || "from-rose-900 via-fuchsia-900 to-amber-900",
-    accentColor:          row["accent_color"]          || "#f43f5e",
+    coverGradient:        row["cover_gradient"]        || "from-cyan-900 via-blue-900 to-indigo-900",
+    accentColor:          row["accent_color"]          || "hsl(195 100% 50%)",
     description:          row["description"]           || "",
     tags,
-    platform:             (row["platform"]             || "icc").toLowerCase(),
+    platform:             (row["platform"]             || "nesf").toLowerCase(),
     posterUrl:            row["poster_url"]            || "",
     guidebookUrl:         row["guidebook_url"]         || "",
     registrationUrl:      row["registration_url"]      || "",
@@ -91,7 +105,7 @@ export async function fetchEvents(
   fallback: ICCEvent[] = []
 ): Promise<ICCEvent[]> {
   if (!GAS_API_URL) {
-    console.warn("[gasClient-icc] VITE_GAS_PUBLIC_API_URL tidak di-set. Menggunakan data lokal.");
+    console.warn("[gasClient-nesf] VITE_GAS_PUBLIC_API_URL tidak di-set. Menggunakan data lokal.");
     return fallback;
   }
 
@@ -116,7 +130,7 @@ export async function fetchEvents(
     return mapped.length > 0 ? mapped : fallback;
 
   } catch (err) {
-    console.error("[gasClient-icc] Gagal fetch events:", err);
+    console.error("[gasClient-nesf] Gagal fetch events:", err);
     return fallback;
   }
 }
@@ -134,7 +148,7 @@ export async function fetchEventBySlug(
     return found ?? fallback;
 
   } catch (err) {
-    console.error(`[gasClient-icc] Gagal fetch event "${slug}":`, err);
+    console.error(`[gasClient-nesf] Gagal fetch event "${slug}":`, err);
     return fallback;
   }
 }

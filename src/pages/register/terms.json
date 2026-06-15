@@ -1,22 +1,23 @@
 {
   "offline": [
-    "All data submitted by participants cannot be modified after the payment deadline. Please review your registration carefully.",
-    "Participants who do not submit required documents (Full Paper, poster) after two reminders will be considered to have resigned automatically.",
-    "Participants must use a title and Full Paper that match the category they are participating in. International participants must use English for all required documents.",
-    "Participants are required to bring an A0-sized poster, the product, and a hard copy of their Full Paper during the judging session.",
-    "Awards will be given in accordance with the event schedule. Participants are not allowed to request awards before their turn.",
-    "Participants are required to follow the entire series of activities according to the set schedule.",
-    "Plagiarism is strictly prohibited. If proven, registration will be cancelled without a refund.",
-    "All jury decisions are final and cannot be contested.",
-    "Registration fees that have been paid are non-refundable under any circumstances."
+    "Peserta merupakan pelajar aktif sesuai jenjang lomba (SD, SMP, SMA), atau umum untuk kategori MHQ, dibuktikan dengan identitas resmi yang masih berlaku.",
+    "Seluruh data yang telah diisi tidak dapat diubah setelah batas waktu pembayaran. Pastikan data yang dikirimkan sudah benar dan final.",
+    "Peserta wajib menyelesaikan pembayaran sesuai ketentuan panitia. Biaya pendaftaran yang telah dibayarkan tidak dapat dikembalikan dalam kondisi apapun.",
+    "Peserta yang tidak mengumpulkan dokumen yang dipersyaratkan setelah dua kali pengingat akan dianggap mengundurkan diri secara otomatis.",
+    "Peserta wajib hadir sesuai jadwal yang telah ditetapkan. Keterlambatan dapat mengurangi waktu penampilan/pengerjaan atau menghilangkan kesempatan tampil.",
+    "Untuk DESF: peserta wajib membawa poster ukuran A0, produk, dan salinan makalah lengkap pada sesi penjurian. Presentasi dilakukan dalam Bahasa Indonesia.",
+    "Untuk DCC Tari: file musik wajib dikirimkan paling lambat H-14 sebelum acara dalam format MP3/WAV. Peserta juga wajib membawa file cadangan pada hari pelaksanaan.",
+    "Untuk DCC MHQ: peserta membawa peralatan musik sendiri dan tidak diperkenankan menggunakan peralatan elektronik saat penampilan. Seluruh peserta wajib hadir 30 menit sebelum acara dimulai.",
+    "Plagiarisme dan kecurangan dilarang keras. Jika terbukti, pendaftaran akan dibatalkan tanpa pengembalian biaya.",
+    "Seluruh keputusan dewan juri bersifat final dan tidak dapat diganggu gugat.",
+    "Peserta wajib mengikuti seluruh rangkaian kegiatan sesuai jadwal yang telah ditetapkan."
   ],
   "online": [
-    "All data submitted by participants cannot be modified after the payment deadline.",
-    "Participants must ensure a stable internet connection during the online presentation session.",
-    "Participants who do not submit required documents after two reminders will be considered to have resigned automatically.",
-    "All submissions must be original work. Plagiarism will result in disqualification without refund.",
-    "International participants must use English for all required documents.",
-    "All jury decisions are final and cannot be contested.",
-    "Registration fees that have been paid are non-refundable under any circumstances."
+    "Seluruh data yang telah diisi tidak dapat diubah setelah batas waktu pembayaran.",
+    "Peserta wajib memastikan koneksi internet yang stabil selama sesi kompetisi online.",
+    "Peserta yang tidak mengumpulkan dokumen yang dipersyaratkan setelah dua kali pengingat akan dianggap mengundurkan diri secara otomatis.",
+    "Seluruh karya/proyek yang dikumpulkan harus merupakan karya orisinal. Plagiarisme akan mengakibatkan diskualifikasi tanpa pengembalian biaya.",
+    "Seluruh keputusan dewan juri bersifat final dan tidak dapat diganggu gugat.",
+    "Biaya pendaftaran yang telah dibayarkan tidak dapat dikembalikan dalam kondisi apapun."
   ]
 }
