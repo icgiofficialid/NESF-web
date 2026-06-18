@@ -25,7 +25,7 @@ const OPTIONS: {
     label: "Depok Engineering Science Fair",
     badge: "DESF",
     desc: "Kompetisi sains & rekayasa antar pelajar dengan 8 kategori bidang ilmu. Presentasi proyek di hadapan juri.",
-    price: "Rp 350.000 / tim",
+    price: "",
     icon: FlaskConical,
   },
   {
@@ -33,7 +33,7 @@ const OPTIONS: {
     label: "Depok Math Olympiad",
     badge: "DMO",
     desc: "Olimpiade matematika individu satu babak. Soal pilihan ganda sesuai jenjang pendidikan.",
-    price: "Rp 175.000 / peserta",
+    price: " ",
     icon: Calculator,
   },
   {
@@ -41,16 +41,16 @@ const OPTIONS: {
     label: "Depok Cultural Competition",
     badge: "DCC",
     desc: "Kompetisi seni budaya: Tari (kreasi/tradisional) dan MHQ (Marawis, Hadroh & Qasidah).",
-    price: "Rp 50.000 / tim",
+    price: " ",
     icon: Music,
   },
 ];
 
 const DscfStepParticipant = ({ selected, setSelected, onNext }: Props) => {
   return (
-    <div className="w-full max-w-lg">
+    <div className="w-full">
       {/* Header */}
-      <div className="text-center mb-8">
+      <div className="text-center mb-6">
         <p className="text-sm uppercase tracking-[0.3em] text-primary mb-2 font-semibold">
           Langkah 1 dari 3
         </p>
@@ -115,7 +115,7 @@ const DscfStepParticipant = ({ selected, setSelected, onNext }: Props) => {
 
       {/* Note */}
       <p className="mt-4 text-xs text-muted-foreground text-center leading-5">
-        ℹ️ DSCF 2026 hanya diselenggarakan secara <strong className="text-foreground">offline</strong> di Depok, Indonesia.
+         DSCF 2026 hanya diselenggarakan secara <strong className="text-foreground">offline</strong> di Depok, Indonesia.
         Peserta dapat mendaftar lebih dari satu sub-kompetisi dengan pendaftaran terpisah.
       </p>
 

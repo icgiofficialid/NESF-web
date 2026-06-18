@@ -155,7 +155,7 @@ const DscfRegister = () => {
 
   return (
     <SiteShell>
-      <section className="container min-h-screen py-24 md:py-32 flex flex-col items-center">
+      <section className="w-full max-w-[80%] mx-auto min-h-screen py-24 md:py-32 flex flex-col items-center">
         <StepIndicator step={step} />
 
         {step === 1 && (

@@ -19,7 +19,7 @@ const DscfStepTerms = ({ subEvent, onBack, onNext }: Props) => {
   const subLabel = DSCF_SUB_LABELS[subEvent];
 
   return (
-    <div className="w-full max-w-2xl">
+    <div className="w-full">
       <div className="text-center mb-8">
         <p className="text-sm uppercase tracking-[0.3em] text-primary mb-2 font-semibold">
           Langkah 2 dari 3

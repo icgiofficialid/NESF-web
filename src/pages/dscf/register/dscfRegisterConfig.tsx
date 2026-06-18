@@ -34,7 +34,7 @@ export const DSCF_PRICE_MAP: Record<DscfSubEvent, string> = {
 
 // ── GAS Endpoint DSCF ─────────────────────────────────────────────
 export const DSCF_SHEET_URL =
-  "https://script.google.com/macros/s/YOUR_DSCF_GAS_URL_HERE/exec";
+  "https://script.google.com/macros/s/AKfycbzz8NDKfyJgcTkGOqwY_-ZkQpFWbJbzERlUK1rUzmcB_aRUJ8hXtG_Z1kI6C0xcZJkA/exec";
 
 // Sheet target per sub-event
 export const DSCF_SHEET_TARGETS: Record<DscfSubEvent, string> = {

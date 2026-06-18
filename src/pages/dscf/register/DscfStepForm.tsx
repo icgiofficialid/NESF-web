@@ -427,7 +427,7 @@ const DscfStepForm = ({ subEvent, onBack, onSuccess }: Props) => {
   const subLabel = DSCF_SUB_LABELS[subEvent];
 
   return (
-    <div className="w-full max-w-3xl">
+    <div className="w-full">
 
       {/* Header */}
       <div className="text-center mb-8">
