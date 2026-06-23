@@ -79,11 +79,6 @@ const NesfContact = () => {
               <div className="space-y-4 text-sm text-muted-foreground">
                 <div className="flex items-start gap-3">
                   <MapPin className="h-4 w-4 shrink-0 mt-1" style={{ color: CYAN }} />
-                  <span>
-                    {lang === "en"
-                      ? "Venue: TBA (Indonesia)"
-                      : "Venue: TBA (Indonesia)"}
-                  </span>
                 </div>
                 <div className="flex items-start gap-3">
                   <Mail className="h-4 w-4 shrink-0 mt-1" style={{ color: CYAN }} />
@@ -106,7 +101,7 @@ const NesfContact = () => {
                 <div className="flex gap-3">
                   {[
                     { icon: Instagram, href: "https://www.instagram.com/icgi.id" },
-                    { icon: Youtube,   href: "/" },
+                    { icon: Youtube,   href: "http://www.youtube.com/@icgiofficial" },
                     { icon: Globe,     href: "https://icgi.or.id" },
                   ].map(({ icon: Icon, href }, i) => (
                     <a key={i} href={href} target="_blank" rel="noopener noreferrer"
