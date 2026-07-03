@@ -145,6 +145,9 @@ const DesfForm = ({ f, set }: { f: (k: string) => string; set: (k: string) => (v
           <Field label="Email Pembimbing" required>
             <TextInput placeholder="guru@sekolah.sch.id" value={f("EMAIL_TEACHER_SUPERVISOR")} onChange={set("EMAIL_TEACHER_SUPERVISOR")} type="email" />
           </Field>
+          <Field label="Link Media Sosial" note="Instagram, LinkedIn, atau media sosial lainnya (opsional).">
+      <TextInput placeholder="https://instagram.com/username" value={f("SOCIAL_MEDIA")} onChange={set("SOCIAL_MEDIA")} />
+    </Field>
         </div>
       </div>
     </div>
@@ -254,6 +257,9 @@ const DmoForm = ({ f, set }: { f: (k: string) => string; set: (k: string) => (v:
           <Field label="Email Pembimbing" required>
             <TextInput placeholder="guru@sekolah.sch.id" value={f("EMAIL_TEACHER_SUPERVISOR")} onChange={set("EMAIL_TEACHER_SUPERVISOR")} type="email" />
           </Field>
+          <Field label="Link Media Sosial" note="Instagram, LinkedIn, atau media sosial lainnya (opsional).">
+      <TextInput placeholder="https://instagram.com/username" value={f("SOCIAL_MEDIA")} onChange={set("SOCIAL_MEDIA")} />
+    </Field>
         </div>
       </div>
     </div>
@@ -418,6 +424,9 @@ const DccForm = ({ f, set }: { f: (k: string) => string; set: (k: string) => (v:
             <Field label="Email Pembimbing" required>
               <TextInput placeholder="pembimbing@email.com" value={f("EMAIL_TEACHER_SUPERVISOR")} onChange={set("EMAIL_TEACHER_SUPERVISOR")} type="email" />
             </Field>
+            <Field label="Link Media Sosial" note="Instagram, LinkedIn, atau media sosial lainnya (opsional).">
+      <TextInput placeholder="https://instagram.com/username" value={f("SOCIAL_MEDIA")} onChange={set("SOCIAL_MEDIA")} />
+    </Field>
           </div>
         </div>
       </div>
