@@ -27,7 +27,7 @@ export const DSCF_SUB_LABELS: Record<DscfSubEvent, string> = {
 
 // ── Harga pendaftaran ─────────────────────────────────────────────
 export const DSCF_PRICE_MAP: Record<DscfSubEvent, string> = {
-  desf: "Rp 500.000 / tim",
+  desf: "Rp 750.000 / tim",
   dmo:  "Rp 200.000 / peserta",
   dcc:  "Rp 100.000 / tim",
 };

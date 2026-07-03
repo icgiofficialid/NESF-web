@@ -4,7 +4,7 @@
 // ================================================================
 import { FlaskConical, Calculator, Music } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { type DscfSubEvent } from "./dscfRegisterConfig";
+import { DSCF_PRICE_MAP, type DscfSubEvent } from "./dscfRegisterConfig";
 
 interface Props {
   selected: DscfSubEvent | null;
@@ -17,7 +17,6 @@ const OPTIONS: {
   label: string;
   badge: string;
   desc: string;
-  price: string;
   icon: React.ElementType;
 }[] = [
   {
@@ -25,7 +24,6 @@ const OPTIONS: {
     label: "Depok Engineering Science Fair",
     badge: "DESF",
     desc: "Kompetisi sains & rekayasa antar pelajar dengan 8 kategori bidang ilmu. Presentasi proyek di hadapan juri.",
-    price: "Rp 500.000 / tim",
     icon: FlaskConical,
   },
   {
@@ -33,7 +31,6 @@ const OPTIONS: {
     label: "Depok Math Olympiad",
     badge: "DMO",
     desc: "Olimpiade matematika individu satu babak. Soal pilihan ganda sesuai jenjang pendidikan.",
-    price: "Rp 200.000 / peserta",
     icon: Calculator,
   },
   {
@@ -41,7 +38,6 @@ const OPTIONS: {
     label: "Depok Cultural Competition",
     badge: "DCC",
     desc: "Kompetisi seni budaya: Tari (kreasi/tradisional) dan MHQ (Marawis, Hadroh & Qasidah).",
-    price: "Rp 100.000 / tim",
     icon: Music,
   },
 ];
@@ -64,7 +60,7 @@ const DscfStepParticipant = ({ selected, setSelected, onNext }: Props) => {
 
       {/* Cards */}
       <div className="flex flex-col gap-3">
-        {OPTIONS.map(({ value, label, badge, desc, price, icon: Icon }) => (
+        {OPTIONS.map(({ value, label, badge, desc, icon: Icon }) => (
           <button
             key={value}
             onClick={() => setSelected(value)}
@@ -96,7 +92,6 @@ const DscfStepParticipant = ({ selected, setSelected, onNext }: Props) => {
               </div>
               <p className="font-semibold text-foreground text-sm leading-snug">{label}</p>
               <p className="text-muted-foreground text-xs mt-0.5 leading-5 line-clamp-2">{desc}</p>
-              <p className="text-xs font-semibold text-primary mt-1">{price}</p>
             </div>
 
             {/* Radio indicator */}
