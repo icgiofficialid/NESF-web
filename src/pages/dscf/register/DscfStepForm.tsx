@@ -192,6 +192,15 @@ const DesfForm = ({ f, set }: { f: (k: string) => string; set: (k: string) => (v
             />
           </Field>
         )}
+        <Field
+              label="Jika Anda mendapat registrasi gratis, lampirkan buktinya di sini."
+              note="Upload bukti ke Google Drive, lalu tempel link-nya di sini. Kosongkan jika tidak ada."
+            >
+              <TextInput
+                placeholder="https://drive.google.com/…"
+                value={f("FILE")} onChange={set("FILE")}
+              />
+            </Field>
       </div>
     </div>
   </>
@@ -258,8 +267,17 @@ const DmoForm = ({ f, set }: { f: (k: string) => string; set: (k: string) => (v:
             <TextInput placeholder="guru@sekolah.sch.id" value={f("EMAIL_TEACHER_SUPERVISOR")} onChange={set("EMAIL_TEACHER_SUPERVISOR")} type="email" />
           </Field>
           <Field label="Link Media Sosial" note="Instagram, LinkedIn, atau media sosial lainnya (opsional).">
-      <TextInput placeholder="https://instagram.com/username" value={f("SOCIAL_MEDIA")} onChange={set("SOCIAL_MEDIA")} />
-    </Field>
+            <TextInput placeholder="https://instagram.com/username" value={f("SOCIAL_MEDIA")} onChange={set("SOCIAL_MEDIA")} />
+          </Field>
+                      <Field
+              label="Jika Anda mendapat registrasi gratis, lampirkan buktinya di sini."
+              note="Upload bukti ke Google Drive, lalu tempel link-nya di sini. Kosongkan jika tidak ada."
+            >
+              <TextInput
+                placeholder="https://drive.google.com/…"
+                value={f("FILE")} onChange={set("FILE")}
+              />
+            </Field>
         </div>
       </div>
     </div>
@@ -491,6 +509,15 @@ const DccForm = ({ f, set }: { f: (k: string) => string; set: (k: string) => (v:
                 />
               </Field>
             )}
+            <Field
+              label="Jika Anda mendapat registrasi gratis, lampirkan buktinya di sini."
+              note="Upload bukti ke Google Drive, lalu tempel link-nya di sini. Kosongkan jika tidak ada."
+            >
+              <TextInput
+                placeholder="https://drive.google.com/…"
+                value={f("FILE")} onChange={set("FILE")}
+              />
+            </Field>
           </div>
         </div>
       )}
