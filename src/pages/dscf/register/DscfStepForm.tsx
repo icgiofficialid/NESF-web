@@ -1,16 +1,15 @@
 // ================================================================
-// DscfStepForm.tsx — Step 3: Form Pendaftaran DSCF
+// DscfStepForm.tsx — Step 3: Form Pendaftaran DSCF 2026
 // Path: src/pages/nesf/register/DscfStepForm.tsx
 //
-// Form berbeda-beda per sub-kompetisi:
-//   DESF → data tim + proyek sains (8 kategori bidang)
-//   DMO  → data individu + jenjang + materi olimpiade
-//   DCC  → data tim + kategori seni (Tari / MHQ)
+// Disesuaikan dengan Juknis DSCF 2026:
+//   DESF → tim (maks 3), proyek sains, makalah, standing banner
+//   DMO  → individu, laptop pribadi, olimpiade matematika
+//   DCC  → Tari (solo/grup, maks 5 menit) / MHQ (maks 10 orang)
 // ================================================================
 import { useState } from "react";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Field, TextInput, TextArea, SelectInput, SectionTitle,
   type DscfSubEvent, type FormData,
@@ -47,7 +46,7 @@ const SuccessOverlay = ({ onDone }: { onDone: () => void }) => (
       </div>
       <h2 className="text-xl font-bold text-foreground font-display">Pendaftaran Berhasil!</h2>
       <p className="text-sm text-muted-foreground leading-6">
-        LoA akan dikirim ke email ketua tim dalam 3 hari kerja. Terima kasih telah mendaftar DSCF 2026!
+        LoA akan dikirim ke email ketua tim dalam 3 hari kerja setelah pembayaran terverifikasi. Terima kasih telah mendaftar DSCF 2026!
       </p>
       <Button size="lg" className="w-full mt-2" onClick={onDone}>
         Kembali ke Beranda
@@ -59,58 +58,78 @@ const SuccessOverlay = ({ onDone }: { onDone: () => void }) => (
 // ── Form DESF ─────────────────────────────────────────────────────
 const DesfForm = ({ f, set }: { f: (k: string) => string; set: (k: string) => (v: string) => void }) => (
   <>
-    {/* Data Tim */}
-    <div>
-      <SectionTitle title="Data Tim" />
-      <div className="grid gap-4">
-        <Field
-          label="Nama Ketua / Anggota Tim"
-          required
-          note="Ketua / Anggota1 / Anggota2 (maks. 3 anggota per tim)"
-        >
-          <TextArea
-            placeholder="Cth: Budi Santoso / Rina Dewi / Ahmad Fauzi"
-            value={f("NAMA_LENGKAP")} onChange={set("NAMA_LENGKAP")} maxLength={300}
-          />
+  {/* Data Tim */}
+  <div>
+    <SectionTitle title="Data Tim" />
+    <div className="grid gap-4">
+      <Field
+        label="Nama Ketua & Anggota Tim"
+        required
+        note={
+          "Catatan: Masukkan nama ketua tim dan anggota tim dengan nama ketua tim di awal, dengan format berikut:\n\n" +
+          "Nama Ketua\nNama Anggota 1\nNama Anggota 2\nNama Anggota 3\n\n" +
+          "Catatan: maksimal 3 anggota + 1 ketua tim"
+        }
+      >
+        <TextArea
+          placeholder="Masukkan Nama Ketua & Anggota Tim"
+          value={f("NAMA_LENGKAP")} onChange={set("NAMA_LENGKAP")} maxLength={400}
+        />
+      </Field>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Field label="WhatsApp Ketua Tim" required note="Sertakan kode negara. Cth: +62 817 xxxx">
+          <TextInput placeholder="+62 …" value={f("LEADER_WHATSAPP")} onChange={set("LEADER_WHATSAPP")} type="tel" />
         </Field>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Field label="WhatsApp Ketua Tim" required note="Sertakan kode negara. Cth: +62 817 xxxx">
-            <TextInput placeholder="+62 …" value={f("LEADER_WHATSAPP")} onChange={set("LEADER_WHATSAPP")} type="tel" />
-          </Field>
-          <Field label="Email Ketua Tim" required note="LoA akan dikirim ke sini.">
-            <TextInput placeholder="email@example.com" value={f("LEADER_EMAIL")} onChange={set("LEADER_EMAIL")} type="email" />
-          </Field>
-        </div>
-        <Field label="Instagram / Media Sosial Tim">
-          <TextInput placeholder="@username" value={f("SOCIAL_MEDIA")} onChange={set("SOCIAL_MEDIA")} />
+        <Field label="Email Ketua Tim" required note="LoA akan dikirim ke email ini.">
+          <TextInput placeholder="email@example.com" value={f("LEADER_EMAIL")} onChange={set("LEADER_EMAIL")} type="email" />
         </Field>
       </div>
     </div>
+  </div>
 
-    {/* Data Sekolah */}
-    <div>
-      <SectionTitle title="Data Sekolah / Institusi" />
-      <div className="grid gap-4">
-        <Field label="Nama Sekolah / Institusi" required>
-          <TextInput placeholder="Cth. SMP Negeri 1 Depok" value={f("NAMA_SEKOLAH")} onChange={set("NAMA_SEKOLAH")} />
+  {/* Data Sekolah */}
+  <div>
+    <SectionTitle title="Data Sekolah / Institusi" />
+    <div className="grid gap-4">
+      <Field
+        label="Nama Sekolah / Institusi"
+        required
+        note={
+          "Tulis nama sekolah tiap anggota sesuai urutan nama di biodata, satu baris per sekolah.\nContoh:\n\n" +
+          "SMA Negeri 1 Depok (Ketua)\nSMK Negeri 2 Depok (Anggota1)"
+        }
+      >
+        <TextArea
+          placeholder={"SMA Negeri 1 Depok (Ketua)\nSMK Negeri 2 Depok (Anggota1)"}
+          value={f("NAMA_SEKOLAH")} onChange={set("NAMA_SEKOLAH")} maxLength={500}
+        />
+      </Field>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Field label="Jenjang" required>
+          <SelectInput
+            placeholder="-- Pilih Jenjang --"
+            value={f("GRADE")} onChange={set("GRADE")}
+            options={["SD (Sekolah Dasar)", "SMP (Sekolah Menengah Pertama)", "SMA/SMK (Sekolah Menengah Atas)"]}
+          />
         </Field>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Field label="Jenjang / Grade" required>
-            <SelectInput
-              placeholder="-- Pilih Jenjang --"
-              value={f("GRADE")} onChange={set("GRADE")}
-              options={["SD (Sekolah Dasar)", "SMP (Sekolah Menengah Pertama)", "SMA/SMK (Sekolah Menengah Atas)"]}
-            />
-          </Field>
-          <Field label="NISN / NIM">
-            <TextInput placeholder="Nomor identitas siswa" value={f("NISN_NIM")} onChange={set("NISN_NIM")} />
-          </Field>
-        </div>
-        <Field label="Provinsi / Kota">
+        <Field label="Provinsi / Kota" required>
           <TextInput placeholder="Cth. Jawa Barat" value={f("PROVINCE")} onChange={set("PROVINCE")} />
         </Field>
       </div>
+      <Field
+        label="NISN / NIM Ketua & Anggota Tim"
+        note={
+          "Catatan: Masukkan NIM/NISN jika masih sekolah dengan urutan nama ketua tim dan anggota, dengan format sebagai berikut:\n\n" +
+          "1201301\n1302402\n1020100"
+        }
+      >
+        <TextArea
+          placeholder="Masukkan NIM / NISN Ketua & Anggota Tim"
+          value={f("NISN_NIM")} onChange={set("NISN_NIM")}
+        />
+      </Field>
     </div>
+  </div>
 
     {/* Data Pembimbing */}
     <div>
@@ -130,39 +149,46 @@ const DesfForm = ({ f, set }: { f: (k: string) => string; set: (k: string) => (v
       </div>
     </div>
 
-    {/* Data Proyek */}
+    {/* Detail Proyek — layout disamakan dengan BIESF */}
     <div>
-      <SectionTitle title="Data Proyek DESF" />
+      <SectionTitle title="Detail Proyek" />
       <div className="grid gap-4">
-        <Field label="Kategori Bidang Proyek" required>
-          <SelectInput
-            placeholder="-- Pilih Kategori Bidang --"
-            value={f("CATEGORIES")} onChange={set("CATEGORIES")}
-            options={DESF_PROJECT_CATEGORIES}
-          />
-        </Field>
         <Field
-          label="Judul Proyek / Penelitian"
+          label="Judul Proyek"
           required
-          note="Tidak dapat diubah setelah pengiriman."
+          note="Isi judul dengan BENAR. Data yang sudah dikirim tidak dapat diubah!"
         >
-          <TextInput placeholder="Masukkan judul proyek Anda" value={f("PROJECT_TITLE")} onChange={set("PROJECT_TITLE")} />
+          <TextArea placeholder="Masukkan judul proyek Anda" value={f("PROJECT_TITLE")} onChange={set("PROJECT_TITLE")} maxLength={160} />
         </Field>
-        <Field
-          label="Abstrak / Ringkasan Proyek"
-          note="Deskripsi singkat latar belakang, metode, dan hasil proyek (maks. 300 kata)."
-        >
-          <TextArea
-            placeholder="Deskripsikan proyek Anda…"
-            value={f("PROJECT_ABSTRACT")} onChange={set("PROJECT_ABSTRACT")} maxLength={1500}
-          />
-        </Field>
-        <Field
-          label="Link Dokumen Proyek (Google Drive)"
-          note="Makalah lengkap (PDF/Word), poster A0, dan dokumen pendukung lainnya. Format template: https://bit.ly/FORMAT-FULL-PAPER"
-        >
-          <TextInput placeholder="https://drive.google.com/…" value={f("DRIVE_LINK")} onChange={set("DRIVE_LINK")} />
-        </Field>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Field label="Kategori Bidang Proyek" required>
+            <SelectInput
+              placeholder="-- Pilih Kategori Bidang --"
+              value={f("CATEGORIES")} onChange={set("CATEGORIES")}
+              options={DESF_PROJECT_CATEGORIES}
+            />
+          </Field>
+          <Field label="Apakah proyek ini pernah diikutkan kompetisi sebelumnya?" required>
+            <SelectInput
+              placeholder="-- Pilih --"
+              value={f("YES_NO")} onChange={set("YES_NO")}
+              options={["Ya", "Tidak"]}
+            />
+          </Field>
+        </div>
+
+        {f("YES_NO") === "Ya" && (
+          <Field
+            label="Nama Kompetisi Sebelumnya"
+            note="Tuliskan nama event/kompetisi yang pernah diikuti dengan judul yang sama."
+          >
+            <TextArea
+              placeholder="Cth. IESF 2025, BIESF 2025…"
+              value={f("JUDUL_PERNAH_BERPARTISIPASI")} onChange={set("JUDUL_PERNAH_BERPARTISIPASI")}
+            />
+          </Field>
+        )}
       </div>
     </div>
   </>
@@ -175,14 +201,14 @@ const DmoForm = ({ f, set }: { f: (k: string) => string; set: (k: string) => (v:
     <div>
       <SectionTitle title="Data Peserta (Individu)" />
       <div className="grid gap-4">
-        <Field label="Nama Lengkap Peserta" required>
-          <TextInput placeholder="Nama lengkap sesuai identitas" value={f("NAMA_LENGKAP")} onChange={set("NAMA_LENGKAP")} />
+        <Field label="Nama Lengkap Peserta" required note="Sesuai identitas resmi (kartu pelajar / KTP).">
+          <TextInput placeholder="Nama lengkap" value={f("NAMA_LENGKAP")} onChange={set("NAMA_LENGKAP")} />
         </Field>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Field label="WhatsApp Peserta / Orang Tua" required note="Sertakan kode negara. Cth: +62 817 xxxx">
             <TextInput placeholder="+62 …" value={f("LEADER_WHATSAPP")} onChange={set("LEADER_WHATSAPP")} type="tel" />
           </Field>
-          <Field label="Email Peserta / Orang Tua" required note="LoA akan dikirim ke sini.">
+          <Field label="Email Peserta / Orang Tua" required note="LoA akan dikirim ke email ini.">
             <TextInput placeholder="email@example.com" value={f("LEADER_EMAIL")} onChange={set("LEADER_EMAIL")} type="email" />
           </Field>
         </div>
@@ -197,9 +223,9 @@ const DmoForm = ({ f, set }: { f: (k: string) => string; set: (k: string) => (v:
           <TextInput placeholder="Cth. SDN 1 Depok" value={f("NAMA_SEKOLAH")} onChange={set("NAMA_SEKOLAH")} />
         </Field>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Field label="Jenjang / Kelas" required>
+          <Field label="Jenjang / Kelas" required note="Pilih sesuai kelas saat ini.">
             <SelectInput
-              placeholder="-- Pilih Jenjang --"
+              placeholder="-- Pilih Jenjang/Kelas --"
               value={f("GRADE")} onChange={set("GRADE")}
               options={DMO_DIVISIONS}
             />
@@ -208,7 +234,7 @@ const DmoForm = ({ f, set }: { f: (k: string) => string; set: (k: string) => (v:
             <TextInput placeholder="Nomor induk siswa" value={f("NISN_NIM")} onChange={set("NISN_NIM")} />
           </Field>
         </div>
-        <Field label="Provinsi / Kota">
+        <Field label="Provinsi / Kota" required>
           <TextInput placeholder="Cth. Jawa Barat" value={f("PROVINCE")} onChange={set("PROVINCE")} />
         </Field>
       </div>
@@ -232,23 +258,24 @@ const DmoForm = ({ f, set }: { f: (k: string) => string; set: (k: string) => (v:
       </div>
     </div>
 
-    {/* Kategori DMO (filler untuk CATEGORIES field) */}
+    {/* Info DMO */}
     <div>
-      <SectionTitle title="Kategori DMO" />
+      <SectionTitle title="Informasi Olimpiade" />
       <div className="grid gap-4">
-        <Field
-          label="Bidang Olimpiade"
-          required
-          note="DMO adalah olimpiade matematika individu satu babak."
-        >
-          <Input value="Depok Math Olympiad (DMO)" disabled className="rounded-lg bg-muted/20 text-sm" />
-        </Field>
-        <Field
-          label="Judul / Tema (opsional)"
-          note="Kosongkan jika tidak ada."
-        >
-          <TextInput placeholder="—" value={f("PROJECT_TITLE")} onChange={set("PROJECT_TITLE")} />
-        </Field>
+        <div className="rounded-xl p-4 text-xs text-muted-foreground bg-amber-500/5 border border-amber-500/20 leading-6">
+          <p className="font-semibold text-foreground mb-2">
+            Bidang Olimpiade: <span className="text-foreground">Depok Math Olympiad — Matematika</span>
+            <span className="block font-normal text-muted-foreground mt-0.5">DMO adalah olimpiade matematika individu satu babak (single round).</span>
+          </p>
+          <p className="font-semibold text-foreground mb-1">📋 Ketentuan Teknis DMO</p>
+          <ul className="space-y-0.5 list-disc list-inside">
+            <li>Peserta wajib membawa <strong className="text-foreground">laptop pribadi</strong> dan alat tulis.</li>
+            <li>Wi-Fi akan disediakan oleh panitia.</li>
+            <li>Penilaian: setiap soal pilihan ganda bernilai <strong className="text-foreground">1 poin</strong>.</li>
+            <li>Medali Emas: KKM &gt; 80 · Perak: 70–79 · Perunggu: &lt; 69.</li>
+            <li>Keterlambatan hadir akan mengurangi waktu pengerjaan.</li>
+          </ul>
+        </div>
       </div>
     </div>
   </>
@@ -257,63 +284,127 @@ const DmoForm = ({ f, set }: { f: (k: string) => string; set: (k: string) => (v:
 // ── Form DCC ──────────────────────────────────────────────────────
 const DccForm = ({ f, set }: { f: (k: string) => string; set: (k: string) => (v: string) => void }) => {
   const isMhq = f("CATEGORIES") === "DCC — MHQ (Marawis, Hadroh & Qasidah)";
+  const isTari = f("CATEGORIES").includes("Tari");
+
   return (
     <>
-      {/* Data Tim */}
+      {/* Kategori DCC */}
       <div>
-        <SectionTitle title="Data Tim / Peserta" />
+        <SectionTitle title="Kategori Kompetisi" />
         <div className="grid gap-4">
-          <Field
-            label="Nama Ketua / Anggota Tim"
-            required
-            note={
-              isMhq
-                ? "Daftar nama semua anggota tim (maks. 10 orang). Pisahkan dengan /"
-                : "Nama ketua / anggota (solo atau grup)"
-            }
-          >
-            <TextArea
-              placeholder="Nama Ketua / Anggota1 / Anggota2 / …"
-              value={f("NAMA_LENGKAP")} onChange={set("NAMA_LENGKAP")} maxLength={500}
-            />
-          </Field>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Field label="WhatsApp Ketua Tim" required note="Sertakan kode negara.">
-              <TextInput placeholder="+62 …" value={f("LEADER_WHATSAPP")} onChange={set("LEADER_WHATSAPP")} type="tel" />
-            </Field>
-            <Field label="Email Ketua Tim" required note="LoA akan dikirim ke sini.">
-              <TextInput placeholder="email@example.com" value={f("LEADER_EMAIL")} onChange={set("LEADER_EMAIL")} type="email" />
-            </Field>
-          </div>
-          <Field label="Jumlah Anggota" note={isMhq ? "Maks. 10 orang/tim" : "Solo: 1 | Grup: sesuai ketentuan"}>
-            <TextInput placeholder="1 / 2 / 3 / …" value={f("MEMBER_COUNT")} onChange={set("MEMBER_COUNT")} />
-          </Field>
-        </div>
-      </div>
-
-      {/* Data Sekolah / Komunitas */}
-      <div>
-        <SectionTitle title="Asal Sekolah / Komunitas" />
-        <div className="grid gap-4">
-          <Field label="Nama Sekolah / Komunitas / Sanggar" required>
-            <TextInput placeholder="Cth. SMAN 2 Depok / Sanggar Tari Nusantara" value={f("NAMA_SEKOLAH")} onChange={set("NAMA_SEKOLAH")} />
-          </Field>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Field label="Jenjang / Kategori Peserta" required>
+          <div className="rounded-xl p-4 border border-primary/20 bg-primary/5">
+            <Field label="Kategori DCC" required note="Pilih kategori terlebih dahulu sebelum mengisi data tim.">
               <SelectInput
-                placeholder="-- Pilih Jenjang --"
-                value={f("GRADE")} onChange={set("GRADE")}
-                options={["SD (Sekolah Dasar)", "SMP (Sekolah Menengah Pertama)", "SMA/SMK (Sekolah Menengah Atas)", "Umum / Komunitas (khusus MHQ)"]}
+                placeholder="-- Pilih Kategori DCC --"
+                value={f("CATEGORIES")} onChange={set("CATEGORIES")}
+                options={DCC_CATEGORIES}
               />
             </Field>
-            <Field label="Provinsi / Kota">
-              <TextInput placeholder="Cth. Jawa Barat" value={f("PROVINCE")} onChange={set("PROVINCE")} />
-            </Field>
+
+            {isTari && (
+              <div className="mt-4 text-xs text-muted-foreground leading-6">
+                <p className="font-semibold text-foreground mb-1">💃 Ketentuan Lomba Tari</p>
+                <ul className="space-y-0.5 list-disc list-inside">
+                  <li>Durasi penampilan <strong className="text-foreground">maksimal 5 menit</strong>.</li>
+                  <li>Urutan penampilan ditentukan panitia dan <strong className="text-foreground">tidak dapat diubah</strong>.</li>
+                  <li>File musik (MP3/WAV) wajib dikirim <strong className="text-foreground">H-14 sebelum acara</strong>.</li>
+                  <li>Peserta wajib membawa file musik cadangan pada hari acara.</li>
+                </ul>
+              </div>
+            )}
+            {isMhq && (
+              <div className="mt-4 text-xs text-muted-foreground leading-6">
+                <p className="font-semibold text-foreground mb-1">🥁 Ketentuan MHQ (Marawis, Hadroh & Qasidah)</p>
+                <ul className="space-y-0.5 list-disc list-inside">
+                  <li>Jumlah peserta <strong className="text-foreground">maksimal 10 orang/tim</strong>. Terbuka untuk umum.</li>
+                  <li>Membawakan <strong className="text-foreground">1 sholawat</strong> + <strong className="text-foreground">1 lagu bebas bernuansa islami</strong>.</li>
+                  <li>Waktu penampilan <strong className="text-foreground">maksimal 5 menit</strong>.</li>
+                  <li>Peserta membawa <strong className="text-foreground">peralatan musik sendiri</strong>. Peralatan elektronik <strong className="text-foreground">TIDAK diperkenankan</strong>.</li>
+                  <li>Seluruh peserta wajib hadir <strong className="text-foreground">30 menit sebelum acara</strong>.</li>
+                </ul>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Data Pembimbing / Penanggung Jawab */}
+    {/* Data Tim / Peserta */}
+    <div>
+      <SectionTitle title="Data Tim / Peserta" />
+      <div className="grid gap-4">
+        <Field
+          label="Nama Ketua & Anggota Tim"
+          required
+          note={
+            isMhq
+              ? "Baris pertama = nama ketua tim. Kalau grup, tambahkan nama anggota di baris berikutnya (tekan Enter), maks. 10 orang/tim. Kalau solo, cukup isi 1 baris."
+              : "Baris pertama = nama ketua tim / penampil solo. Kalau grup, tambahkan nama anggota di baris berikutnya (tekan Enter)."
+          }
+        >
+          <TextArea
+            placeholder={"Nama Ketua Tim\nNama Anggota 1\nNama Anggota 2"}
+            value={f("NAMA_LENGKAP")} onChange={set("NAMA_LENGKAP")} maxLength={500}
+          />
+        </Field>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <Field label="WhatsApp Ketua Tim" required note="Sertakan kode negara.">
+            <TextInput placeholder="+62 …" value={f("LEADER_WHATSAPP")} onChange={set("LEADER_WHATSAPP")} type="tel" />
+          </Field>
+          <Field label="Email Ketua Tim" required note="LoA akan dikirim ke email ini.">
+            <TextInput placeholder="email@example.com" value={f("LEADER_EMAIL")} onChange={set("LEADER_EMAIL")} type="email" />
+          </Field>
+        </div>
+        <Field
+          label="Jumlah Anggota"
+          note={isMhq ? "Maks. 10 orang/tim" : "Solo: 1 orang | Grup: sesuai kategori"}
+        >
+          <TextInput placeholder="Cth. 5" value={f("MEMBER_COUNT")} onChange={set("MEMBER_COUNT")} />
+        </Field>
+      </div>
+    </div>
+
+  {/* Asal Sekolah / Komunitas */}
+  <div>
+    <SectionTitle title="Asal Sekolah / Komunitas" />
+    <div className="grid gap-4">
+      <Field
+        label="Nama Sekolah / Komunitas / Sanggar"
+        required
+        note={
+          isMhq
+            ? "Kalau solo/satu asal, cukup isi 1 baris. Kalau anggota tim berasal dari sekolah/komunitas berbeda, tulis satu per baris sesuai urutan nama di Data Tim.\nContoh:\n\nSanggar Marawis Al-Hidayah (Ketua)\nSMAN 2 Depok (Anggota1)"
+            : "Kalau solo/satu asal, cukup isi 1 baris. Kalau anggota tim berasal dari sekolah/sanggar berbeda, tulis satu per baris sesuai urutan nama di Data Tim.\nContoh:\n\nSMAN 2 Depok (Ketua)\nSanggar Tari Nusantara (Anggota1)"
+        }
+      >
+        <TextArea
+          placeholder={
+            isMhq
+              ? "Sanggar Marawis Al-Hidayah (Ketua)\nSMAN 2 Depok (Anggota1)"
+              : "SMAN 2 Depok (Ketua)\nSanggar Tari Nusantara (Anggota1)"
+          }
+          value={f("NAMA_SEKOLAH")} onChange={set("NAMA_SEKOLAH")} maxLength={500}
+        />
+      </Field>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <Field label="Jenjang / Kategori Peserta" required>
+          <SelectInput
+            placeholder="-- Pilih Jenjang --"
+            value={f("GRADE")} onChange={set("GRADE")}
+            options={
+              isMhq
+                ? ["SD (Sekolah Dasar)", "SMP (Sekolah Menengah Pertama)", "SMA/SMK (Sekolah Menengah Atas)", "Umum / Komunitas"]
+                : ["SD (Sekolah Dasar)", "SMP (Sekolah Menengah Pertama)", "SMA/SMK (Sekolah Menengah Atas)"]
+            }
+          />
+        </Field>
+        <Field label="Kota / Provinsi" required>
+          <TextInput placeholder="Cth. Depok, Jawa Barat" value={f("PROVINCE")} onChange={set("PROVINCE")} />
+        </Field>
+      </div>
+    </div>
+  </div>
+
+      {/* Guru Pembimbing / PJ */}
       <div>
         <SectionTitle title="Guru Pembimbing / Penanggung Jawab" />
         <div className="grid gap-4">
@@ -331,57 +422,69 @@ const DccForm = ({ f, set }: { f: (k: string) => string; set: (k: string) => (v:
         </div>
       </div>
 
-      {/* Kategori DCC */}
-      <div>
-        <SectionTitle title="Kategori &amp; Detail Penampilan" />
-        <div className="grid gap-4">
-          <Field label="Kategori DCC" required>
-            <SelectInput
-              placeholder="-- Pilih Kategori DCC --"
-              value={f("CATEGORIES")} onChange={set("CATEGORIES")}
-              options={DCC_CATEGORIES}
-            />
-          </Field>
-
-          <Field
-            label="Judul / Nama Penampilan"
-            required
-            note={
-              isMhq
-                ? "Nama sholawat yang dibawakan + lagu bebas islami (maks. 7 menit)"
-                : "Judul tari atau tema penampilan"
-            }
-          >
-            <TextInput
-              placeholder={isMhq ? "Sholawat: … | Lagu: …" : "Judul tari / penampilan"}
-              value={f("PROJECT_TITLE")} onChange={set("PROJECT_TITLE")}
-            />
-          </Field>
-
-          {/* Field khusus Tari: link file musik */}
-          {!isMhq && (
+      {/* Detail Penampilan — layout disamakan dengan BIESF */}
+      {f("CATEGORIES") && (
+        <div>
+          <SectionTitle title="Detail Penampilan" />
+          <div className="grid gap-4">
             <Field
-              label="Link File Musik (Google Drive)"
-              note="Upload file MP3/WAV ke Google Drive dan tempel link di sini. Wajib dikirim H-14 sebelum acara."
-            >
-              <TextInput placeholder="https://drive.google.com/…" value={f("DRIVE_LINK")} onChange={set("DRIVE_LINK")} />
-            </Field>
-          )}
-
-          {/* Field khusus MHQ: pernyataan peralatan */}
-          {isMhq && (
-            <Field
-              label="Peralatan yang Dibawa Tim"
-              note="Peserta membawa peralatan sendiri. Tidak diperbolehkan menggunakan peralatan elektronik saat penampilan."
+              label={isMhq ? "Judul Sholawat & Lagu Islami" : "Judul / Nama Penampilan"}
+              required
+              note={
+                isMhq
+                  ? "Tuliskan 1 judul sholawat dan 1 judul lagu bebas bernuansa islami. Cth: Sholawat: Ya Habibal Qolbi | Lagu: Tombo Ati"
+                  : "Judul tari atau nama penampilan yang akan ditampilkan. Tidak dapat diubah setelah pengiriman."
+              }
             >
               <TextArea
-                placeholder="Cth: Rebana (5 buah), Bedug (1), Simbal (2)…"
-                value={f("DRIVE_LINK")} onChange={set("DRIVE_LINK")} maxLength={300}
+                placeholder={isMhq ? "Sholawat: … | Lagu: …" : "Judul tari / penampilan"}
+                value={f("PROJECT_TITLE")} onChange={set("PROJECT_TITLE")} maxLength={160}
               />
             </Field>
-          )}
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Reuse CATEGORIES slot kosong di sini tidak perlu — kategori sudah dipilih di atas.
+                  Sejajarkan pertanyaan partisipasi sebelumnya, sesuai pola BIESF. */}
+              <Field label="Apakah penampilan ini pernah diikutkan kompetisi sebelumnya?" required>
+                <SelectInput
+                  placeholder="-- Pilih --"
+                  value={f("YES_NO")} onChange={set("YES_NO")}
+                  options={["Ya", "Tidak"]}
+                />
+              </Field>
+
+              {isTari && (
+                <Field
+                  label="Link File Musik (Google Drive)"
+                  note="Wajib dikirim H-14 sebelum acara (sebelum 17 September 2026)."
+                >
+                  <TextInput placeholder="https://drive.google.com/…" value={f("DRIVE_LINK")} onChange={set("DRIVE_LINK")} />
+                </Field>
+              )}
+              {isMhq && (
+                <Field
+                  label="Peralatan Musik yang Dibawa"
+                  note="Elektronik TIDAK diperkenankan saat tampil."
+                >
+                  <TextInput placeholder="Cth: Rebana, Bedug, Simbal…" value={f("DRIVE_LINK")} onChange={set("DRIVE_LINK")} />
+                </Field>
+              )}
+            </div>
+
+            {f("YES_NO") === "Ya" && (
+              <Field
+                label="Nama Kompetisi Sebelumnya"
+                note="Tuliskan nama event/kompetisi yang pernah diikuti dengan judul yang sama."
+              >
+                <TextArea
+                  placeholder="Cth. YICC 2025, DCC 2025…"
+                  value={f("JUDUL_PERNAH_BERPARTISIPASI")} onChange={set("JUDUL_PERNAH_BERPARTISIPASI")}
+                />
+              </Field>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </>
   );
 };
@@ -396,12 +499,10 @@ const DscfStepForm = ({ subEvent, onBack, onSuccess }: Props) => {
   const set = (key: string) => (v: string) => setForm(prev => ({ ...prev, [key]: v }));
   const f   = (key: string) => form[key] ?? "";
 
-  // Inject sub-event ke CATEGORY_COMPETITION agar ter-record di sheet
   const formWithMeta: FormData = {
     ...form,
     CATEGORY_COMPETITION: DSCF_SUB_LABELS[subEvent],
     CATEGORY_PRICE:       DSCF_PRICE_MAP[subEvent],
-    // DMO: set CATEGORIES otomatis
     ...(subEvent === "dmo" && !form["CATEGORIES"]
       ? { CATEGORIES: "Depok Math Olympiad (DMO)" }
       : {}),
@@ -435,65 +536,43 @@ const DscfStepForm = ({ subEvent, onBack, onSuccess }: Props) => {
           Langkah 3 dari 3
         </p>
         <h2 className="text-2xl md:text-3xl font-bold font-display">Formulir Pendaftaran</h2>
-        <p className="text-muted-foreground mt-1 text-sm">DSCF 2026 · {subLabel} · Offline</p>
+        <p className="text-muted-foreground mt-1 text-sm">DSCF 2026 · {subLabel} · Depok, Indonesia</p>
       </div>
 
       <div className="tech-shell rounded-2xl p-6 md:p-8 space-y-8">
 
         {/* Info banner */}
         <div className="rounded-xl p-4 text-sm text-muted-foreground leading-6 bg-primary/5 border border-primary/20">
-          <p className="font-semibold text-foreground mb-1">DSCF 2026 — {subLabel}</p>
+          <p className="font-semibold text-foreground mb-2">📌 DSCF 2026 — {subLabel}</p>
           <ol className="list-decimal list-inside space-y-1">
             <li>Isi semua data dengan benar. Data yang dikirim bersifat <strong className="text-foreground">final</strong> dan tidak dapat diubah.</li>
-            <li>Selesaikan pembayaran <strong className="text-foreground">sebelum 27 Agustus 2026</strong>. Berita transfer: IESF + Nama Lengkap.</li>
-            <li>LoA akan dikirim ke email ketua dalam <strong className="text-foreground">3 hari kerja</strong>.</li>
+            <li>Selesaikan pembayaran paling lambat <strong className="text-foreground">27 Agustus 2026</strong>.</li>
+            <li>Berita transfer: <strong className="text-foreground">IESF + Nama Lengkap</strong>.</li>
+            <li>LoA dikirim ke email ketua dalam <strong className="text-foreground">3 hari kerja</strong> setelah pembayaran terverifikasi.</li>
             <li>Biaya pendaftaran: <strong className="text-primary">{DSCF_PRICE_MAP[subEvent]}</strong></li>
           </ol>
         </div>
 
-        {/* Form berbeda per sub-event */}
+        {/* Form per sub-event */}
         {subEvent === "desf" && <DesfForm f={f} set={set} />}
         {subEvent === "dmo"  && <DmoForm  f={f} set={set} />}
         {subEvent === "dcc"  && <DccForm  f={f} set={set} />}
 
-        {/* Informasi Umum (semua sub-event) */}
+        {/* Informasi Umum */}
         <div>
           <SectionTitle title="Informasi Umum" />
           <div className="grid gap-4">
-            <Field label="Alamat Lengkap" required note="Jalan, Kota, Provinsi">
+            <Field label="Alamat Lengkap" required note="Jalan, Kelurahan, Kecamatan, Kota, Provinsi">
               <TextArea
                 placeholder="Masukkan alamat lengkap…"
                 value={f("COMPLETE_ADDRESS")} onChange={set("COMPLETE_ADDRESS")}
               />
             </Field>
-            <Field label="Dari mana Anda mengetahui DSCF?">
+            <Field label="Dari mana Anda mengetahui DSCF 2026?">
               <SelectInput
-                placeholder="-- Pilih Sumber --"
+                placeholder="-- Pilih Sumber Informasi --"
                 value={f("INFORMATION_RESOURCES")} onChange={set("INFORMATION_RESOURCES")}
-                options={["Instagram", "WhatsApp", "Teman / Guru", "Website", "YouTube", "Lainnya"]}
-              />
-            </Field>
-          </div>
-        </div>
-
-        {/* Bukti Pembayaran */}
-        <div>
-          <SectionTitle title="Bukti Pembayaran" />
-          <div className="grid gap-4">
-            <div className="rounded-xl p-4 text-xs text-muted-foreground bg-muted/30 border border-border/50 leading-6">
-              <p className="font-semibold text-foreground mb-1">📌 Informasi Pembayaran</p>
-              <p>Bank Syariah Indonesia (BSI) · Kode: 451</p>
-              <p>No. Rekening: <strong className="text-foreground">352261658</strong></p>
-              <p>Atas Nama: YYS PUSAT INOVASI ANAK BERBAKAT IND</p>
-              <p className="mt-1">Berita Transfer: <strong className="text-primary">IESF + Nama Lengkap</strong></p>
-            </div>
-            <Field
-              label="Link Bukti Pembayaran (Google Drive)"
-              note="Upload foto/screenshot bukti transfer ke Google Drive dan tempel link-nya di sini."
-            >
-              <TextInput
-                placeholder="https://drive.google.com/…"
-                value={f("FILE")} onChange={set("FILE")}
+                options={["Instagram", "WhatsApp", "Teman / Guru", "Website ICGI", "YouTube", "Lainnya"]}
               />
             </Field>
           </div>

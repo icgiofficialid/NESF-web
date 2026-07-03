@@ -25,7 +25,7 @@ const OPTIONS: {
     label: "Depok Engineering Science Fair",
     badge: "DESF",
     desc: "Kompetisi sains & rekayasa antar pelajar dengan 8 kategori bidang ilmu. Presentasi proyek di hadapan juri.",
-    price: "",
+    price: "Rp 500.000 / tim",
     icon: FlaskConical,
   },
   {
@@ -33,7 +33,7 @@ const OPTIONS: {
     label: "Depok Math Olympiad",
     badge: "DMO",
     desc: "Olimpiade matematika individu satu babak. Soal pilihan ganda sesuai jenjang pendidikan.",
-    price: " ",
+    price: "Rp 200.000 / peserta",
     icon: Calculator,
   },
   {
@@ -41,7 +41,7 @@ const OPTIONS: {
     label: "Depok Cultural Competition",
     badge: "DCC",
     desc: "Kompetisi seni budaya: Tari (kreasi/tradisional) dan MHQ (Marawis, Hadroh & Qasidah).",
-    price: " ",
+    price: "Rp 100.000 / tim",
     icon: Music,
   },
 ];

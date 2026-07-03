@@ -27,14 +27,14 @@ const dscf: EventDetailData = {
     categoriesDesc:
       "Peserta dapat mendaftar pada tiga sub-kompetisi: Depok Engineering Science Fair (DESF), Depok Math Olympiad (DMO), dan Depok Cultural Competition (DCC).",
     scheduleDesc:
-      "DSCF 2026 berlangsung pada 29 September – 1 Oktober 2026 di Depok, mencakup Seremoni Pembukaan, Sesi Penjurian, dan Upacara Penghargaan.",
+      "DSCF 2026 berlangsung pada 29 September – 3 Oktober 2026 di Depok, mencakup Seremoni Pembukaan & DMO (29 Sep), DESF (30 Sep), DCC (1 Okt), dan Awarding (3 Okt).",
   },
 
   stats: [
-    { value: "3",          label: "Sub-Kompetisi" },
-    { value: "29 Sep",     label: "Pembukaan" },
-    { value: "24 Agt",     label: "Batas Pendaftaran" },
-    { value: "Depok",      label: "Lokasi" },
+    { value: "3",      label: "Sub-Kompetisi" },
+    { value: "29 Sep", label: "Pembukaan" },
+    { value: "24 Agt", label: "Batas Pendaftaran" },
+    { value: "27 Agt", label: "Batas Pembayaran" },
   ],
 
   regSteps: [
@@ -139,70 +139,77 @@ const dscf: EventDetailData = {
   // ── Kriteria penilaian gabungan (DESF sebagai utama) ──────────
   judgingCriteria: [
     // DESF
-    { aspect: "Inovasi dan Orisinalitas (DESF)",          weight: "25%" },
-    { aspect: "Kualitas Ilmiah (DESF)",                   weight: "25%" },
-    { aspect: "Kreativitas (DESF)",                       weight: "25%" },
-    { aspect: "Presentasi & Penguasaan Materi (DESF)",    weight: "25%" },
+    { aspect: "Inovasi & Orisinalitas (DESF)",   weight: "30%" },
+    { aspect: "Metodologi (DESF)",               weight: "25%" },
+    { aspect: "Dampak / Efek (DESF)",            weight: "20%" },
+    { aspect: "Presentasi (DESF)",               weight: "15%" },
+    { aspect: "Booth & Standing Banner (DESF)",  weight: "10%" },
+    // DCC Tari
+    { aspect: "Teknik Gerak (Tari)",             weight: "30%" },
+    { aspect: "Ekspresi & Penjiwaan (Tari)",     weight: "20%" },
+    { aspect: "Kreativitas Koreografi (Tari)",   weight: "20%" },
+    { aspect: "Kostum & Penampilan (Tari)",      weight: "20%" },
+    { aspect: "Kekompakan (Tari)",               weight: "10%" },
+    // DCC MHQ
+    { aspect: "Kekompakan Tim (MHQ)",            weight: "30%" },
+    { aspect: "Vokal & Harmonisasi (MHQ)",       weight: "30%" },
+    { aspect: "Aransemen Musik (MHQ)",           weight: "20%" },
+    { aspect: "Penampilan Panggung (MHQ)",       weight: "20%" },
   ],
 
   awards: [
     // DESF
-    { place: "DESF — Juara Pertama",   medal: "Sertifikat & Medali", extra: "Nilai: 86–100" },
-    { place: "DESF — Juara Kedua",     medal: "Sertifikat & Medali", extra: "Nilai: 71–85"  },
-    { place: "DESF — Juara Ketiga",    medal: "Sertifikat & Medali", extra: "Nilai: 55–70"  },
-    { place: "DESF — Juara Keempat",   medal: "Sertifikat & Medali", extra: "Nilai: ≤54"    },
+    { place: "DESF — Juara Pertama",              medal: "Sertifikat & Medali", extra: "ICGI Platinum / Achievement Award (selektif)" },
+    { place: "DESF — Juara Kedua",                medal: "Sertifikat & Medali", extra: "" },
+    { place: "DESF — Juara Ketiga",               medal: "Sertifikat & Medali", extra: "" },
+    { place: "DESF — Juara Keempat",              medal: "Sertifikat & Medali", extra: "" },
     // DMO
-    { place: "DMO — Penghargaan Emas",   medal: "Sertifikat & Medali", extra: "Nilai > 80"    },
-    { place: "DMO — Penghargaan Perak",  medal: "Sertifikat & Medali", extra: "Nilai 70–79"   },
-    { place: "DMO — Penghargaan Perunggu", medal: "Sertifikat & Medali", extra: "Nilai < 69"  },
+    { place: "DMO — Penghargaan Emas",            medal: "Sertifikat & Medali", extra: "KKM > 80"  },
+    { place: "DMO — Penghargaan Perak",           medal: "Sertifikat & Medali", extra: "KKM 70–79" },
+    { place: "DMO — Penghargaan Perunggu",        medal: "Sertifikat & Medali", extra: "KKM < 69"  },
+    { place: "DMO — Penghargaan Terbaik",         medal: "Sertifikat & Medali", extra: "Nilai Kelulusan tertinggi" },
     // DCC Tari
-    { place: "DCC Tari — Juara Pertama",   medal: "Hadiah & Sertifikat", extra: "" },
-    { place: "DCC Tari — Juara Kedua",     medal: "Hadiah & Sertifikat", extra: "" },
-    { place: "DCC Tari — Juara Ketiga",    medal: "Hadiah & Sertifikat", extra: "" },
-    { place: "DCC Tari — Kostum Terbaik",  medal: "Hadiah & Sertifikat", extra: "" },
+    { place: "DCC Tari — Juara Pertama",          medal: "Hadiah & Sertifikat", extra: "" },
+    { place: "DCC Tari — Juara Kedua",            medal: "Hadiah & Sertifikat", extra: "" },
+    { place: "DCC Tari — Juara Ketiga",           medal: "Hadiah & Sertifikat", extra: "" },
+    { place: "DCC Tari — Kostum Terbaik",         medal: "Hadiah & Sertifikat", extra: "" },
     // DCC MHQ
-    { place: "DCC MHQ — 5–6 Tim Terpilih", medal: "Hadiah & Sertifikat", extra: "Sistem parade/undian" },
+    { place: "DCC MHQ — 5–6 Tim Terpilih",       medal: "Hadiah & Sertifikat", extra: "Sistem parade/undian" },
   ],
 
   scheduleOffline: [
     {
-      day: 1,
-      date:  "29 September 2026",
-      title: "Seremoni Pembukaan",
+      day: 1, date: "29 September 2026", title: "Seremoni Pembukaan & DMO",
       items: [
-        { time: "TBA", description: "Seremoni Pembukaan DSCF 2026", location: "Depok" },
+        { time: "10.00 – 11.00", description: "Seremoni Pembukaan DSCF 2026", location: "Depok" },
+        { time: "12.30 – Selesai", description: "Depok Math Olympiad (DMO)", location: "Depok" },
       ],
     },
     {
-      day: 2,
-      date:  "30 September 2026",
-      title: "Hari Kompetisi (Jadwal Menyusul)",
+      day: 2, date: "30 September 2026", title: "Depok Engineering Science Fair (DESF)",
       items: [
-        { time: "TBA", description: "Sesi Kompetisi DESF / DMO / DCC (Jadwal Menyusul)", location: "Depok" },
+        { time: "07.00 – 09.00", description: "Set up Booth Peserta", location: "Depok" },
+        { time: "09.00 – 10.00", description: "Briefing Juri", location: "Depok" },
+        { time: "10.00 – 16.00", description: "Penilaian DESF", location: "Depok" },
       ],
     },
     {
-      day: 3,
-      date:  "1 Oktober 2026",
-      title: "Hari Kompetisi (Jadwal Menyusul)",
+      day: 3, date: "1 Oktober 2026", title: "Depok Cultural Competition (DCC)",
       items: [
-        { time: "TBA", description: "Sesi Kompetisi DESF / DMO / DCC (Jadwal Menyusul)", location: "Depok" },
+        { time: "09.00 – 12.00", description: "Lomba Tari (Solo & Grup)", location: "Depok" },
+        { time: "13.00 – Selesai", description: "MHQ (Marawis, Hadroh & Qasidah)", location: "Depok" },
       ],
     },
     {
-      day: 4,
-      date:  "2 Oktober 2026",
-      title: "Hari Kompetisi (Jadwal Menyusul)",
+      day: 4, date: "2 Oktober 2026", title: "Free Time",
       items: [
-        { time: "TBA", description: "Sesi Kompetisi DESF / DMO / DCC (Jadwal Menyusul)", location: "Depok" },
+        { time: "Seharian", description: "Free Time", location: "Depok" },
       ],
     },
     {
-      day: 5,
-      date:  "3 Oktober 2026",
-      title: "Upacara Penghargaan & Penutupan",
+      day: 5, date: "3 Oktober 2026", title: "Awarding DSCF 2026",
       items: [
-        { time: "TBA", description: "Upacara Penghargaan & Penutupan DSCF 2026", location: "Depok" },
+        { time: "09.30 – Selesai", description: "Upacara Penghargaan & Penutupan DSCF 2026", location: "Depok" },
       ],
     },
   ],
