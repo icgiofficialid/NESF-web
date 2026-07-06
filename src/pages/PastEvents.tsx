@@ -7,6 +7,7 @@ import IccShell from "@/components/nesf/NesfShell";
 import SectionReveal from "@/components/nesf/SectionReveal";
 import { useLang } from "@/components/LanguageProvider";
 import { useEvents } from "@/hooks/useEvents";
+import EventCard from "@/components/nesf/EventCard";
 
 const PastEvents = () => {
   const [search, setSearch] = useState("");
@@ -14,7 +15,7 @@ const PastEvents = () => {
 
   // ← Sebelumnya: import { iccEvents } dari iccEventsData (hardcode)
   // ← Sekarang:   fetch dari GAS Public API via useEvents hook
-  const { events, loading } = useEvents("icc");
+  const { events, loading } = useEvents("nesf");
 
   const LABELS = {
     title:    { en: "Past",                id: "Event" },
@@ -79,24 +80,11 @@ const PastEvents = () => {
             </div>
           </SectionReveal>
         ) : (
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {pastEvents.map((event, i) => (
-              <SectionReveal key={event.id} delay={i * 0.07}>
-                <div className="rounded-2xl border border-border/70 bg-panel overflow-hidden opacity-80 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-300">
-                  <div className={`h-44 bg-gradient-to-br ${event.coverGradient} flex items-end p-4`}>
-                    <div>
-                      <p className="text-white/60 text-[10px] uppercase tracking-widest">{event.subtitle}</p>
-                      <h3 className="text-white text-sm font-bold mt-1">{event.title}</h3>
-                    </div>
-                  </div>
-                  <div className="p-4 space-y-1.5 text-xs text-muted-foreground">
-                    <p>📍 {event.location}</p>
-                    <p>📅 {event.dateRange}</p>
-                  </div>
-                </div>
-              </SectionReveal>
-            ))}
-          </div>
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+        {pastEvents.map((event, i) => (
+          <EventCard key={event.id} event={event} index={i} variant="past" />
+        ))}
+      </div>  
         )}
       </section>
     </IccShell>

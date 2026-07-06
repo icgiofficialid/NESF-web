@@ -10,6 +10,7 @@ import SectionReveal from "@/components/nesf/SectionReveal";
 import { useLang } from "@/components/LanguageProvider";
 import { useRef, useEffect, useState } from "react";
 import { newsItems } from "@/config/newsData";
+import EventCard from "@/components/nesf/EventCard";
 import {
   competitionCategories,
   highlights,
@@ -541,45 +542,11 @@ const NesfIndex = () => {
             </button>
           </SectionReveal>
 
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {featuredEvents.map((event, i) => (
-              <SectionReveal key={event.id} delay={i * 0.08} className="h-full">
-                <motion.div
-                  whileHover={{ y: -6 }}
-                  transition={{ duration: 0.22 }}
-                  onClick={() => navigate(`/events/${event.slug}`)}
-                  className="group relative h-full cursor-pointer rounded-2xl overflow-hidden border border-border/70 bg-panel shadow-sm hover:shadow-xl transition-shadow duration-300"
-                >
-                  <div className={`relative h-44 bg-gradient-to-br ${event.coverGradient} flex items-end p-0`}>
-                    {event.coverImage && (
-                      <img
-                        src={event.coverImage}
-                        alt=""
-                        className="absolute inset-0 w-full h-full object-cover opacity-20"
-                      />
-                    )}
-                    <div className="absolute top-3 left-3 flex items-center gap-1.5 rounded-full bg-white/15 backdrop-blur-md border border-white/20 px-3 py-1 text-xs font-semibold text-white">
-                      <span className="w-1.5 h-1.5 rounded-full" style={{ background: C.cyan }} />
-                      {event.type}
-                    </div>
-                    <div className="absolute top-3 right-3 text-white/40 text-[10px] tracking-widest font-bold">NESF</div>
-                    <div className="w-full bg-gradient-to-t from-black/70 to-transparent px-4 pb-4 pt-8">
-                      <p className="text-white/60 text-[10px] uppercase tracking-[0.2em] mb-1">{event.subtitle}</p>
-                      <h3 className="text-white text-sm font-bold leading-tight line-clamp-2 font-display">{event.title}</h3>
-                    </div>
-                  </div>
-                  <div className="p-4 space-y-2">
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <MapPin className="h-3 w-3" /><span>{event.location}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <Calendar className="h-3 w-3" /><span>{event.dateRange}</span>
-                    </div>
-                  </div>
-                </motion.div>
-              </SectionReveal>
-            ))}
-          </div>
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+          {featuredEvents.map((event, i) => (
+            <EventCard key={event.id} event={event} index={i} />
+          ))}
+        </div>
         </section>
       )}
 

@@ -82,8 +82,10 @@ export const EVENTS_REGISTRY: EventMeta[] = [
     route:                "/events/dscf-2026",
     shutdown:             false,
     heroGradient:         "from-cyan-900 via-blue-900 to-indigo-900",
+    coverImage:           "https://res.cloudinary.com/dwhobhexj/image/upload/v1783324813/dscf-potret_idalof.jpg",
+    coverImageLandscape:  "https://res.cloudinary.com/dwhobhexj/image/upload/v1783324812/dscf-landscape_lygnsu.jpg",
     sheet: {
-      // Ganti dengan URL GAS deployment milik DSCF
+      // Ganti dengan URL GAS deploymen milik DSCF
       sheetUrl: "https://script.google.com/macros/s/YOUR_GAS_URL_HERE/exec",
       targets: {
         "indo-online":   "indo-online",
