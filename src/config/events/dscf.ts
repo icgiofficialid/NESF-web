@@ -43,10 +43,9 @@ const dscf: EventDetailData = {
     "Pilih sub-kompetisi yang ingin diikuti: DESF, DMO, atau DCC.",
     "Baca dan setujui Syarat & Ketentuan kompetisi.",
     "Isi Formulir Pendaftaran dengan data tim, sekolah, pembimbing, dan detail proyek/penampilan secara lengkap dan benar. Peserta wajib dibuktikan dengan identitas resmi yang masih berlaku sesuai jenjang lomba (SD/SMP/SMA) atau umum khusus kategori MHQ.",
-    "Lakukan pembayaran paling lambat 27 Agustus 2026 dan unggah bukti transfer via Google Drive. Berita Transfer: IESF + Nama Lengkap.",
+    "Lakukan pembayaran paling lambat 27 Agustus 2026 dan unggah bukti transfer via Google Drive. Berita Transfer: DSCF + Nama Lengkap.",
     "Khusus peserta DESF: kirimkan makalah lengkap (format PDF/Word, template resmi) sebelum hari pelaksanaan, dan siapkan standing banner/X-banner ukuran 60×160 cm untuk hari-H.",
     "Khusus peserta DCC kategori Tari: kirimkan file musik (MP3/WAV) beserta file cadangan selambat-lambatnya H-14 sebelum acara.",
-    "Surat Keputusan Penerimaan (LoA) akan dikirim ke email ketua tim dalam 3 hari kerja setelah pembayaran terverifikasi.",
     "Seluruh peserta wajib mematuhi peraturan dan tata tertib panitia selama rangkaian kegiatan berlangsung; keputusan panitia dan dewan juri bersifat final.",
   ],
 
