@@ -235,6 +235,18 @@ export const faqItems = [
     answer:   { en: "All required registration data and project documents must be submitted no later than H-14 (14 days before the event) unless otherwise stated by the committee.", id: "Semua data registrasi dan dokumen proyek harus dikirimkan paling lambat H-14 (14 hari sebelum acara) kecuali dinyatakan lain oleh panitia." },
   },
   {
+    question: { en: "What documents are required?", id: "Dokumen apa yang diperlukan?" },
+    answer:   { en: "Each team must submit a project abstract/summary, problem statement, objectives, research method, results/findings, conclusion, and project photos/documentation, along with participant and mentor information.", id: "Setiap tim wajib mengumpulkan abstrak/ringkasan proyek, pernyataan masalah, tujuan, metode penelitian, hasil/temuan, kesimpulan, serta foto/dokumentasi proyek, lengkap dengan data peserta dan pembimbing." },
+  },
+  {
+    question: { en: "What are the judging criteria?", id: "Apa saja kriteria penilaian?" },
+    answer:   { en: "Projects are assessed across 6 aspects: Originality & Innovation (25%), Scientific/Technical Quality (25%), Methodology/Engineering Process (20%), Practical Application/Impact (15%), Presentation & Communication (10%), and Booth/Poster/Visual Display (5%).", id: "Proyek dinilai dari 6 aspek: Originalitas & Inovasi (25%), Kualitas Ilmiah/Teknis (25%), Metodologi/Proses Rekayasa (20%), Aplikasi Praktis/Dampak (15%), Presentasi & Komunikasi (10%), dan Booth/Poster/Tampilan Visual (5%)." },
+  },
+  {
+    question: { en: "What language should be used for presentations?", id: "Bahasa apa yang digunakan untuk presentasi?" },
+    answer:   { en: "As NESF is a national-level competition for Indonesian students, all presentations, full papers, and posters must be in Bahasa Indonesia.", id: "Karena NESF adalah kompetisi tingkat nasional untuk pelajar Indonesia, seluruh presentasi, full paper, dan poster wajib menggunakan Bahasa Indonesia." },
+  },
+  {
     question: { en: "What awards are given?", id: "Penghargaan apa yang diberikan?" },
     answer:   { en: "Awards include Gold, Silver, Bronze Medal + Certificate, 4th Place Medal + Certificate, Honorable Mention Certificate, and Finalist recognition. Additional special awards (cash prize, scholarship, gadget) are under discussion.", id: "Penghargaan meliputi Medali Emas, Perak, Perunggu + Sertifikat, Medali Peringkat 4 + Sertifikat, Sertifikat Honorable Mention, dan pengakuan Finalis. Penghargaan khusus tambahan (uang tunai, beasiswa, gadget) sedang dalam pembahasan." },
   },

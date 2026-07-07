@@ -6,6 +6,8 @@
 // Portal: NESF  |  Peserta: Indonesia Only
 // Sub-kompetisi: DESF · DMO · DCC
 // Semua teks: Bahasa Indonesia
+//
+// Disesuaikan dengan JUKNIS DSCF 2026 resmi (ICGI x Kota Depok).
 // ================================================================
 
 import type { EventDetailData } from "@/config/eventDetailTypes";
@@ -19,15 +21,15 @@ const dscf: EventDetailData = {
 
   email:   "icgi.official.id@gmail.com",
   website: "www.icgi.or.id",
-  venue:   "Depok, Indonesia",
+  venue:   "Depok, Jawa Barat",
 
   labels: {
     eventBadge:     "ICGI · DSCF 2026",
-    heroBadge:      "Kompetisi · Nasional · Depok, Indonesia",
+    heroBadge:      "Kompetisi · Nasional · Depok, Jawa Barat",
     categoriesDesc:
       "Peserta dapat mendaftar pada tiga sub-kompetisi: Depok Engineering Science Fair (DESF), Depok Math Olympiad (DMO), dan Depok Cultural Competition (DCC).",
     scheduleDesc:
-      "DSCF 2026 berlangsung pada 29 September – 3 Oktober 2026 di Depok, mencakup Seremoni Pembukaan & DMO (29 Sep), DESF (30 Sep), DCC (1 Okt), dan Awarding (3 Okt).",
+      "DSCF 2026 berlangsung pada 29 September – 3 Oktober 2026 di Depok, mencakup Seremoni Pembukaan & DMO (29 Sep), DESF (30 Sep), DCC (1 Okt), Free Time (2 Okt), dan Awarding (3 Okt).",
   },
 
   stats: [
@@ -40,16 +42,19 @@ const dscf: EventDetailData = {
   regSteps: [
     "Pilih sub-kompetisi yang ingin diikuti: DESF, DMO, atau DCC.",
     "Baca dan setujui Syarat & Ketentuan kompetisi.",
-    "Isi Formulir Pendaftaran dengan data tim, sekolah, pembimbing, dan detail proyek/penampilan.",
-    "Lakukan pembayaran dan unggah bukti transfer via Google Drive. Berita Transfer: IESF + Nama Lengkap.",
-    "Surat Keputusan Penerimaan (LoA) akan dikirim ke email ketua tim dalam 3 hari kerja.",
+    "Isi Formulir Pendaftaran dengan data tim, sekolah, pembimbing, dan detail proyek/penampilan secara lengkap dan benar. Peserta wajib dibuktikan dengan identitas resmi yang masih berlaku sesuai jenjang lomba (SD/SMP/SMA) atau umum khusus kategori MHQ.",
+    "Lakukan pembayaran paling lambat 27 Agustus 2026 dan unggah bukti transfer via Google Drive. Berita Transfer: IESF + Nama Lengkap.",
+    "Khusus peserta DESF: kirimkan makalah lengkap (format PDF/Word, template resmi) sebelum hari pelaksanaan, dan siapkan standing banner/X-banner ukuran 60×160 cm untuk hari-H.",
+    "Khusus peserta DCC kategori Tari: kirimkan file musik (MP3/WAV) beserta file cadangan selambat-lambatnya H-14 sebelum acara.",
+    "Surat Keputusan Penerimaan (LoA) akan dikirim ke email ketua tim dalam 3 hari kerja setelah pembayaran terverifikasi.",
+    "Seluruh peserta wajib mematuhi peraturan dan tata tertib panitia selama rangkaian kegiatan berlangsung; keputusan panitia dan dewan juri bersifat final.",
   ],
 
   about: {
     welcome:
       "Depok Science & Cultural Festival (DSCF) 2026 hadir sebagai ajang kompetisi sekaligus apresiasi bagi pelajar untuk mengembangkan potensi di bidang sains, matematika, dan budaya. Kegiatan ini diharapkan dapat mendorong semangat inovasi, sportivitas, serta pelestarian budaya lokal di kalangan generasi muda.",
     background:
-      "DSCF 2026 terdiri dari tiga sub-kompetisi: Depok Engineering Science Fair (DESF) dengan 8 kategori bidang sains dan rekayasa, Depok Math Olympiad (DMO) untuk kompetisi matematika individu, serta Depok Cultural Competition (DCC) yang mencakup lomba Tari dan MHQ (Marawis, Hadroh & Qasidah).",
+      "Perkembangan ilmu pengetahuan dan teknologi yang pesat harus diimbangi dengan penguatan nilai budaya serta kreativitas generasi muda. Oleh karena itu, diperlukan suatu wadah yang mampu mengakomodasi keduanya dalam satu kegiatan yang terpadu. DSCF 2026 terdiri dari tiga sub-kompetisi: Depok Engineering Science Fair (DESF) dengan 8 kategori bidang sains dan rekayasa, Depok Math Olympiad (DMO) untuk kompetisi matematika individu satu babak, serta Depok Cultural Competition (DCC) yang mencakup lomba Tari dan MHQ (Marawis, Hadroh & Qasidah). Ketentuan umum: peserta merupakan pelajar aktif sesuai jenjang lomba (SD, SMP, SMA) atau umum untuk kategori MHQ, dibuktikan dengan identitas resmi yang masih berlaku; peserta wajib mendaftar secara lengkap dan benar serta menyelesaikan pembayaran sesuai ketentuan panitia; dan seluruh peserta wajib mematuhi peraturan serta tata tertib yang berlaku selama rangkaian kegiatan.",
     objectives: [
       "Meningkatkan minat dan bakat pelajar di bidang sains, matematika, dan budaya.",
       "Menjadi wadah kompetisi yang sehat, edukatif, dan mendorong kreativitas serta inovasi generasi muda.",
@@ -58,9 +63,9 @@ const dscf: EventDetailData = {
   },
 
   divisions: [
-    { level: "Sekolah Dasar (SD)",            age: "Tingkat SD"    },
-    { level: "Sekolah Menengah (SMP/SMA)",    age: "Tingkat SMP/SMA" },
-    { level: "Umum (khusus MHQ)",             age: "Semua usia"    },
+    { level: "Sekolah Dasar (SD)",         age: "Tingkat SD"      },
+    { level: "Sekolah Menengah (SMP/SMA)", age: "Tingkat SMP/SMA" },
+    { level: "Umum (khusus MHQ)",          age: "Semua usia"      },
   ],
 
   // ── Kategori mencakup semua sub-kompetisi ──────────────────────
@@ -118,20 +123,20 @@ const dscf: EventDetailData = {
     {
       letter: "DMO",
       title:       "Depok Math Olympiad",
-      description: "Kompetisi matematika individu satu babak. Peserta mengerjakan soal pilihan ganda sesuai jenjang. Penilaian berdasarkan ketepatan dan jumlah jawaban benar.",
+      description: "Menampilkan kemampuan berpikir logis, analitis, dan kreativitas dalam pemecahan masalah matematika tingkat tinggi guna menjaring talenta muda berbakat di bidang numerasi. Kompetisi dilaksanakan dalam satu babak (single round) secara individu sesuai jenjang.",
       icon: "FlaskConical",
     },
     // DCC
     {
       letter: "DCC-1",
       title:       "Tari",
-      description: "Menampilkan kreativitas, kekompakan, dan keindahan gerakan tari sebagai bentuk pelestarian seni dan budaya. Durasi dan kategori (solo/grup) sesuai ketentuan panitia.",
+      description: "Menampilkan kreativitas, kekompakan, dan keindahan gerakan tari sebagai bentuk pelestarian seni dan budaya. Peserta tampil sesuai kategori (solo/grup) dengan durasi maksimal 5 menit.",
       icon: "Users",
     },
     {
       letter: "DCC-2",
       title:       "MHQ (Marawis, Hadroh & Qasidah)",
-      description: "Menampilkan seni musik islami melalui harmonisasi vokal dan tabuhan rebana. Maksimal 10 orang/tim, membawakan 1 sholawat dan 1 lagu bebas bernuansa islami. Waktu maksimal 7 menit.",
+      description: "Menampilkan seni musik islami melalui harmonisasi vokal dan tabuhan rebana yang bernilai religi dan kreatif. Maksimal 10 orang/tim, membawakan 1 sholawat dan 1 lagu bebas bernuansa islami. Waktu maksimal 5 menit.",
       icon: "Users",
     },
   ],
@@ -155,6 +160,8 @@ const dscf: EventDetailData = {
     { aspect: "Vokal & Harmonisasi (MHQ)",       weight: "30%" },
     { aspect: "Aransemen Musik (MHQ)",           weight: "20%" },
     { aspect: "Penampilan Panggung (MHQ)",       weight: "20%" },
+    // DMO — sistem poin, bukan bobot persentase
+    { aspect: "Setiap Soal Pilihan Ganda (DMO)", weight: "1 poin/soal" },
   ],
 
   awards: [
@@ -174,7 +181,7 @@ const dscf: EventDetailData = {
     { place: "DCC Tari — Juara Ketiga",           medal: "Hadiah & Sertifikat", extra: "" },
     { place: "DCC Tari — Kostum Terbaik",         medal: "Hadiah & Sertifikat", extra: "" },
     // DCC MHQ
-    { place: "DCC MHQ — 5–6 Tim Terpilih",       medal: "Hadiah & Sertifikat", extra: "Sistem parade/undian" },
+    { place: "DCC MHQ — 5–6 Tim Terpilih",        medal: "Hadiah & Sertifikat", extra: "Sistem parade/undian, seluruh peserta berkesempatan sama" },
   ],
 
   scheduleOffline: [
