@@ -45,7 +45,7 @@ export default function EventDetail() {
   const { lang }           = useLang();
 
   const LABELS = {
-    registerBtn:    { en: "Register Now",                id: "Daftar Sekarang" },
+    registerBtn:    { id: "Daftar Sekarang" },
     guideBtn:       { en: "Download Guidebook",          id: "Unduh Buku Panduan" },
     back:           { en: "← Back to Events",            id: "← Kembali ke Events" },
     divisions:      { en: "Participant Divisions",       id: "Divisi Peserta" },

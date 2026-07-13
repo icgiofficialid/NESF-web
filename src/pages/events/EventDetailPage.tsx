@@ -28,28 +28,28 @@ const SECTION_IDS = ["home", "about", "categories", "schedule", "registration"] 
 type SectionId = typeof SECTION_IDS[number];
 
 const SECTION_LABELS: Record<SectionId, string> = {
-  home:         "Home",
-  about:        "About",
-  categories:   "Categories",
-  schedule:     "Schedule",
-  registration: "Registration",
+  home:         "Beranda",
+  about:        "Tentang",
+  categories:   "Kategori",
+  schedule:     "Jadwal",
+  registration: "Pendaftaran",
 };
 
 const L: Record<string, string> = {
-  backToEvents:       "Back to Upcoming Events",
-  registerNow:        "Register Now",
-  guidebook:          "Guidebook",
-  venue:              "Venue",
-  contact:            "Contact",
-  website:            "Website",
-  welcomeNote:        "Welcome Note",
-  objectives:         "Objectives",
-  divisions:          "Participant Divisions",
-  judgingCriteria:    "Judging Criteria",
-  categoryLabel:      "Category",
-  dayLabel:           "Day",
-  registrationOpen:   "Registration is open!",
-  registrationClosed: "Registration is currently closed.",
+  backToEvents:       "Kembali ke Acara Mendatang",
+  registerNow:        "Daftar Sekarang",
+  guidebook:          "Buku Panduan",
+  venue:              "Tempat Acara", // atau tetap "Venue" jika ingin lebih modern
+  contact:            "Kontak",
+  website:            "Situs Web",
+  welcomeNote:        "Sambutan",
+  objectives:         "Tujuan",
+  divisions:          "Divisi Peserta",
+  judgingCriteria:    "Kriteria Penilaian",
+  categoryLabel:      "Kategori",
+  dayLabel:           "Hari",
+  registrationOpen:   "Pendaftaran telah dibuka!",
+  registrationClosed: "Pendaftaran saat ini ditutup.",
 };
 
 interface EventDetailPageProps {
@@ -112,9 +112,12 @@ const EventDetailPage = ({ slug, data }: EventDetailPageProps) => {
     </h2>
   );
 
-  return (
-    <SiteShell>
-      <div className="w-full min-h-screen">
+return (
+  <SiteShell>
+    <div
+      className="w-full min-h-screen"
+      style={meta?.accentColor ? ({ "--primary": meta.accentColor } as React.CSSProperties) : undefined}
+    >
 
         {/* ── Sticky Nav ───────────────────────────────────────── */}
         <div className="sticky top-0 z-40 bg-background/90 backdrop-blur-xl border-b border-border">
@@ -154,7 +157,7 @@ const EventDetailPage = ({ slug, data }: EventDetailPageProps) => {
         {/* ══════ HOME ══════ */}
         <Sec id="home">
           {/* Hero */}
-          <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-blue-900 via-indigo-800 to-purple-900 p-8 md:p-14 text-white mb-10">
+          <div className={`relative rounded-3xl overflow-hidden bg-gradient-to-br ${meta?.heroGradient ?? "from-blue-900 via-indigo-800 to-purple-900"} p-8 md:p-14 text-white mb-10`}>
             
           {(meta?.coverImageLandscape ?? meta?.coverImage) && (
             <img
@@ -196,14 +199,14 @@ const EventDetailPage = ({ slug, data }: EventDetailPageProps) => {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-            {data.stats.map((s) => (
-              <div key={s.label} className="tech-shell rounded-2xl p-5 text-center">
-                <p className="text-2xl font-bold text-primary mb-1">{s.value}</p>
-                <p className="text-xs text-muted-foreground uppercase tracking-wide">{s.label}</p>
-              </div>
-            ))}
-          </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-10">
+          {data.stats.map((s) => (
+            <div key={s.label} className="tech-shell rounded-2xl p-4 sm:p-5 text-center">
+              <p className="text-xl sm:text-2xl font-bold text-primary mb-1">{s.value}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground uppercase tracking-wide">{s.label}</p>
+            </div>
+          ))}
+        </div>
 
           {/* Info bar */}
           <div className="tech-shell rounded-2xl p-6 flex flex-col sm:flex-row gap-6">
@@ -239,6 +242,33 @@ const EventDetailPage = ({ slug, data }: EventDetailPageProps) => {
             )}
           </div>
         </Sec>
+
+        {/* Organized By */}
+        {data.organizers && data.organizers.length > 0 && (
+          <div className="mt-10">
+            <p className="text-xs font-bold uppercase tracking-[0.25em] text-muted-foreground mb-4">
+              Diselenggarakan Oleh
+            </p>
+            <div
+              className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4"
+              style={{ gridTemplateColumns: `repeat(auto-fit, minmax(140px, 1fr))` }}
+            >
+              {data.organizers.map((org) => (
+                <div
+                  key={org.name}
+                  className="tech-shell rounded-2xl px-6 py-6 sm:py-8 flex items-center justify-center min-h-[90px] sm:min-h-[110px]"
+                >
+                  <img
+                    src={org.logo}
+                    alt={org.name}
+                    className="h-10 sm:h-14 md:h-16 max-w-full object-contain"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
 
         {/* ══════ ABOUT ══════ */}
         <Sec id="about">
@@ -293,7 +323,7 @@ const EventDetailPage = ({ slug, data }: EventDetailPageProps) => {
               <div className="tech-shell rounded-2xl p-8">
                 <div className="flex items-center gap-3 mb-6">
                   <ClipboardList className="w-6 h-6 text-primary" />
-                  <h3 className="text-base font-bold text-primary">How to Register</h3>
+                  <h3 className="text-base font-bold text-primary">Cara Mendaftar</h3>
                 </div>
                 <ol className="space-y-4">
                   {data.regSteps.map((step, i) => (
@@ -354,7 +384,7 @@ const EventDetailPage = ({ slug, data }: EventDetailPageProps) => {
             <div className="tech-shell rounded-2xl p-8">
               <div className="flex items-center gap-3 mb-6">
                 <Trophy className="w-6 h-6 text-primary" />
-                <h3 className="text-base font-bold text-primary">Awards</h3>
+                <h3 className="text-base font-bold text-primary">Penghargaan</h3>
               </div>
               <div className="grid gap-2">
                 {data.awards.map((a, i) => (
@@ -383,7 +413,7 @@ const EventDetailPage = ({ slug, data }: EventDetailPageProps) => {
                 <div className="flex items-center gap-3 mb-4">
                   <div className="flex-1 h-px bg-border/50" />
                   <span className="text-xs font-bold uppercase tracking-[0.25em] text-primary border border-primary/30 rounded-full px-4 py-1.5">
-                    Offline Competition
+                    Kompetisi Offline
                   </span>
                   <div className="flex-1 h-px bg-border/50" />
                 </div>

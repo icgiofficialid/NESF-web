@@ -13,9 +13,11 @@
 import type { EventDetailData } from "@/config/eventDetailTypes";
 
 const dscf: EventDetailData = {
-  slug: "dscf-2026",
+  slug: "Depok Science & Cultural Festival 2026",
   organizers: [
     { name: "ICGI", logo: "https://res.cloudinary.com/dwhobhexj/image/upload/v1778572483/Logo_ICGI_Bg_Transparant_1_rdvff1.png" },
+    { name: "IYSA",  logo: "https://res.cloudinary.com/dwhobhexj/image/upload/v1778572483/logo_IYSA_bagus_e6uai3.png" },
+    { name: "DSCF",  logo: "https://res.cloudinary.com/dwhobhexj/image/upload/v1783935566/logo_dcsf.pdf_glnqma.png" },
   ],
   guidebookUrl: "https://drive.google.com/file/d/17aemWc6TKjNzkrllVRF2grhv939anAU9/view?usp=drive_link", // Isi URL guidebook PDF jika sudah tersedia
 

@@ -136,18 +136,6 @@ const NesfNavbar = () => {
           className="hidden items-center gap-1 lg:flex"
         >
           <ThemeToggle />
-          <NavLink
-            to="/register"
-            className="ml-2 flex items-center gap-2 rounded-lg px-5 py-2 text-sm font-semibold tracking-wide transition-all hover:scale-[1.04] hover:shadow-lg active:scale-[0.97]"
-            style={{
-              background: "linear-gradient(135deg, hsl(195 100% 40%), hsl(220 90% 50%))",
-              color: "#fff",
-              boxShadow: "0 2px 16px hsl(195 100% 50% / 0.3)",
-            }}
-          >
-            <AtomMark size={13} />
-            Register
-          </NavLink>
         </motion.div>
       </div>
 

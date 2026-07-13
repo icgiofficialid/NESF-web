@@ -64,6 +64,8 @@ export interface EventMeta {
   coverImageLandscape?: string;
   /** Gradient untuk hero/card jika tidak ada coverImage */
   heroGradient?: string;
+  /** Warna aksen untuk event */
+  accentColor?: string;
 }
 
 // ================================================================
@@ -81,7 +83,8 @@ export const EVENTS_REGISTRY: EventMeta[] = [
     registrationOpen:     true,
     route:                "/events/dscf-2026",
     shutdown:             false,
-    heroGradient:         "from-cyan-900 via-blue-900 to-indigo-900",
+    heroGradient:         "from-amber-700 via-yellow-600 to-amber-800",
+    accentColor:          "38 92% 50%", 
     coverImage:           "https://res.cloudinary.com/dwhobhexj/image/upload/v1783324813/dscf-potret_idalof.jpg",
     coverImageLandscape:  "https://res.cloudinary.com/dwhobhexj/image/upload/v1783324812/dscf-landscape_lygnsu.jpg",
     sheet: {

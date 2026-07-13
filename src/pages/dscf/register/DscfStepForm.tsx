@@ -76,6 +76,18 @@ const DesfForm = ({ f, set }: { f: (k: string) => string; set: (k: string) => (v
           value={f("NAMA_LENGKAP")} onChange={set("NAMA_LENGKAP")} maxLength={400}
         />
       </Field>
+            <Field
+        label="NISN / NIM Ketua & Anggota Tim"
+        note={
+          "Catatan: Masukkan NIM/NISN jika masih sekolah dengan urutan nama ketua tim dan anggota, dengan format sebagai berikut:\n\n" +
+          "1201301\n1302402\n1020100"
+        }
+      >
+        <TextArea
+          placeholder="Masukkan NIM / NISN Ketua & Anggota Tim"
+          value={f("NISN_NIM")} onChange={set("NISN_NIM")}
+        />
+      </Field>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <Field label="WhatsApp Ketua Tim" required note="Sertakan kode negara. Cth: +62 817 xxxx">
           <TextInput placeholder="+62 …" value={f("LEADER_WHATSAPP")} onChange={set("LEADER_WHATSAPP")} type="tel" />
@@ -116,19 +128,13 @@ const DesfForm = ({ f, set }: { f: (k: string) => string; set: (k: string) => (v
           <TextInput placeholder="Cth. Jawa Barat" value={f("PROVINCE")} onChange={set("PROVINCE")} />
         </Field>
       </div>
-      <Field
-        label="NISN / NIM Ketua & Anggota Tim"
-        note={
-          "Catatan: Masukkan NIM/NISN jika masih sekolah dengan urutan nama ketua tim dan anggota, dengan format sebagai berikut:\n\n" +
-          "1201301\n1302402\n1020100"
-        }
-      >
-        <TextArea
-          placeholder="Masukkan NIM / NISN Ketua & Anggota Tim"
-          value={f("NISN_NIM")} onChange={set("NISN_NIM")}
-        />
-      </Field>
     </div>
+    <Field label="NPSN Sekolah" note="Nomor Pokok Sekolah Nasional">
+  <TextInput placeholder="Cth. 20229819" value={f("NPSN")} onChange={set("NPSN")} />
+  </Field>
+  <Field label="Provinsi / Kota" required>
+    <TextInput placeholder="Cth. Jawa Barat" value={f("PROVINCE")} onChange={set("PROVINCE")} />
+  </Field>
   </div>
 
     {/* Data Pembimbing */}
@@ -216,6 +222,9 @@ const DmoForm = ({ f, set }: { f: (k: string) => string; set: (k: string) => (v:
         <Field label="Nama Lengkap Peserta" required note="Sesuai identitas resmi (kartu pelajar / KTP).">
           <TextInput placeholder="Nama lengkap" value={f("NAMA_LENGKAP")} onChange={set("NAMA_LENGKAP")} />
         </Field>
+          <Field label="NISN">
+            <TextInput placeholder="Nomor induk siswa" value={f("NISN_NIM")} onChange={set("NISN_NIM")} />
+          </Field>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Field label="WhatsApp Peserta / Orang Tua" required note="Sertakan kode negara. Cth: +62 817 xxxx">
             <TextInput placeholder="+62 …" value={f("LEADER_WHATSAPP")} onChange={set("LEADER_WHATSAPP")} type="tel" />
@@ -242,13 +251,13 @@ const DmoForm = ({ f, set }: { f: (k: string) => string; set: (k: string) => (v:
               options={DMO_DIVISIONS}
             />
           </Field>
-          <Field label="NISN">
-            <TextInput placeholder="Nomor induk siswa" value={f("NISN_NIM")} onChange={set("NISN_NIM")} />
-          </Field>
         </div>
-        <Field label="Provinsi / Kota" required>
-          <TextInput placeholder="Cth. Jawa Barat" value={f("PROVINCE")} onChange={set("PROVINCE")} />
-        </Field>
+      <Field label="NPSN Sekolah" note="Nomor Pokok Sekolah Nasional (opsional).">
+        <TextInput placeholder="Cth. 20229819" value={f("NPSN")} onChange={set("NPSN")} />
+      </Field>
+      <Field label="Provinsi / Kota" required>
+        <TextInput placeholder="Cth. Jawa Barat" value={f("PROVINCE")} onChange={set("PROVINCE")} />
+      </Field>
       </div>
     </div>
 
@@ -384,6 +393,18 @@ const DccForm = ({ f, set }: { f: (k: string) => string; set: (k: string) => (v:
         >
           <TextInput placeholder="Cth. 5" value={f("MEMBER_COUNT")} onChange={set("MEMBER_COUNT")} />
         </Field>
+                <Field
+        label="NISN / NIM Ketua & Anggota Tim"
+        note={
+          "Catatan: Masukkan NIM/NISN jika masih sekolah dengan urutan nama ketua tim dan anggota, dengan format sebagai berikut:\n\n" +
+          "1201301\n1302402\n1020100"
+        }
+      >
+        <TextArea
+          placeholder="Masukkan NIM / NISN Ketua & Anggota Tim"
+          value={f("NISN_NIM")} onChange={set("NISN_NIM")}
+        />
+      </Field>
       </div>
     </div>
 
@@ -421,6 +442,9 @@ const DccForm = ({ f, set }: { f: (k: string) => string; set: (k: string) => (v:
             }
           />
         </Field>
+      <Field label="NPSN Sekolah" note="Nomor Pokok Sekolah Nasional (opsional).">
+      <TextInput placeholder="Cth. 20229819" value={f("NPSN")} onChange={set("NPSN")} />
+      </Field>
         <Field label="Kota / Provinsi" required>
           <TextInput placeholder="Cth. Depok, Jawa Barat" value={f("PROVINCE")} onChange={set("PROVINCE")} />
         </Field>
@@ -583,7 +607,7 @@ const DscfStepForm = ({ subEvent, onBack, onSuccess }: Props) => {
           <ol className="list-decimal list-inside space-y-1">
             <li>Isi semua data dengan benar. Data yang dikirim bersifat <strong className="text-foreground">final</strong> dan tidak dapat diubah.</li>
             <li>Selesaikan pembayaran paling lambat <strong className="text-foreground">27 Agustus 2026</strong>.</li>
-            <li>Berita transfer: <strong className="text-foreground">IESF + Nama Lengkap</strong>.</li>
+            <li>Berita transfer: <strong className="text-foreground">DSCF + Nama Lengkap</strong>.</li>
             <li>LoA dikirim ke email ketua dalam <strong className="text-foreground">3 hari kerja</strong> setelah pembayaran terverifikasi.</li>
             <li>Biaya pendaftaran: <strong className="text-primary">{DSCF_PRICE_MAP[subEvent]}</strong></li>
           </ol>
