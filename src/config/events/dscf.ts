@@ -17,7 +17,7 @@ const dscf: EventDetailData = {
   organizers: [
     { name: "ICGI", logo: "https://res.cloudinary.com/dwhobhexj/image/upload/v1778572483/Logo_ICGI_Bg_Transparant_1_rdvff1.png" },
   ],
-  guidebookUrl: "https://drive.google.com/file/d/1iNWBT-nzdiCOtfJLkbggi76b7Fkqrhx_/view?usp=sharing", // Isi URL guidebook PDF jika sudah tersedia
+  guidebookUrl: "https://drive.google.com/file/d/17aemWc6TKjNzkrllVRF2grhv939anAU9/view?usp=drive_link", // Isi URL guidebook PDF jika sudah tersedia
 
   email:   "icgi.official.id@gmail.com",
   website: "www.icgi.or.id",
