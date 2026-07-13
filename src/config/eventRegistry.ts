@@ -86,7 +86,7 @@ export const EVENTS_REGISTRY: EventMeta[] = [
     coverImageLandscape:  "https://res.cloudinary.com/dwhobhexj/image/upload/v1783324812/dscf-landscape_lygnsu.jpg",
     sheet: {
       // Ganti dengan URL GAS deploymen milik DSCF
-      sheetUrl: "https://script.google.com/macros/s/YOUR_GAS_URL_HERE/exec",
+      sheetUrl: "https://script.google.com/macros/s/AKfycbzz8NDKfyJgcTkGOqwY_-ZkQpFWbJbzERlUK1rUzmcB_aRUJ8hXtG_Z1kI6C0xcZJkA/exec",
       targets: {
         "indo-online":   "indo-online",
         "indo-offline":  "indo-offline",
