@@ -129,7 +129,7 @@ const DesfForm = ({ f, set }: { f: (k: string) => string; set: (k: string) => (v
         </Field>
       </div>
     </div>
-    <Field label="NPSN Sekolah" note="Nomor Pokok Sekolah Nasional">
+    <Field label="NPSN Sekolah" note="Nomor Pokok Sekolah Nasional" required>
   <TextInput placeholder="Cth. 20229819" value={f("NPSN")} onChange={set("NPSN")} />
   </Field>
   <Field label="Provinsi / Kota" required>
@@ -442,7 +442,7 @@ const DccForm = ({ f, set }: { f: (k: string) => string; set: (k: string) => (v:
             }
           />
         </Field>
-      <Field label="NPSN Sekolah" note="Nomor Pokok Sekolah Nasional (opsional).">
+      <Field label="NPSN Sekolah" note="Nomor Pokok Sekolah Nasional." required>
       <TextInput placeholder="Cth. 20229819" value={f("NPSN")} onChange={set("NPSN")} />
       </Field>
         <Field label="Kota / Provinsi" required>
@@ -504,20 +504,21 @@ const DccForm = ({ f, set }: { f: (k: string) => string; set: (k: string) => (v:
                 />
               </Field>
 
-              {isTari && (
+              {isTari && ( 
                 <Field
-                  label="Link File Musik (Google Drive)"
-                  note="Wajib dikirim H-14 sebelum acara (sebelum 17 September 2026)."
+                  label="foto (bersama grup/solo) dan File Musik (Google Drive)"
+                  note="Wajib dikirim H-14 sebelum acara." required
                 >
                   <TextInput placeholder="https://drive.google.com/…" value={f("DRIVE_LINK")} onChange={set("DRIVE_LINK")} />
                 </Field>
               )}
               {isMhq && (
                 <Field
-                  label="Peralatan Musik yang Dibawa"
+                  label="Foto bersama Grup"
                   note="Elektronik TIDAK diperkenankan saat tampil."
+                  required
                 >
-                  <TextInput placeholder="Cth: Rebana, Bedug, Simbal…" value={f("DRIVE_LINK")} onChange={set("DRIVE_LINK")} />
+                  <TextInput placeholder="https://drive.google.com/…" value={f("DRIVE_LINK")} onChange={set("DRIVE_LINK")} />
                 </Field>
               )}
             </div>
@@ -534,11 +535,10 @@ const DccForm = ({ f, set }: { f: (k: string) => string; set: (k: string) => (v:
               </Field>
             )}
             <Field
-              label="Jika Anda mendapat registrasi gratis, lampirkan buktinya di sini."
-              note="Upload bukti ke Google Drive, lalu tempel link-nya di sini. Kosongkan jika tidak ada."
+              label="Peralatan music yang di bawa (jika ada)"
             >
               <TextInput
-                placeholder="https://drive.google.com/…"
+                placeholder="cth: ,Rebana, kipas tari, bedug, simbal, dll"
                 value={f("FILE")} onChange={set("FILE")}
               />
             </Field>
