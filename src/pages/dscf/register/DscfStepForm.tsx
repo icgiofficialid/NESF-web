@@ -20,10 +20,13 @@ import {
   DSCF_SUB_LABELS,
   DSCF_PRICE_MAP,
   submitToDscfSheet,
+  type CompetitionType,
+  DSCF_COMPETITION_LABELS
 } from "./dscfRegisterConfig";
 
 interface Props {
   subEvent: DscfSubEvent;
+  competitionType?: CompetitionType | null; 
   onBack: () => void;
   onSuccess: (subEvent: DscfSubEvent, form: FormData) => void;
 }
@@ -550,7 +553,7 @@ const DccForm = ({ f, set }: { f: (k: string) => string; set: (k: string) => (v:
 };
 
 // ── Main Component ─────────────────────────────────────────────────
-const DscfStepForm = ({ subEvent, onBack, onSuccess }: Props) => {
+const DscfStepForm = ({ subEvent, competitionType, onBack, onSuccess }: Props) => {
   const [form, setForm]           = useState<FormData>({});
   const [loading, setLoading]     = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -563,6 +566,7 @@ const DscfStepForm = ({ subEvent, onBack, onSuccess }: Props) => {
     ...form,
     CATEGORY_COMPETITION: DSCF_SUB_LABELS[subEvent],
     CATEGORY_PRICE:       DSCF_PRICE_MAP[subEvent],
+    CATEGORY_PARTICIPATION: competitionType ? DSCF_COMPETITION_LABELS[competitionType] : "",
     ...(subEvent === "dmo" && !form["CATEGORIES"]
       ? { CATEGORIES: "Depok Math Olympiad (DMO)" }
       : {}),
@@ -576,7 +580,7 @@ const DscfStepForm = ({ subEvent, onBack, onSuccess }: Props) => {
     setLoading(true);
     setError("");
     try {
-      await submitToDscfSheet(subEvent, formWithMeta);
+      await submitToDscfSheet(subEvent, formWithMeta, competitionType);
       setSubmitted(true);
     } catch {
       setError("Pengiriman gagal. Periksa koneksi Anda dan coba lagi.");

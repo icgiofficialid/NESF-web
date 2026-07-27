@@ -4,15 +4,16 @@
 // ================================================================
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { type DscfSubEvent, DSCF_TERMS, DSCF_SUB_LABELS } from "./dscfRegisterConfig";
+import { type DscfSubEvent, DSCF_TERMS, DSCF_SUB_LABELS,   type CompetitionType, DSCF_COMPETITION_LABELS} from "./dscfRegisterConfig";
 
 interface Props {
   subEvent: DscfSubEvent;
+  competitionType?: CompetitionType | null;
   onBack: () => void;
   onNext: () => void;
 }
 
-const DscfStepTerms = ({ subEvent, onBack, onNext }: Props) => {
+const DscfStepTerms = ({ subEvent, competitionType, onBack, onNext }: Props) => {
   const [agreed, setAgreed] = useState(false);
 
   const terms    = DSCF_TERMS[subEvent];

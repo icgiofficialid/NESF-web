@@ -25,6 +25,14 @@ export const DSCF_SUB_LABELS: Record<DscfSubEvent, string> = {
   dcc:  "Depok Cultural Competition (DCC)",
 };
 
+// ── Tipe baru ─────────────────────────────────────────────────────
+export type CompetitionType = "online" | "offline";
+
+export const DSCF_COMPETITION_LABELS: Record<CompetitionType, string> = {
+  online:  "Online Competition",
+  offline: "Offline Competition",
+};
+
 // ── Harga pendaftaran ─────────────────────────────────────────────
 export const DSCF_PRICE_MAP: Record<DscfSubEvent, string> = {
   desf: "Rp 750.000 / tim",
@@ -37,10 +45,10 @@ export const DSCF_SHEET_URL =
   "https://script.google.com/macros/s/AKfycbzz8NDKfyJgcTkGOqwY_-ZkQpFWbJbzERlUK1rUzmcB_aRUJ8hXtG_Z1kI6C0xcZJkA/exec";
 
 // Sheet target per sub-event
-export const DSCF_SHEET_TARGETS: Record<DscfSubEvent, string> = {
-  desf: "dscf-desf",
-  dmo:  "dscf-dmo",
-  dcc:  "dscf-dcc",
+export const getDscfSheetTarget = (subEvent: DscfSubEvent, competitionType?: CompetitionType | null): string => {
+  if (subEvent === "dcc") return "dscf-dcc";
+  var mode = competitionType === "online" ? "online" : "offline";
+  return `dscf-${subEvent}-${mode}`;
 };
 
 // ── Kategori DESF (8 bidang sains) ───────────────────────────────
@@ -78,14 +86,14 @@ export const DCC_CATEGORIES: string[] = [
 // ── Field wajib per sub-event ─────────────────────────────────────
 export const DSCF_REQUIRED_FIELDS: Record<DscfSubEvent, string[]> = {
   desf: [
-    "NAMA_LENGKAP", "LEADER_WHATSAPP", "LEADER_EMAIL",
+    "NAMA_LENGKAP", "LEADER_WHATSAPP", "LEADER_EMAIL", "CATEGORY_PARTICIPATION",
     "NAMA_SEKOLAH", "GRADE", "PROVINCE", "NPSN",
     "NAME_SUPERVISOR", "WHATSAPP_NUMBER_SUPERVISOR", "EMAIL_TEACHER_SUPERVISOR",
     "PROJECT_TITLE", "CATEGORIES", "YES_NO",
     "COMPLETE_ADDRESS",
   ],
   dmo: [
-    "NAMA_LENGKAP", "LEADER_WHATSAPP", "LEADER_EMAIL",
+    "NAMA_LENGKAP", "LEADER_WHATSAPP", "LEADER_EMAIL", "CATEGORY_PARTICIPATION",
     "NAMA_SEKOLAH", "GRADE", "PROVINCE", "NPSN",
     "NAME_SUPERVISOR", "WHATSAPP_NUMBER_SUPERVISOR", "EMAIL_TEACHER_SUPERVISOR",
     "COMPLETE_ADDRESS",
@@ -152,11 +160,12 @@ export const DSCF_TERMS: Record<DscfSubEvent, string[]> = {
 export const submitToDscfSheet = async (
   subEvent: DscfSubEvent,
   form:     FormData,
+  competitionType?: CompetitionType | null,   // ← BARU
   sheetUrl?:    string,
   sheetTarget?: string,
 ): Promise<void> => {
   const url    = sheetUrl    ?? DSCF_SHEET_URL;
-  const target = sheetTarget ?? DSCF_SHEET_TARGETS[subEvent];
+  const target = sheetTarget ?? getDscfSheetTarget(subEvent, competitionType);
   const f = (key: string) => form[key] ?? "";
 
   const payload: Record<string, string> = {

@@ -1,47 +1,43 @@
 // ================================================================
-// DscfRegister.tsx — DSCF Registration Page (3-step flow)
-// Path: src/pages/nesf/DscfRegister.tsx
-//
-// Flow khusus DSCF — BERBEDA dari NesfRegister.tsx (tetap ada).
-// Step 1: Pilih Sub-Kompetisi (DESF / DMO / DCC)
-// Step 2: Syarat & Ketentuan per sub-kompetisi
-// Step 3: Form Pendaftaran → submit ke GAS
-// Step 4: Halaman Ringkasan / Sukses
-//
-// DSCF hanya offline → tidak ada pilihan online/offline.
+// DscfRegister.tsx — DSCF Registration Page
+// DESF & DMO: Sub-Kompetisi → Online/Offline → Syarat → Form → Ringkasan
+// DCC       : Sub-Kompetisi → Syarat → Form → Ringkasan (tidak berubah)
 // ================================================================
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SiteShell from "@/components/nesf/NesfShell";
-import { type DscfSubEvent, type FormData, DSCF_SUB_LABELS, DSCF_PRICE_MAP } from "./register/dscfRegisterConfig";
-import DscfStepParticipant from "./register/DscfStepParticipant";
-import DscfStepTerms       from "./register/DscfStepTerms";
-import DscfStepForm        from "./register/DscfStepForm";
+import {
+  type DscfSubEvent, type CompetitionType, type FormData,
+  DSCF_SUB_LABELS, DSCF_PRICE_MAP, DSCF_COMPETITION_LABELS,
+} from "./register/dscfRegisterConfig";
+import DscfStepParticipant  from "./register/DscfStepParticipant";
+import DscfStepCompetition  from "./register/DscfStepCompetition";
+import DscfStepTerms        from "./register/DscfStepTerms";
+import DscfStepForm         from "./register/DscfStepForm";
 
-// ── Step indicator ────────────────────────────────────────────────
-const STEP_LABELS = ["Sub-Kompetisi", "Syarat", "Formulir"];
+type Step = "participant" | "competition" | "terms" | "form" | "summary";
 
-const StepIndicator = ({ step }: { step: number }) => (
+const StepIndicator = ({ labels, currentIndex }: { labels: string[]; currentIndex: number }) => (
   <div className="flex items-center gap-2 mb-10">
-    {STEP_LABELS.map((label, i) => (
+    {labels.map((label, i) => (
       <div key={label} className="flex items-center gap-2">
         <div className="flex flex-col items-center gap-1">
           <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${
-            step > i + 1
+            currentIndex > i
               ? "bg-primary text-primary-foreground"
-              : step === i + 1
+              : currentIndex === i
               ? "bg-primary text-primary-foreground ring-4 ring-primary/20"
               : "bg-border text-muted-foreground"
           }`}>
-            {step > i + 1 ? "✓" : i + 1}
+            {currentIndex > i ? "✓" : i + 1}
           </div>
           <span className="text-[10px] text-muted-foreground hidden sm:block">{label}</span>
         </div>
-        {i < STEP_LABELS.length - 1 && (
+        {i < labels.length - 1 && (
           <div className={`w-8 sm:w-16 h-0.5 mb-4 transition-all duration-300 ${
-            step > i + 1 ? "bg-primary" : "bg-border"
+            currentIndex > i ? "bg-primary" : "bg-border"
           }`} />
         )}
       </div>
@@ -49,13 +45,11 @@ const StepIndicator = ({ step }: { step: number }) => (
   </div>
 );
 
-// ── Halaman Ringkasan / Sukses ────────────────────────────────────
 const SummaryPage = ({
-  subEvent,
-  form,
-  onHome,
+  subEvent, competitionType, form, onHome,
 }: {
   subEvent: DscfSubEvent;
+  competitionType: CompetitionType | null;
   form: FormData;
   onHome: () => void;
 }) => {
@@ -64,11 +58,7 @@ const SummaryPage = ({
   useEffect(() => {
     const timer = setTimeout(() => {
       if (boxRef.current) {
-        const top =
-          boxRef.current.getBoundingClientRect().top +
-          window.scrollY -
-          window.innerHeight / 2 +
-          boxRef.current.offsetHeight / 2;
+        const top = boxRef.current.getBoundingClientRect().top + window.scrollY - window.innerHeight / 2 + boxRef.current.offsetHeight / 2;
         window.scrollTo({ top, behavior: "smooth" });
       }
     }, 150);
@@ -76,15 +66,16 @@ const SummaryPage = ({
   }, []);
 
   const rows = [
-    { label: "Sub-Kompetisi",      value: DSCF_SUB_LABELS[subEvent] },
+    { label: "Sub-Kompetisi",        value: DSCF_SUB_LABELS[subEvent] },
+    { label: "Kategori Partisipasi", value: competitionType ? DSCF_COMPETITION_LABELS[competitionType] : "" },
     { label: "Nama Ketua / Peserta", value: form["NAMA_LENGKAP"] },
-    { label: "Email Ketua",        value: form["LEADER_EMAIL"] },
-    { label: "WhatsApp Ketua",     value: form["LEADER_WHATSAPP"] },
-    { label: "Asal Sekolah",       value: form["NAMA_SEKOLAH"] },
-    { label: "Jenjang",            value: form["GRADE"] },
-    { label: "Kategori / Bidang",  value: form["CATEGORIES"] },
+    { label: "Email Ketua",          value: form["LEADER_EMAIL"] },
+    { label: "WhatsApp Ketua",       value: form["LEADER_WHATSAPP"] },
+    { label: "Asal Sekolah",         value: form["NAMA_SEKOLAH"] },
+    { label: "Jenjang",              value: form["GRADE"] },
+    { label: "Kategori / Bidang",    value: form["CATEGORIES"] },
     { label: "Judul Proyek / Penampilan", value: form["PROJECT_TITLE"] },
-    { label: "Biaya Pendaftaran",  value: DSCF_PRICE_MAP[subEvent] },
+    { label: "Biaya Pendaftaran",    value: DSCF_PRICE_MAP[subEvent] },
   ].filter(r => r.value);
 
   return (
@@ -104,10 +95,7 @@ const SummaryPage = ({
           Ringkasan Pendaftaran
         </h3>
         {rows.map(({ label, value }) => (
-          <div
-            key={label}
-            className="flex flex-col sm:flex-row sm:justify-between gap-0.5 py-1 border-b border-border/40 last:border-0"
-          >
+          <div key={label} className="flex flex-col sm:flex-row sm:justify-between gap-0.5 py-1 border-b border-border/40 last:border-0">
             <span className="text-xs text-muted-foreground">{label}</span>
             <span className="text-sm text-foreground font-semibold sm:text-right sm:max-w-[60%] whitespace-pre-wrap">
               {value || "—"}
@@ -123,31 +111,46 @@ const SummaryPage = ({
   );
 };
 
-// ── Main Page ──────────────────────────────────────────────────────
-type Step = 1 | 2 | 3 | 4;
-
 const DscfRegister = () => {
   const navigate = useNavigate();
 
-  const [step, setStep]       = useState<Step>(1);
+  const [step, setStep] = useState<Step>("participant");
   const [subEvent, setSubEvent] = useState<DscfSubEvent | null>(null);
+  const [competitionType, setCompetitionType] = useState<CompetitionType | null>(null);
   const [summaryForm, setSummaryForm] = useState<FormData>({});
+
+  const needsCompetitionStep = subEvent === "desf" || subEvent === "dmo";
+
+  const stepLabels = needsCompetitionStep
+    ? ["Sub-Kompetisi", "Partisipasi", "Syarat", "Formulir"]
+    : ["Sub-Kompetisi", "Syarat", "Formulir"];
+
+  const stepIndexMap: Record<Step, number> = needsCompetitionStep
+    ? { participant: 0, competition: 1, terms: 2, form: 3, summary: 4 }
+    : { participant: 0, competition: 0, terms: 1, form: 2, summary: 3 };
+
+  const handleParticipantNext = () => {
+    if (!subEvent) return;
+    if (subEvent === "dcc") {
+      setCompetitionType(null);
+      setStep("terms");
+    } else {
+      setStep("competition");
+    }
+  };
 
   const handleSuccess = (sv: DscfSubEvent, form: FormData) => {
     setSummaryForm(form);
-    setStep(4);
+    setStep("summary");
   };
 
-  const handleHome = () => {
-    navigate("/");
-  };
+  const handleHome = () => navigate("/");
 
-  // Step 4: Ringkasan
-  if (step === 4 && subEvent) {
+  if (step === "summary" && subEvent) {
     return (
       <SiteShell>
         <section className="w-full min-h-screen py-24 md:py-32 px-4 flex flex-col items-center justify-center">
-          <SummaryPage subEvent={subEvent} form={summaryForm} onHome={handleHome} />
+          <SummaryPage subEvent={subEvent} competitionType={competitionType} form={summaryForm} onHome={handleHome} />
         </section>
       </SiteShell>
     );
@@ -156,28 +159,35 @@ const DscfRegister = () => {
   return (
     <SiteShell>
       <section className="w-full max-w-[80%] mx-auto min-h-screen py-24 md:py-32 flex flex-col items-center">
-        <StepIndicator step={step} />
+        <StepIndicator labels={stepLabels} currentIndex={stepIndexMap[step]} />
 
-        {step === 1 && (
-          <DscfStepParticipant
-            selected={subEvent}
-            setSelected={setSubEvent}
-            onNext={() => setStep(2)}
+        {step === "participant" && (
+          <DscfStepParticipant selected={subEvent} setSelected={setSubEvent} onNext={handleParticipantNext} />
+        )}
+
+        {step === "competition" && subEvent && (
+          <DscfStepCompetition
+            subEvent={subEvent}
+            selected={competitionType}
+            setSelected={setCompetitionType}
+            onBack={() => setStep("participant")}
+            onNext={() => setStep("terms")}
           />
         )}
 
-        {step === 2 && subEvent && (
+        {step === "terms" && subEvent && (
           <DscfStepTerms
             subEvent={subEvent}
-            onBack={() => setStep(1)}
-            onNext={() => setStep(3)}
+            onBack={() => setStep(needsCompetitionStep ? "competition" : "participant")}
+            onNext={() => setStep("form")}
           />
         )}
 
-        {step === 3 && subEvent && (
+        {step === "form" && subEvent && (
           <DscfStepForm
             subEvent={subEvent}
-            onBack={() => setStep(2)}
+            competitionType={competitionType}
+            onBack={() => setStep("terms")}
             onSuccess={handleSuccess}
           />
         )}
