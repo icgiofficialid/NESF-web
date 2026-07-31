@@ -16,7 +16,10 @@ interface Props {
 const DscfStepTerms = ({ subEvent, competitionType, onBack, onNext }: Props) => {
   const [agreed, setAgreed] = useState(false);
 
-  const terms    = DSCF_TERMS[subEvent];
+  const terms = subEvent === "dcc"
+    ? DSCF_TERMS.dcc
+    : DSCF_TERMS[subEvent][competitionType === "online" ? "online" : "offline"];
+
   const subLabel = DSCF_SUB_LABELS[subEvent];
 
   return (

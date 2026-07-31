@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import SiteShell from "@/components/nesf/NesfShell";
 import {
   type DscfSubEvent, type CompetitionType, type FormData,
-  DSCF_SUB_LABELS, DSCF_PRICE_MAP, DSCF_COMPETITION_LABELS,
+  DSCF_SUB_LABELS, DSCF_PRICE_MAP, DSCF_COMPETITION_LABELS,getDscfPrice,
 } from "./register/dscfRegisterConfig";
 import DscfStepParticipant  from "./register/DscfStepParticipant";
 import DscfStepCompetition  from "./register/DscfStepCompetition";
@@ -75,7 +75,7 @@ const SummaryPage = ({
     { label: "Jenjang",              value: form["GRADE"] },
     { label: "Kategori / Bidang",    value: form["CATEGORIES"] },
     { label: "Judul Proyek / Penampilan", value: form["PROJECT_TITLE"] },
-    { label: "Biaya Pendaftaran",    value: DSCF_PRICE_MAP[subEvent] },
+    { label: "Biaya Pendaftaran",    value: getDscfPrice(subEvent, competitionType) },
   ].filter(r => r.value);
 
   return (
@@ -178,6 +178,7 @@ const DscfRegister = () => {
         {step === "terms" && subEvent && (
           <DscfStepTerms
             subEvent={subEvent}
+            competitionType={competitionType}  
             onBack={() => setStep(needsCompetitionStep ? "competition" : "participant")}
             onNext={() => setStep("form")}
           />

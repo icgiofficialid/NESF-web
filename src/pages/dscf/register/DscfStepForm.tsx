@@ -23,6 +23,7 @@ import {
   type CompetitionType,
   DSCF_COMPETITION_LABELS
 } from "./dscfRegisterConfig";
+import { getDscfPrice } from "./dscfRegisterConfig";
 
 interface Props {
   subEvent: DscfSubEvent;
@@ -103,41 +104,24 @@ const DesfForm = ({ f, set }: { f: (k: string) => string; set: (k: string) => (v
   </div>
 
   {/* Data Sekolah */}
-  <div>
-    <SectionTitle title="Data Sekolah / Institusi" />
-    <div className="grid gap-4">
-      <Field
-        label="Nama Sekolah / Institusi"
-        required
-        note={
-          "Tulis nama sekolah tiap anggota sesuai urutan nama di biodata, satu baris per sekolah.\nContoh:\n\n" +
-          "SMA Negeri 1 Depok (Ketua)\nSMK Negeri 2 Depok (Anggota1)"
-        }
-      >
-        <TextArea
-          placeholder={"SMA Negeri 1 Depok (Ketua)\nSMK Negeri 2 Depok (Anggota1)"}
-          value={f("NAMA_SEKOLAH")} onChange={set("NAMA_SEKOLAH")} maxLength={500}
-        />
+<div>
+  <SectionTitle title="Data Sekolah / Institusi" />
+  <div className="grid gap-4">
+    <Field label="Nama Sekolah / Institusi" required note={"Nama sekolah / institusi sesuai identitas resmi (kartu pelajar / KTP)."}>
+      <TextArea placeholder={"Cth. SDN 1 Depok"} value={f("NAMA_SEKOLAH")} onChange={set("NAMA_SEKOLAH")} maxLength={500} />
+    </Field>
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <Field label="Jenjang" required>
+        <SelectInput placeholder="-- Pilih Jenjang --" value={f("GRADE")} onChange={set("GRADE")}
+          options={["SD (Sekolah Dasar)", "SMP (Sekolah Menengah Pertama)", "SMA/SMK (Sekolah Menengah Atas)"]} />
       </Field>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Field label="Jenjang" required>
-          <SelectInput
-            placeholder="-- Pilih Jenjang --"
-            value={f("GRADE")} onChange={set("GRADE")}
-            options={["SD (Sekolah Dasar)", "SMP (Sekolah Menengah Pertama)", "SMA/SMK (Sekolah Menengah Atas)"]}
-          />
-        </Field>
-        <Field label="Provinsi / Kota" required>
-          <TextInput placeholder="Cth. Jawa Barat" value={f("PROVINCE")} onChange={set("PROVINCE")} />
-        </Field>
-      </div>
+      <Field label="Provinsi / Kota" required>
+        <TextInput placeholder="Cth. Jawa Barat" value={f("PROVINCE")} onChange={set("PROVINCE")} />
+      </Field>
     </div>
-    <Field label="NPSN Sekolah" note="Nomor Pokok Sekolah Nasional" required>
-  <TextInput placeholder="Cth. 20229819" value={f("NPSN")} onChange={set("NPSN")} />
-  </Field>
-  <Field label="Provinsi / Kota" required>
-    <TextInput placeholder="Cth. Jawa Barat" value={f("PROVINCE")} onChange={set("PROVINCE")} />
-  </Field>
+    <Field label="NPSN Sekolah" required note="Nomor Pokok Sekolah Nasional">
+      <TextInput placeholder="Cth. 20229819" value={f("NPSN")} onChange={set("NPSN")} />
+    </Field>
   </div>
 
     {/* Data Pembimbing */}
@@ -212,6 +196,7 @@ const DesfForm = ({ f, set }: { f: (k: string) => string; set: (k: string) => (v
             </Field>
       </div>
     </div>
+  </div>
   </>
 );
 
@@ -255,7 +240,7 @@ const DmoForm = ({ f, set }: { f: (k: string) => string; set: (k: string) => (v:
             />
           </Field>
         </div>
-      <Field label="NPSN Sekolah" note="Nomor Pokok Sekolah Nasional (opsional).">
+      <Field label="NPSN Sekolah" required note="Nomor Pokok Sekolah Nasional.">
         <TextInput placeholder="Cth. 20229819" value={f("NPSN")} onChange={set("NPSN")} />
       </Field>
       <Field label="Provinsi / Kota" required>
@@ -508,19 +493,12 @@ const DccForm = ({ f, set }: { f: (k: string) => string; set: (k: string) => (v:
               </Field>
 
               {isTari && ( 
-                <Field
-                  label="foto (bersama grup/solo) dan File Musik (Google Drive)"
-                  note="Wajib dikirim H-14 sebelum acara." required
-                >
+                <Field label="foto (bersama grup/solo) dan File Musik (Google Drive)"required>
                   <TextInput placeholder="https://drive.google.com/…" value={f("DRIVE_LINK")} onChange={set("DRIVE_LINK")} />
                 </Field>
               )}
               {isMhq && (
-                <Field
-                  label="Foto bersama Grup"
-                  note="Elektronik TIDAK diperkenankan saat tampil."
-                  required
-                >
+                <Field label="Foto bersama Grup"  required>
                   <TextInput placeholder="https://drive.google.com/…" value={f("DRIVE_LINK")} onChange={set("DRIVE_LINK")} />
                 </Field>
               )}
@@ -564,12 +542,9 @@ const DscfStepForm = ({ subEvent, competitionType, onBack, onSuccess }: Props) =
 
   const formWithMeta: FormData = {
     ...form,
-    CATEGORY_COMPETITION: DSCF_SUB_LABELS[subEvent],
-    CATEGORY_PRICE:       DSCF_PRICE_MAP[subEvent],
+    CATEGORY_PRICE: getDscfPrice(subEvent, competitionType),   // ← diganti dari DSCF_PRICE_MAP[subEvent]
     CATEGORY_PARTICIPATION: competitionType ? DSCF_COMPETITION_LABELS[competitionType] : "",
-    ...(subEvent === "dmo" && !form["CATEGORIES"]
-      ? { CATEGORIES: "Depok Math Olympiad (DMO)" }
-      : {}),
+    ...(subEvent === "dmo" && !form["CATEGORIES"] ? { CATEGORIES: "Depok Math Olympiad (DMO)" } : {}),
   };
 
   const requiredFields = DSCF_REQUIRED_FIELDS[subEvent];
@@ -613,7 +588,7 @@ const DscfStepForm = ({ subEvent, competitionType, onBack, onSuccess }: Props) =
             <li>Selesaikan pembayaran paling lambat <strong className="text-foreground">27 Agustus 2026</strong>.</li>
             <li>Berita transfer: <strong className="text-foreground">DSCF + Nama Lengkap</strong>.</li>
             <li>LoA dikirim ke email ketua dalam <strong className="text-foreground">3 hari kerja</strong> setelah pembayaran terverifikasi.</li>
-            <li>Biaya pendaftaran: <strong className="text-primary">{DSCF_PRICE_MAP[subEvent]}</strong></li>
+            <li>Biaya pendaftaran: <strong className="text-primary">{getDscfPrice(subEvent, competitionType)}</strong></li>
           </ol>
         </div>
 

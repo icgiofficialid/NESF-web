@@ -34,11 +34,36 @@ export const DSCF_COMPETITION_LABELS: Record<CompetitionType, string> = {
 };
 
 // ── Harga pendaftaran ─────────────────────────────────────────────
-export const DSCF_PRICE_MAP: Record<DscfSubEvent, string> = {
-  desf: "Rp 750.000 / tim",
-  dmo:  "Rp 200.000 / peserta",
-  dcc:  "Rp 100.000 / tim",
+// ── Harga pendaftaran — sekarang beda per mode untuk DESF & DMO ───
+export const DSCF_PRICE_MAP: Record<DscfSubEvent, Record<"online" | "offline", string> | string> = {
+  desf: { online: "Rp 500.000 / tim", offline: "Rp 750.000 / tim" },
+  dmo:  { online: "Rp 150.000 / peserta", offline: "Rp 200.000 / peserta" },
+  dcc:  "Rp 100.000 / tim",   // DCC tidak ada online, harga tunggal
 };
+
+// ── Helper untuk ambil harga sesuai sub-event + mode ───────────────
+export const getDscfPrice = (
+  subEvent: DscfSubEvent,
+  competitionType?: CompetitionType | null
+): string => {
+  const entry = DSCF_PRICE_MAP[subEvent];
+  if (typeof entry === "string") return entry;
+  const mode = competitionType === "online" ? "online" : "offline";
+  return entry[mode];
+};
+
+// ── Fasilitas per paket (opsional, untuk ditampilkan di ringkasan) ─
+export const DSCF_FACILITIES: Partial<Record<DscfSubEvent, Record<"online" | "offline", string[]>>> = {
+  desf: {
+    offline: ["ID Card Peserta & Supervisor", "Snack hari Opening", "Snack hari Awarding", "Meja", "Sertifikat Peserta", "Medali 1/Tim"],
+    online:  ["Sertifikat Peserta (E-Certificate)"],
+  },
+  dmo: {
+    offline: ["ID Card Peserta", "Snack hari Opening", "Snack hari Awarding", "Meja dan Kursi"],
+    online:  ["Sertifikat Peserta (E-Certificate)"],
+  },
+};
+export const DSCF_DCC_FACILITIES = ["ID Card Peserta & Supervisor", "Snack hari Opening", "Snack hari Awarding"];
 
 // ── GAS Endpoint DSCF ─────────────────────────────────────────────
 export const DSCF_SHEET_URL =
@@ -103,7 +128,7 @@ export const DSCF_REQUIRED_FIELDS: Record<DscfSubEvent, string[]> = {
     "NAMA_SEKOLAH", "GRADE", "PROVINCE", "NPSN",
     "NAME_SUPERVISOR", "WHATSAPP_NUMBER_SUPERVISOR", "EMAIL_TEACHER_SUPERVISOR",
     "PROJECT_TITLE", "CATEGORIES", "YES_NO",
-    "COMPLETE_ADDRESS",
+    "COMPLETE_ADDRESS","DRIVE_LINK",
     // MEMBER_NAMES, MEMBER_WHATSAPP, MEMBER_EMAIL, MEMBER_COUNT, DRIVE_LINK sengaja TIDAK wajib
     // (solo performer boleh kosongkan semua field anggota)
   ],
@@ -112,31 +137,68 @@ export const DSCF_REQUIRED_FIELDS: Record<DscfSubEvent, string[]> = {
 // ================================================================
 // SYARAT & KETENTUAN per sub-event
 // ================================================================
-export const DSCF_TERMS: Record<DscfSubEvent, string[]> = {
-  desf: [
-    "Peserta merupakan pelajar aktif jenjang SD, SMP, atau SMA/SMK, dibuktikan dengan identitas resmi yang masih berlaku.",
-    "Seluruh data yang telah diisi tidak dapat diubah setelah batas waktu pembayaran. Pastikan data yang dikirimkan sudah benar dan final.",
-    "Peserta wajib menyelesaikan pembayaran paling lambat 27 Agustus 2026. Biaya yang telah dibayarkan tidak dapat dikembalikan.",
-    "Setiap tim diwajibkan membawa standing banner atau X-banner (60×160 cm) yang memuat detail proyek dan mendekorasi meja yang disediakan panitia.",
-    "Panitia hanya menyediakan meja pameran. Peserta bertanggung jawab penuh atas dekorasi meja serta alat/perlengkapan pendukung.",
-    "Penilaian dilakukan dalam 1 tahap secara langsung di meja pameran oleh panel juri.",
-    "Setiap tim memiliki waktu 7 menit presentasi + 8 menit tanya jawab (Q&A) di hadapan juri.",
-    "Presentasi wajib dilakukan dalam Bahasa Indonesia.",
-    "Makalah lengkap wajib dikirim sebelum hari pelaksanaan (PDF/Word, maks. 12 halaman, font Arial 12, spasi 1, margin 4,3,3,3). Template: https://bit.ly/FORMAT-FULL-PAPER",
-    "Plagiarisme dan kecurangan dilarang keras. Jika terbukti, pendaftaran akan dibatalkan tanpa pengembalian biaya.",
-    "Seluruh keputusan dewan juri bersifat final dan tidak dapat diganggu gugat.",
-  ],
-  dmo: [
-    "Peserta merupakan pelajar aktif SD, SMP, atau SMA/SMK, dibuktikan dengan identitas resmi yang masih berlaku.",
-    "Kompetisi dilaksanakan secara individu dalam satu babak (single round).",
-    "Peserta mengerjakan soal sesuai jenjang pendidikan. Penilaian menggunakan sistem poin — setiap soal pilihan ganda bernilai 1 poin.",
-    "Kategori medali: KKM > 80 (Emas), KKM 70–79 (Perak), KKM < 69 (Perunggu).",
-    "Peserta wajib membawa laptop pribadi dan alat tulis. Wi-Fi disediakan oleh panitia.",
-    "Peserta wajib hadir tepat waktu. Keterlambatan akan mengurangi waktu pengerjaan dan tidak dapat dikompensasi.",
-    "Seluruh data yang telah diisi tidak dapat diubah setelah batas waktu pembayaran.",
-    "Biaya pendaftaran yang telah dibayarkan tidak dapat dikembalikan dalam kondisi apapun.",
-    "Seluruh keputusan panitia dan dewan juri bersifat final.",
-  ],
+  export const DSCF_TERMS: {
+    desf: Record<"online" | "offline", string[]>;
+    dmo:  Record<"online" | "offline", string[]>;
+    dcc:  string[];
+  } = {
+    desf: {
+      offline: [
+        "Peserta merupakan pelajar aktif jenjang SD, SMP, atau SMA/SMK, dibuktikan dengan identitas resmi yang masih berlaku.",
+        "Jumlah peserta maksimal 4 orang/tim (1 orang ketua & 3 orang anggota).",
+        "Seluruh data yang telah diisi tidak dapat diubah setelah batas waktu pembayaran.",
+        "Peserta wajib menyelesaikan pembayaran paling lambat 27 Agustus 2026. Biaya yang telah dibayarkan tidak dapat dikembalikan.",
+        "Peserta wajib hadir sesuai jadwal yang telah ditetapkan panitia.",
+        "Setiap tim diwajibkan membawa standing banner atau X-banner (ukuran 60×160 cm) yang memuat detail proyek, dan mendekorasi meja yang disediakan panitia.",
+        "Panitia hanya menyediakan meja pameran (tidak menyediakan booth/stan). Peserta bertanggung jawab penuh atas dekorasi meja serta alat/perlengkapan pendukung.",
+        "Penilaian dilakukan dalam 1 tahap secara langsung di meja pameran oleh panel juri.",
+        "Setiap peserta memiliki waktu 7 menit presentasi + 8 menit tanya jawab (Q&A) di hadapan kedua juri.",
+        "Presentasi wajib dilakukan dalam Bahasa Indonesia.",
+        "Makalah lengkap wajib dikirim sebelum hari pelaksanaan (PDF/Word, maks. 12 halaman, font Arial 12, spasi 1, margin 4,3,3,3). Template: https://bit.ly/FORMAT-FULL-PAPER",
+        "Plagiarisme dan kecurangan dilarang keras. Jika terbukti, pendaftaran akan dibatalkan tanpa pengembalian biaya.",
+        "Seluruh keputusan dewan juri bersifat final dan tidak dapat diganggu gugat.",
+      ],
+      online: [
+        "Peserta merupakan pelajar aktif jenjang SD, SMP, atau SMA/SMK, dibuktikan dengan identitas resmi yang masih berlaku.",
+        "Jumlah peserta maksimal 4 orang/tim (1 orang ketua & 3 orang anggota).",
+        "Seluruh data yang telah diisi tidak dapat diubah setelah batas waktu pembayaran.",
+        "Peserta wajib menyelesaikan pembayaran paling lambat 27 Agustus 2026. Biaya yang telah dibayarkan tidak dapat dikembalikan.",
+        "Semua peserta akan menjalani tahap Penilaian Umum sebagai evaluasi awal.",
+        "Peserta wajib hadir sesuai jadwal yang telah ditetapkan panitia.",
+        "Penilaian dilakukan oleh panel juri dalam dua tahap: peninjauan dokumen dan presentasi langsung melalui Zoom.",
+        "Seluruh anggota tim wajib mengikuti proses penilaian melalui platform Zoom.",
+        "Presentasi dapat disampaikan dalam Bahasa Indonesia, begitu pula materi presentasi (format PowerPoint).",
+        "Setiap tim diberikan waktu 15 menit, dibagi menjadi 7 menit presentasi dan 8 menit sesi tanya jawab dengan juri.",
+        "Selama presentasi, peserta wajib menunjukkan produk yang telah dibuat.",
+        "Makalah lengkap wajib dikirim sebelum hari pelaksanaan (PDF/Word, maks. 12 halaman, font Arial 12, spasi 1, margin 4,3,3,3). Template: https://bit.ly/FORMAT-FULL-PAPER",
+        "Plagiarisme dan kecurangan dilarang keras. Jika terbukti, pendaftaran akan dibatalkan tanpa pengembalian biaya.",
+        "Seluruh keputusan dewan juri bersifat final dan tidak dapat diganggu gugat.",
+      ],
+    },
+    dmo: {
+      offline: [
+        "Peserta merupakan pelajar aktif SD, SMP, atau SMA/SMK, dibuktikan dengan identitas resmi yang masih berlaku.",
+        "Kompetisi dilaksanakan secara individu dalam satu babak (single round).",
+        "Peserta mengerjakan soal sesuai jenjang pendidikan. Penilaian menggunakan sistem poin — setiap soal pilihan ganda bernilai 1 poin.",
+        "Kategori medali: KKM > 80 (Emas), KKM 70–79 (Perak), KKM < 69 (Perunggu).",
+        "Peserta wajib membawa laptop pribadi dan alat tulis. Wi-Fi disediakan oleh panitia.",
+        "Peserta wajib hadir tepat waktu. Keterlambatan akan mengurangi waktu pengerjaan dan tidak dapat dikompensasi.",
+        "Seluruh data yang telah diisi tidak dapat diubah setelah batas waktu pembayaran.",
+        "Biaya pendaftaran yang telah dibayarkan tidak dapat dikembalikan dalam kondisi apapun.",
+        "Seluruh keputusan panitia dan dewan juri bersifat final.",
+      ],
+      online: [
+        "Peserta merupakan pelajar aktif SD, SMP, atau SMA/SMK, dibuktikan dengan identitas resmi yang masih berlaku.",
+        "Kompetisi dilaksanakan secara individu dalam satu babak (single round) secara daring melalui Zoom.",
+        "Peserta mengerjakan soal sesuai jenjang pendidikan dalam waktu yang ditetapkan panitia.",
+        "Penilaian berdasarkan ketepatan dan jumlah jawaban benar.",
+        "Peserta wajib menyiapkan laptop/komputer dan koneksi internet yang stabil secara mandiri.",
+        "Hasil kompetisi akan diumumkan oleh panitia saat pengumuman penghargaan.",
+        "Seluruh data yang telah diisi tidak dapat diubah setelah batas waktu pembayaran.",
+        "Biaya pendaftaran yang telah dibayarkan tidak dapat dikembalikan dalam kondisi apapun.",
+        "Seluruh keputusan panitia dan dewan juri bersifat final.",
+      ],
+    },
   dcc: [
     "Peserta merupakan pelajar aktif SD, SMP, SMA/SMK, atau umum (khusus kategori MHQ), dibuktikan dengan identitas resmi.",
     "Seluruh data yang telah diisi tidak dapat diubah setelah batas waktu pembayaran.",
@@ -171,7 +233,7 @@ export const submitToDscfSheet = async (
   const payload: Record<string, string> = {
     sheetTarget:                 target,
     timestamp:                   new Date().toISOString(),
-    CATEGORY_PRICE:              f("CATEGORY_PRICE") || DSCF_PRICE_MAP[subEvent],
+    CATEGORY_PRICE:              f("CATEGORY_PRICE") || getDscfPrice(subEvent, competitionType),
     NAMA_LENGKAP:                f("NAMA_LENGKAP"),
     MEMBER_NAMES:                f("MEMBER_NAMES"),
     LEADER_WHATSAPP:             f("LEADER_WHATSAPP"),
