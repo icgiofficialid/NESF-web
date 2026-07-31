@@ -20,7 +20,7 @@ const dscf: EventDetailData = {
     { name: "IYSA", logo: "https://res.cloudinary.com/dwhobhexj/image/upload/v1778572483/logo_IYSA_bagus_e6uai3.png" },
     { name: "DSCF", logo: "https://res.cloudinary.com/dwhobhexj/image/upload/v1783935566/logo_dcsf.pdf_glnqma.png" },
   ],
-  guidebookUrl: "https://drive.google.com/file/d/1BJbgYdA2EJFyr12cXCQuoWce92-Ce7FH/view?usp=drive_link",
+  guidebookUrl: "",
 
   email:   "icgi.official.id@gmail.com",
   website: "www.icgi.or.id",
