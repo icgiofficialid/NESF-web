@@ -32,7 +32,7 @@ const dscf: EventDetailData = {
     categoriesDesc:
       "Peserta dapat mendaftar pada tiga sub-kompetisi: Depok Engineering Science Fair (DESF), Depok Math Olympiad (DMO), dan Depok Cultural Competition (DCC). DESF dan DMO tersedia dalam format Daring maupun Luring, sedangkan DCC hanya diselenggarakan secara Luring di Depok.",
     scheduleDesc:
-      "DSCF 2026 berlangsung pada 29 September – 3 Oktober 2026. Peserta Luring mengikuti seluruh rangkaian di Depok, Jawa Barat, sementara peserta Daring (DESF & DMO) mengikuti sesi penilaian melalui Zoom pada 29–30 September 2026, dengan pengumuman penghargaan pada 1 Oktober 2026.",
+      "DSCF 2026 berlangsung pada 29 September – 2 Oktober 2026. Peserta Luring mengikuti seluruh rangkaian di Depok, Jawa Barat, sementara peserta Daring (DESF & DMO) mengikuti sesi penilaian melalui Zoom pada 29–30 September 2026, dengan pengumuman penghargaan pada 1 Oktober 2026.",
   },
 
   stats: [

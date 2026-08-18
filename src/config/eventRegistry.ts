@@ -77,7 +77,7 @@ export const EVENTS_REGISTRY: EventMeta[] = [
     title:                "Depok Science & Cultural Festival",
     subtitle:             "DSCF 2026",
     location:             "Depok, Indonesia",
-    dateRange:            "29 September – 3 Oktober 2026",
+    dateRange:            "29 September – 2 Oktober 2026",
     registrationDeadline: "24 Agustus 2026",
     status:               "upcoming",
     registrationOpen:     true,

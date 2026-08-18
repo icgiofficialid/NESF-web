@@ -110,7 +110,7 @@ const DscfStepParticipant = ({ selected, setSelected, onNext }: Props) => {
 
       {/* Note */}
       <p className="mt-4 text-xs text-muted-foreground text-center leading-5">
-         DSCF 2026 hanya diselenggarakan secara <strong className="text-foreground">offline</strong> di Depok, Indonesia.
+         DCC 2026 hanya diselenggarakan secara <strong className="text-foreground">offline</strong> di Depok, Indonesia.
         Peserta dapat mendaftar lebih dari satu sub-kompetisi dengan pendaftaran terpisah.
       </p>
 
