@@ -120,7 +120,7 @@ export const EVENTS_REGISTRY: EventMeta[] = [
     route:                "/events/borneo-nesf-2026",
     shutdown:             false,
     coverImage:           "https://res.cloudinary.com/dwhobhexj/image/upload/v1787221796/BorneoNESF-potret_nks3ri.png",
-    coverImageLandscape:  "https://res.cloudinary.com/dwhobhexj/image/upload/v1787221796/BorneoNESF-landscape_ykbhqo.png",
+    coverImageLandscape:  "https://res.cloudinary.com/dwhobhexj/image/upload/v1787225619/BorneoNESF-landscape_gyuaby.png",
     heroGradient:         "from-slate-900 via-amber-950 to-orange-900",
     accentColor:          "38 92% 50%",
 
