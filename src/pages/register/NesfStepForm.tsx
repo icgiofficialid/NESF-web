@@ -1,357 +1,315 @@
 // ================================================================
-// NesfStepForm.tsx — Step 3: Registration Form
+// NesfStepForm.tsx — Langkah 3: Formulir Pendaftaran
+//
+// Field, label, urutan section, dan aturan wajib isi DISAMAKAN
+// PERSIS dengan RegistrationForm.tsx milik IESF (cabang peserta
+// Indonesia) — hanya bahasanya full Bahasa Indonesia dan TIDAK ada
+// field COUNTRY / pilihan kewarganegaraan (NESF = kompetisi
+// nasional). Generik untuk semua event NESF lewat props
+// (eventSlug, eventTitle, sheetUrl, sheetTarget, pricing) yang
+// diambil dari eventRegistry.ts oleh NesfRegister.tsx.
 // ================================================================
 import { useState } from "react";
-import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useLang } from "@/components/LanguageProvider";
 import {
-  Field, TextInput, TextArea, SelectInput, SectionTitle,
-  type CompetitionType, type FormData,
-  REQUIRED_FIELDS, COMPETITION_CATEGORIES, PARTICIPANT_DIVISIONS,
-  submitToNesfSheet,
+  Field, TextInput, TextArea, SelectInput, SectionTitle, SuccessOverlay,
+  type FormData, type CompetitionType,
+  getRequired, normalizePhone62, submitToSheet,
+  DEFAULT_CATEGORY_PRICE_MAP, PROJECT_CATEGORIES, GRADE_OPTIONS, INFO_SOURCES,
+  FORMAT_LABEL,
 } from "./nesfRegisterConfig";
 
-interface Props {
-  competition: CompetitionType;
-  onBack: () => void;
-  onSuccess: () => void;
-}
-
-// ── Sub-components ────────────────────────────────────────────────
-
-const SpinnerOverlay = () => (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-    <div
-      className="w-14 h-14 border-4 border-t-transparent rounded-full animate-spin"
-      style={{ borderColor: "hsl(var(--primary) / 0.3)", borderTopColor: "hsl(var(--primary))" }}
+// ── Input WhatsApp nasional — prefix +62 tetap (NESF = peserta
+//    Indonesia saja, jadi tidak perlu dropdown kode negara penuh
+//    seperti di form IESF) ─────────────────────────────────────────
+const PhoneInputID = ({
+  placeholder, value, onChange,
+}: {
+  placeholder: string; value: string; onChange: (v: string) => void;
+}) => (
+  <div className="flex gap-2">
+    <span className="shrink-0 flex items-center gap-1.5 rounded-lg border border-input bg-muted/30 px-3 py-3 text-sm text-muted-foreground select-none">
+      🇮🇩 +62
+    </span>
+    <Input
+      type="tel"
+      placeholder={placeholder}
+      value={value}
+      onChange={e => onChange(e.target.value)}
+      className="flex-1 min-w-0 rounded-lg border border-input bg-muted/30 px-4 py-3 text-sm focus:border-primary"
     />
   </div>
 );
 
-const SuccessOverlay = ({ onDone }: { onDone: () => void }) => (
+const SpinnerOverlay = () => (
   <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm">
-    <div className="bg-card border border-border rounded-2xl p-10 flex flex-col items-center gap-4 text-center shadow-xl max-w-sm mx-4">
-      <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center">
-        <Check className="text-emerald-500" size={32} />
-      </div>
-      <h2 className="text-xl font-bold text-foreground font-display">Registration Submitted!</h2>
-      <p className="text-sm text-muted-foreground leading-6">
-        LoA will be sent to your email within 3 working days. Thank you for registering to NESF 2026!
-      </p>
-      <Button size="lg" className="w-full mt-2" onClick={onDone}>
-        Back to Home
-      </Button>
-    </div>
+    <div className="w-14 h-14 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
   </div>
 );
 
-// ── Main Component ────────────────────────────────────────────────
+export interface SummaryData {
+  namaLengkap: string; namaSekolah: string;
+  categories: string; projectTitle: string;
+  grade: string; competitionCategory?: string;
+}
 
-const NesfStepForm = ({ competition, onBack, onSuccess }: Props) => {
+interface Props {
+  eventSlug: string;
+  eventTitle: string;
+  competition: CompetitionType;
+  sheetUrl: string;
+  sheetTarget: string;
+  pricing?: Record<string, string>; // ← harga khusus event ini (dari eventRegistry); fallback DEFAULT_CATEGORY_PRICE_MAP kalau tidak diisi
+  onBack: () => void;
+  onSuccess: (data: SummaryData) => void;
+}
+
+const NesfStepForm = ({ eventTitle, competition, sheetUrl, sheetTarget, pricing, onBack, onSuccess }: Props) => {
+  const priceMap = { ...DEFAULT_CATEGORY_PRICE_MAP, ...(pricing ?? {}) };
+
   const [form, setForm]           = useState<FormData>({});
   const [loading, setLoading]     = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [error, setError]         = useState("");
-  const { lang } = useLang();
+  const [errors, setErrors]       = useState<Record<string, boolean>>({});
 
-  const set = (key: string) => (v: string) => setForm(prev => ({ ...prev, [key]: v }));
-  const f   = (key: string) => form[key] ?? "";
+  const set = (key: string) => (v: string) => {
+    setForm(p => ({ ...p, [key]: v }));
+    if (v) setErrors(p => ({ ...p, [key]: false }));
+  };
+  const f = (key: string) => form[key] || "";
 
-  const isValid = REQUIRED_FIELDS.every(k => !!f(k).trim());
+  const required = getRequired();
+  const YES = "Ya";
+  const cLabel = FORMAT_LABEL[competition];
 
   const handleSubmit = async () => {
-    if (!isValid) return;
-    setLoading(true);
-    setError("");
+    // Validasi semua field required — tampilkan error & scroll ke yang pertama
+    const newErrors: Record<string, boolean> = {};
+    required.forEach(k => { if (!f(k)) newErrors[k] = true; });
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      const firstEmpty = required.find(k => !f(k));
+      if (firstEmpty) {
+        const el = document.getElementById(`field-${firstEmpty}`);
+        if (el) {
+          const top = el.getBoundingClientRect().top + window.scrollY - 120;
+          window.scrollTo({ top, behavior: "smooth" });
+        }
+      }
+      return;
+    }
+
+    setErrors({});
+    setLoading(true); setError("");
+
+    const resolvedCatComp = f("CATEGORY_COMPETITION") || cLabel;
+
+    const finalForm: FormData = {
+      ...form,
+      LEADER_WHATSAPP:            normalizePhone62(f("LEADER_WHATSAPP_NUM")),
+      WHATSAPP_NUMBER_SUPERVISOR: normalizePhone62(f("SUPERVISOR_WA_NUM")),
+      CATEGORY_COMPETITION:       resolvedCatComp,
+      CATEGORY_PRICE:             priceMap[resolvedCatComp] ?? "",
+    };
+
     try {
-      await submitToNesfSheet(competition, form);
+      await submitToSheet(sheetUrl, sheetTarget, competition, finalForm);
       setSubmitted(true);
+      setTimeout(() => onSuccess({
+        namaLengkap:  f("NAMA_LENGKAP"),
+        namaSekolah:  f("NAMA_SEKOLAH"),
+        categories:   f("CATEGORIES"),
+        projectTitle: f("PROJECT_TITLE"),
+        grade:        f("GRADE"),
+        competitionCategory: resolvedCatComp,
+      }), 2000);
     } catch {
-      setError(
-        lang === "en"
-          ? "Submission failed. Please check your connection and try again."
-          : "Pengiriman gagal. Periksa koneksi Anda dan coba lagi."
-      );
+      setError("Gagal mengirim. Silakan coba lagi.");
     } finally {
       setLoading(false);
     }
   };
 
-  const L = {
-    step:       { en: "Step 3 of 3",         id: "Langkah 3 dari 3" },
-    online:     { en: "Online",              id: "Online" },
-    offline:    { en: "Offline",             id: "Offline" },
-    submit:     { en: "Submit Registration", id: "Kirim Formulir" },
-    submitting: { en: "Submitting…",         id: "Mengirim…" },
-    required:   { en: "Please fill in all required fields (*)", id: "Harap isi semua kolom wajib (*)" },
-    back:       { en: "← Back",             id: "← Kembali" },
-  };
-
-  const cLabel = competition === "online" ? L.online[lang] : L.offline[lang];
-
   return (
-    <div className="w-full max-w-3xl">
+    <div className="w-full md:w-[88%] xl:w-[82%] max-w-[1200px] mx-auto">
 
-      {/* Header */}
       <div className="text-center mb-8">
-        <p className="text-sm uppercase tracking-[0.3em] text-primary mb-2 font-semibold">
-          {L.step[lang]}
-        </p>
-        <h2 className="text-2xl md:text-3xl font-bold font-display">Registration Form</h2>
-        <p className="text-muted-foreground mt-1 text-sm">NESF 2026 · {cLabel}</p>
+        <p className="text-sm uppercase tracking-[0.3em] text-primary mb-2">Langkah 3 dari 3</p>
+        <h2 className="text-2xl md:text-3xl font-bold text-foreground">Formulir Pendaftaran</h2>
+        <p className="text-muted-foreground mt-1 text-sm">{eventTitle} · {cLabel}</p>
       </div>
 
-      <div className="tech-shell rounded-2xl p-6 md:p-8 space-y-8">
+      <div className="bg-card border border-border rounded-2xl p-5 md:p-10 space-y-10">
 
-        {/* Info banner */}
-        <div className="rounded-xl p-4 text-sm text-muted-foreground leading-6 bg-primary/5 border border-primary/20">
-          <p className="font-semibold text-foreground mb-1">NESF 2026 — {cLabel} Participant</p>
-          <ol className="list-decimal list-inside space-y-1">
-            <li>
-              {lang === "en"
-                ? "Fill in all data correctly. Submitted data is final and cannot be changed."
-                : "Isi semua data dengan benar. Data yang dikirim bersifat final."}
-            </li>
-            <li>
-              {lang === "en"
-                ? "All project documents must be submitted no later than H-14 before the event."
-                : "Semua dokumen proyek harus dikirim paling lambat H-14 sebelum acara."}
-            </li>
-            <li>
-              {lang === "en"
-                ? "LoA will be sent to the leader's email within 3 working days."
-                : "LoA akan dikirim ke email ketua dalam 3 hari kerja."}
-            </li>
+        {/* Banner info */}
+        <div className="bg-primary/5 border border-primary/20 rounded-xl p-4 text-sm text-muted-foreground leading-6">
+          <p className="font-semibold text-foreground mb-3">
+            {`HALO PESERTA ${eventTitle.toUpperCase()}, Mohon perhatikan informasi berikut sebelum mengisi formulir pendaftaran:`}
+          </p>
+          <ol className="list-decimal list-inside space-y-3">
+            <li>Harap isi data yang diperlukan dengan benar dan pastikan tidak ada kesalahan penulisan. Pastikan juga bahwa data yang dikirimkan sudah final dan tidak berubah.</li>
+            <li>Setelah memastikan data sudah benar, klik tombol "Kirim Formulir" sekali saja. Jika data berhasil dikirim, Anda akan dipindahkan ke halaman lain.</li>
+            <li>Akan ada email informasi bahwa pendaftaran telah diterima yang dikirim ke alamat email ketua tim, dan file akan divalidasi oleh tim kami. Harap bersabar dan tunggu maksimal 3 hari setelah waktu pendaftaran, Letter of Acceptance (LoA) akan dikirimkan ke alamat email ketua tim.</li>
           </ol>
         </div>
 
-        {/* ── 1. TEAM DATA ─────────────────────────────────────── */}
-        <div>
-          <SectionTitle title={lang === "en" ? "Team Data" : "Data Tim"} />
-          <div className="grid gap-4">
-
-            {/* Read-only: competition type */}
-            <Field label={lang === "en" ? "Competition Format" : "Format Kompetisi"}>
-              <Input value={cLabel} disabled className="rounded-lg bg-muted/20 text-sm" />
+        {/* ── BIODATA ─────────────────────────────────────────── */}
+        <section>
+          <SectionTitle title="Biodata" />
+          <div className="grid gap-5">
+            <Field label="Kategori Kompetisi">
+              <Input value={cLabel} disabled />
             </Field>
 
-            <Field
-              label={lang === "en" ? "Team Leader / Participant Name" : "Nama Ketua Tim / Peserta"}
-              required
-              note={lang === "en"
-                ? "For team: Leader / Member1 / Member2 (max 3 members)"
-                : "Untuk tim: Ketua / Anggota1 / Anggota2 (maks. 3 anggota)"}
-            >
-              <TextArea
-                placeholder={lang === "en" ? "Enter participant name(s)" : "Masukkan nama peserta"}
-                value={f("NAMA_LENGKAP")} onChange={set("NAMA_LENGKAP")} maxLength={300}
-              />
+            <Field label="Nama Ketua & Anggota Tim" required fieldId="field-NAMA_LENGKAP" error={errors["NAMA_LENGKAP"]}
+              note={"Masukkan nama ketua tim dan anggota tim dengan nama ketua tim di awal, dengan format berikut:\n\nNama Ketua\nNama Anggota 1\nNama Anggota 2\n\nCatatan: maksimal 3 anggota + 1 ketua tim"}>
+              <TextArea placeholder="Masukkan Nama Ketua & Anggota Tim"
+                value={f("NAMA_LENGKAP")} onChange={set("NAMA_LENGKAP")} maxLength={400} />
             </Field>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field
-                label={lang === "en" ? "Leader WhatsApp" : "WhatsApp Ketua"}
-                required
-                note={lang === "en" ? "Include country code. e.g. +62 817 xxxx" : "Sertakan kode negara. Cth: +62 817 xxxx"}
-              >
-                <TextInput placeholder="+62 …" value={f("LEADER_WHATSAPP")} onChange={set("LEADER_WHATSAPP")} type="tel" />
+              <Field label="No. WhatsApp Ketua" required note="Masukkan nomor tanpa awalan 0." fieldId="field-LEADER_WHATSAPP_NUM" error={errors["LEADER_WHATSAPP_NUM"]}>
+                <PhoneInputID placeholder="8xxxxxxxx"
+                  value={f("LEADER_WHATSAPP_NUM")} onChange={set("LEADER_WHATSAPP_NUM")} />
               </Field>
-              <Field
-                label={lang === "en" ? "Leader Email" : "Email Ketua"}
-                required
-                note={lang === "en" ? "LoA will be sent here." : "LoA akan dikirim ke sini."}
-              >
-                <TextInput placeholder="email@example.com" value={f("LEADER_EMAIL")} onChange={set("LEADER_EMAIL")} type="email" />
+              <Field label="Email Ketua" required note="LoA akan dikirim ke email ini." fieldId="field-LEADER_EMAIL" error={errors["LEADER_EMAIL"]}>
+                <TextInput placeholder="email@sekolah.com"
+                  value={f("LEADER_EMAIL")} onChange={set("LEADER_EMAIL")} type="email" />
               </Field>
             </div>
+
+            <Field label="NIM / NISN Ketua & Anggota Tim" required fieldId="field-NISN_NIM" error={errors["NISN_NIM"]}
+              note={"Catatan: Masukkan NIM/NISN jika masih sekolah dengan urutan nama ketua tim dan anggota, dengan format sebagai berikut:\n\n1201301\n1302402\n1020100"}>
+              <TextArea placeholder="Masukkan NIM / NISN Ketua & Anggota Tim"
+                value={f("NISN_NIM")} onChange={set("NISN_NIM")} />
+            </Field>
+
+            <Field label="Link Media Sosial" note="Instagram, LinkedIn, atau media sosial lainnya (opsional).">
+              <TextInput placeholder="https://instagram.com/username"
+                value={f("SOCIAL_MEDIA")} onChange={set("SOCIAL_MEDIA")} />
+            </Field>
+          </div>
+        </section>
+
+        {/* ── DATA SEKOLAH ─────────────────────────────────────── */}
+        <section>
+          <SectionTitle title="Data Sekolah" />
+          <div className="grid gap-5">
+            <Field label="Nama Sekolah/Universitas" required fieldId="field-NAMA_SEKOLAH" error={errors["NAMA_SEKOLAH"]}
+              note={"Tulis nama sekolah tiap anggota sesuai urutan nama di biodata, satu baris per sekolah.\nContoh:\n\nSMA Negeri 1 Jakarta (Ketua)\nSMK Telkom Bandung (Anggota1)"}>
+              <TextArea placeholder="SMA Negeri 1 Jakarta (Ketua)\nSMK Telkom Bandung (Anggota1)"
+                value={f("NAMA_SEKOLAH")} onChange={set("NAMA_SEKOLAH")} maxLength={500} />
+            </Field>
+
+            <Field label="NPSN (Nomor Pokok Sekolah Nasional)" required fieldId="field-NPSN" error={errors["NPSN"]}
+              note="Nomor Pokok Sekolah Nasional (8 digit). Cek di https://sekolah.data.kemdikbud.go.id jika belum tahu.">
+              <TextInput placeholder="Contoh: 20106589"
+                value={f("NPSN")} onChange={set("NPSN")} />
+            </Field>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field label={lang === "en" ? "Participant Division" : "Divisi Peserta"} required>
-                <SelectInput
-                  placeholder={lang === "en" ? "-- Choose Division --" : "-- Pilih Divisi --"}
-                  value={f("DIVISION")} onChange={set("DIVISION")} options={PARTICIPANT_DIVISIONS}
-                />
+              <Field label="Jenjang / Tahun" required fieldId="field-GRADE" error={errors["GRADE"]}>
+                <SelectInput placeholder="-- Pilih Jenjang --" value={f("GRADE")} onChange={set("GRADE")}
+                  options={GRADE_OPTIONS} />
               </Field>
-              <Field
-                label={lang === "en" ? "Number of Members" : "Jumlah Anggota"}
-                note={lang === "en" ? "Solo: 1 | Team: up to 3" : "Solo: 1 | Tim: maks. 3"}
-              >
-                <TextInput placeholder="1 / 2 / 3" value={f("MEMBER_COUNT")} onChange={set("MEMBER_COUNT")} />
+              <Field label="Provinsi" required fieldId="field-PROVINCE" error={errors["PROVINCE"]}>
+                <TextInput placeholder="Mis. Jawa Barat, Yogyakarta"
+                  value={f("PROVINCE")} onChange={set("PROVINCE")} />
               </Field>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* ── 2. INSTITUTION DATA ──────────────────────────────── */}
-        <div>
-          <SectionTitle title={lang === "en" ? "School / Institution" : "Sekolah / Institusi"} />
-          <div className="grid gap-4">
-            <Field
-              label={lang === "en" ? "Name of School / University / Community" : "Nama Sekolah / Universitas / Komunitas"}
-              required
-            >
-              <TextArea
-                placeholder={lang === "en" ? "e.g. SMA N 1 Yogyakarta" : "Cth. SMA N 1 Yogyakarta"}
-                value={f("NAMA_SEKOLAH")} onChange={set("NAMA_SEKOLAH")} maxLength={200}
-              />
-            </Field>
-            <Field label={lang === "en" ? "Province / City" : "Provinsi / Kota"}>
-              <TextInput
-                placeholder={lang === "en" ? "e.g. Jawa Tengah" : "Cth. Jawa Tengah"}
-                value={f("PROVINCE")} onChange={set("PROVINCE")}
-              />
-            </Field>
-          </div>
-        </div>
-
-        {/* ── 3. SUPERVISOR DATA ───────────────────────────────── */}
-        <div>
-          <SectionTitle title={lang === "en" ? "Supervisor / Mentor" : "Pembimbing / Mentor"} />
-          <div className="grid gap-4">
-            <Field label={lang === "en" ? "Supervisor Name" : "Nama Pembimbing"} required>
-              <TextInput
-                placeholder={lang === "en" ? "Enter supervisor name" : "Masukkan nama pembimbing"}
-                value={f("NAME_SUPERVISOR")} onChange={set("NAME_SUPERVISOR")}
-              />
+        {/* ── DATA PEMBIMBING ──────────────────────────────────── */}
+        <section>
+          <SectionTitle title="Data Pembimbing" />
+          <div className="grid gap-5">
+            <Field label="Nama Guru/Pembimbing" required fieldId="field-NAME_SUPERVISOR" error={errors["NAME_SUPERVISOR"]}>
+              <TextArea placeholder="Masukkan Nama Guru/Pembimbing"
+                value={f("NAME_SUPERVISOR")} onChange={set("NAME_SUPERVISOR")} />
             </Field>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field
-                label={lang === "en" ? "Supervisor WhatsApp" : "WhatsApp Pembimbing"}
-                required
-                note={lang === "en" ? "Include country code." : "Sertakan kode negara."}
-              >
-                <TextInput placeholder="+62 …" value={f("WHATSAPP_NUMBER_SUPERVISOR")} onChange={set("WHATSAPP_NUMBER_SUPERVISOR")} type="tel" />
+              <Field label="No. WhatsApp Pembimbing" required note="Masukkan nomor tanpa awalan 0." fieldId="field-SUPERVISOR_WA_NUM" error={errors["SUPERVISOR_WA_NUM"]}>
+                <PhoneInputID placeholder="8xxxxxxxx"
+                  value={f("SUPERVISOR_WA_NUM")} onChange={set("SUPERVISOR_WA_NUM")} />
               </Field>
-              <Field label={lang === "en" ? "Supervisor Email" : "Email Pembimbing"} required>
-                <TextInput placeholder="supervisor@example.com" value={f("EMAIL_SUPERVISOR")} onChange={set("EMAIL_SUPERVISOR")} type="email" />
+              <Field label="Email Pembimbing" required fieldId="field-EMAIL_TEACHER_SUPERVISOR" error={errors["EMAIL_TEACHER_SUPERVISOR"]}>
+                <TextInput placeholder="pembimbing@sekolah.com"
+                  value={f("EMAIL_TEACHER_SUPERVISOR")} onChange={set("EMAIL_TEACHER_SUPERVISOR")} type="email" />
               </Field>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* ── 4. PROJECT DATA ──────────────────────────────────── */}
-        <div>
-          <SectionTitle title={lang === "en" ? "Project Data" : "Data Proyek"} />
-          <div className="grid gap-4">
-
-            <Field label={lang === "en" ? "Competition Category" : "Kategori Kompetisi"} required>
-              <SelectInput
-                placeholder={lang === "en" ? "-- Choose Category --" : "-- Pilih Kategori --"}
-                value={f("COMPETITION_CATEGORY")} onChange={set("COMPETITION_CATEGORY")}
-                options={COMPETITION_CATEGORIES}
-              />
+        {/* ── DETAIL PROYEK ────────────────────────────────────── */}
+        <section>
+          <SectionTitle title="Detail Proyek" />
+          <div className="grid gap-5">
+            <Field label="Judul Proyek" required note="Tidak dapat diubah setelah pengiriman." fieldId="field-PROJECT_TITLE" error={errors["PROJECT_TITLE"]}>
+              <TextArea placeholder="Masukkan judul proyek Anda"
+                value={f("PROJECT_TITLE")} onChange={set("PROJECT_TITLE")} maxLength={160} />
             </Field>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Field label="Kategori Proyek" required fieldId="field-CATEGORIES" error={errors["CATEGORIES"]}>
+                <SelectInput placeholder="-- Pilih Kategori --" value={f("CATEGORIES")}
+                  onChange={set("CATEGORIES")} options={PROJECT_CATEGORIES} />
+              </Field>
+              <Field label="Apakah proyek ini pernah ikut kompetisi lain?">
+                <SelectInput placeholder="-- Pilih --" value={f("YES_NO")}
+                  onChange={set("YES_NO")} options={[YES, "Tidak"]} />
+              </Field>
+            </div>
+            {f("YES_NO") === YES && (
+              <Field label="Nama Kompetisi Sebelumnya">
+                <TextArea placeholder="Masukkan Nama Kompetisi"
+                  value={f("JUDUL_PERNAH_BERPATISIPASI")} onChange={set("JUDUL_PERNAH_BERPATISIPASI")} />
+              </Field>
+            )}
+          </div>
+        </section>
 
-            <Field
-              label={lang === "en" ? "Project Title" : "Judul Proyek"}
-              required
-              note={lang === "en"
-                ? "Cannot be changed after submission."
-                : "Tidak dapat diubah setelah pengiriman."}
-            >
-              <TextInput
-                placeholder={lang === "en" ? "Enter your project title" : "Masukkan judul proyek Anda"}
-                value={f("PROJECT_TITLE")} onChange={set("PROJECT_TITLE")}
-              />
+        {/* ── INFORMASI UMUM ───────────────────────────────────── */}
+        <section>
+          <SectionTitle title="Informasi Umum" />
+          <div className="grid gap-5">
+            <Field label="Alamat Lengkap" required note="Nama Jalan, No. Rumah, Kelurahan, Kecamatan, Kab/Kota, Provinsi, Kode Pos" fieldId="field-COMPLETE_ADDRESS" error={errors["COMPLETE_ADDRESS"]}>
+              <TextArea placeholder="Masukkan Alamat Lengkap Anda"
+                value={f("COMPLETE_ADDRESS")} onChange={set("COMPLETE_ADDRESS")} />
             </Field>
-
-            <Field
-              label={lang === "en" ? "Project Abstract / Summary" : "Abstrak / Ringkasan Proyek"}
-              note={lang === "en" ? "Brief description of your project (max 300 words)." : "Deskripsi singkat proyek Anda (maks. 300 kata)."}
-            >
-              <TextArea
-                placeholder={lang === "en" ? "Describe your project…" : "Deskripsikan proyek Anda…"}
-                value={f("PROJECT_ABSTRACT")} onChange={set("PROJECT_ABSTRACT")} maxLength={1500}
-              />
-            </Field>
-
-            <Field
-              label={lang === "en" ? "Project Document / Drive Link" : "Link Dokumen Proyek / Drive"}
-              note={lang === "en"
-                ? "Google Drive link to your full paper, poster, or supporting documents."
-                : "Link Google Drive ke full paper, poster, atau dokumen pendukung."}
-            >
-              <TextInput
-                placeholder="https://drive.google.com/…"
-                value={f("DRIVE_LINK")} onChange={set("DRIVE_LINK")}
-              />
+            <Field label={`Dari mana Anda mengetahui ${eventTitle}?`} required fieldId="field-INFORMATION_RESOURCES" error={errors["INFORMATION_RESOURCES"]}>
+              <SelectInput placeholder="-- Pilih Sumber --" value={f("INFORMATION_RESOURCES")}
+                onChange={set("INFORMATION_RESOURCES")} options={INFO_SOURCES} />
             </Field>
           </div>
-        </div>
+        </section>
 
-        {/* ── 5. GENERAL INFO ──────────────────────────────────── */}
-        <div>
-          <SectionTitle title={lang === "en" ? "General Information" : "Informasi Umum"} />
-          <div className="grid gap-4">
-            <Field
-              label={lang === "en" ? "Full Address" : "Alamat Lengkap"}
-              required
-              note={lang === "en" ? "Street, City, Province" : "Jalan, Kota, Provinsi"}
-            >
-              <TextArea
-                placeholder={lang === "en" ? "Enter your full address…" : "Masukkan alamat lengkap…"}
-                value={f("COMPLETE_ADDRESS")} onChange={set("COMPLETE_ADDRESS")}
-              />
-            </Field>
-            <Field label={lang === "en" ? "How did you hear about NESF?" : "Dari mana Anda mengetahui NESF?"}>
-              <SelectInput
-                placeholder={lang === "en" ? "-- Select Source --" : "-- Pilih Sumber --"}
-                value={f("INFORMATION_RESOURCES")} onChange={set("INFORMATION_RESOURCES")}
-                options={["Instagram", "WhatsApp", "Friend / Teacher", "Website", "YouTube", "Other"]}
-              />
-            </Field>
-          </div>
-        </div>
-
-        {/* ── 6. PAYMENT PROOF ─────────────────────────────────── */}
-        <div>
-          <SectionTitle title={lang === "en" ? "Payment Proof" : "Bukti Pembayaran"} />
-          <Field
-            label={lang === "en" ? "Payment / Free Registration Evidence" : "Bukti Pembayaran / Registrasi Gratis"}
-            note={lang === "en"
-              ? "Upload to Google Drive and paste the link here."
-              : "Upload ke Google Drive dan tempel linknya di sini."}
-          >
-            <TextInput
-              placeholder="https://drive.google.com/…"
-              value={f("FILE")} onChange={set("FILE")}
-            />
+        {/* ── BUKTI REGISTRASI GRATIS ──────────────────────────── */}
+        <section>
+          <Field label="Jika mendapat registrasi gratis, lampirkan buktinya di sini.">
+            <TextInput placeholder="https://drive.google.com/..." value={f("FILE")} onChange={set("FILE")} />
           </Field>
-        </div>
+        </section>
 
-        {/* Error */}
-        {error && (
-          <p className="text-sm text-rose-400 bg-rose-400/10 border border-rose-400/20 rounded-lg px-4 py-3">
-            {error}
-          </p>
-        )}
+        {error && <p className="text-sm text-red-400">{error}</p>}
 
-        {/* Submit */}
-        <div className="pt-2 space-y-2">
-          <Button
+        <div className="pt-2">
+          <Button variant="hero" size="lg"
             className="w-full text-base py-4 font-bold tracking-widest uppercase"
-            disabled={!isValid || loading}
-            onClick={handleSubmit}
-          >
-            {loading ? L.submitting[lang] : L.submit[lang]}
+            disabled={loading} onClick={handleSubmit}>
+            {loading ? "Mengirim..." : "Kirim Formulir"}
           </Button>
-          {!isValid && (
-            <p className="text-xs text-center text-muted-foreground">{L.required[lang]}</p>
-          )}
         </div>
       </div>
 
-      {/* Back */}
-      <div className="mt-4">
-        <Button variant="outline" size="sm" onClick={onBack}>
-          {L.back[lang]}
-        </Button>
+      <div className="mt-4 flex justify-start">
+        <Button variant="hero-outline" size="sm" onClick={onBack}>← Kembali ke Syarat</Button>
       </div>
 
       {loading && <SpinnerOverlay />}
-      {submitted && <SuccessOverlay onDone={onSuccess} />}
+      {submitted && <SuccessOverlay />}
     </div>
   );
 };

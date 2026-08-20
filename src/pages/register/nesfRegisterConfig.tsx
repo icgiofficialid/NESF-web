@@ -1,12 +1,29 @@
 // ================================================================
 // nesfRegisterConfig.tsx
-// Path: src/pages/nesf/register/nesfRegisterConfig.tsx
+// Path: src/pages/register/nesfRegisterConfig.tsx
 //
-// Single source of truth untuk registrasi NESF:
-// tipe, konstanta, logika submit, komponen UI reusable.
-// Struktur mengikuti pola registerConfig.tsx IESF.
-// Hanya peserta Indonesia (tidak ada ParticipantType).
-// Semua teks: Bahasa Indonesia.
+// ⚠️ REWRITE — sekarang ini adalah SINGLE SOURCE OF TRUTH untuk
+// flow registrasi generik NESF, dipakai oleh SEMUA event NESF
+// (Borneo-NESF, dan event NESF berikutnya) KECUALI DSCF (DSCF
+// sengaja punya flow terpisah — dscfRegisterConfig.tsx — JANGAN
+// disatukan ke sini).
+//
+// Field, label, urutan section, dan aturan wajib isi di sini
+// DISAMAKAN PERSIS dengan RegistrationForm.tsx milik IESF (cabang
+// peserta Indonesia) — hanya bahasanya saja yang full Bahasa
+// Indonesia (NESF adalah kompetisi nasional, tidak ada pilihan
+// kewarganegaraan/COUNTRY seperti IESF).
+//
+// CARA KERJA UNTUK EVENT BARU (tanpa bikin file register baru lagi):
+//   1. Tambahkan entry event baru di src/config/eventRegistry.ts
+//      (isi pricing, sheet.sheetUrl, sheet.targets, dst).
+//   2. Buat file data konten di src/config/events/<slug>.ts
+//   3. Buat halaman detail (boleh custom, atau pakai EventDetailPage
+//      generik) yang tombol "Daftar"-nya navigate ke `/register/<slug>`.
+//   4. Selesai — NesfRegister.tsx otomatis baca slug dari URL,
+//      ambil sheetUrl/sheetTarget/pricing dari eventRegistry, dan
+//      pakai komponen di file ini apa adanya. TIDAK PERLU file
+//      register baru per event lagi.
 // ================================================================
 
 import { type ReactNode } from "react";
@@ -16,169 +33,171 @@ import { Input } from "@/components/ui/input";
 // ── Kontak Admin ──────────────────────────────────────────────────
 export const WHATSAPP_ADMIN = "628139905880";
 
-// ── GAS Endpoint default (bisa di-override lewat argumen submit) ──
-export const NESF_SHEET_URL =
-  "https://script.google.com/macros/s/AKfycbyR5h25ll0eDrld-0IcSzflrtMx501Je9kfuq3BS_t6aMqHzExp6IuAJoIMjX6W6GaE/exec";
-
 // ── Tipe ──────────────────────────────────────────────────────────
+// Sengaja TIDAK ada ParticipantType/COUNTRY — semua event NESF
+// adalah kompetisi nasional, peserta selalu Indonesia.
 export type CompetitionType = "online" | "offline";
 export type FormData        = Record<string, string>;
 
-// ================================================================
-// HARGA — ubah di sini jika ada perubahan
-// ================================================================
-export const CATEGORY_PRICE_MAP: Record<string, string> = {
-  // DSCF — Depok Science & Cultural Festival
-  "Kompetisi DESF (Depok Engineering Science Fair)": "Rp 350.000",
-  "Kompetisi DMO (Depok Math Olympiad)":             "Rp 175.000",
-  "Kompetisi DCC (Depok Cultural Competition)":      "Rp 50.000",
+// ── Label format kompetisi (dipakai untuk key harga & payload) ────
+// KEY di sini HARUS sama persis dengan key yang dipakai di
+// `pricing` pada tiap entry EVENTS_REGISTRY (src/config/eventRegistry.ts).
+export const FORMAT_LABEL: Record<CompetitionType, string> = {
+  online:  "Online Competition",
+  offline: "Offline Competition",
 };
 
 // ================================================================
-// COMPETITION_CATEGORIES
-// Alias flat array untuk NesfStepForm (agar import tetap berfungsi).
-// Isi dari kategori DSCF offline sebagai default.
+// HARGA — FALLBACK DEFAULT saja (dipakai kalau event yang aktif
+// tidak mengisi field `pricing` di eventRegistry.ts sama sekali).
+// Harga sesungguhnya selalu per-event, lihat `pricing` di
+// eventRegistry.ts (pola sama persis dengan IESF).
 // ================================================================
-export const COMPETITION_CATEGORIES: string[] = [
-  "Kompetisi DESF (Depok Engineering Science Fair)",
-  "Kompetisi DMO (Depok Math Olympiad)",
-  "Kompetisi DCC (Depok Cultural Competition)",
+export const DEFAULT_CATEGORY_PRICE_MAP: Record<string, string> = {
+  "Online Competition":  "",
+  "Offline Competition": "",
+};
+
+// ================================================================
+// PROJECT_CATEGORIES — sama persis (diterjemahkan) dengan
+// PROJECT_CATEGORIES di RegistrationForm.tsx (IESF). Konstanta
+// global, dipakai semua event NESF (bukan per-event), mengikuti
+// pola aslinya di IESF.
+// ================================================================
+export const PROJECT_CATEGORIES: string[] = [
+  "Matematika, Sains & Teknologi",
+  "Lingkungan",
+  "IoT & Robotika",
+  "Informatika & Kecerdasan Buatan",
+  "Ilmu Hayati",
+  "Ilmu Sosial & Humaniora",
+  "Fisika, Energi & Teknik",
+  "Kesehatan & Kedokteran",
 ];
 
-// ── Kategori Sub-Kompetisi per Event (untuk penggunaan per-slug) ──
-export const COMPETITION_CATEGORY_OPTIONS: Record<string, Record<CompetitionType, string[]>> = {
-  "dscf-2026": {
-    offline: [
-      "Kompetisi DESF (Depok Engineering Science Fair)",
-      "Kompetisi DMO (Depok Math Olympiad)",
-      "Kompetisi DCC (Depok Cultural Competition)",
-    ],
-    online: [], // DSCF hanya offline
-  },
-};
+// ── Jenjang peserta (setara "Grade / Year" IESF: Elementary/Secondary/University) ─
+export const GRADE_OPTIONS: string[] = [
+  "SD / Sederajat",
+  "SMP–SMA / Sederajat",
+  "Perguruan Tinggi / Universitas",
+];
 
-// ── Kategori Proyek per Event ─────────────────────────────────────
-export const PROJECT_CATEGORIES: Record<string, string[]> = {
-  "dscf-2026": [
-    "Matematika, Sains & Teknologi",
-    "Lingkungan",
-    "IoT & Robotika",
-    "Informatika & Kecerdasan Buatan",
-    "Ilmu Hayati",
-    "Ilmu Sosial & Humaniora",
-    "Fisika, Energi & Teknik",
-    "Kesehatan & Kedokteran",
-    "Depok Math Olympiad (DMO)",
-    "Depok Cultural Competition — Tari",
-    "Depok Cultural Competition — MHQ",
-  ],
-};
-
-// ================================================================
-// PARTICIPANT_DIVISIONS
-// Dipakai oleh NesfStepForm untuk dropdown divisi peserta.
-// ================================================================
-export const PARTICIPANT_DIVISIONS: string[] = [
-  "SD (Sekolah Dasar)",
-  "SMP (Sekolah Menengah Pertama)",
-  "SMA/SMK (Sekolah Menengah Atas)",
-  "Umum / Komunitas (khusus MHQ)",
+// ── Sumber informasi (setara infoSources IESF, versi Indonesia) ───
+export const INFO_SOURCES: string[] = [
+  "Instagram", "WhatsApp", "Teman/Guru", "Website", "YouTube", "Lainnya",
 ];
 
 // ================================================================
-// TERMS — Syarat & Ketentuan per format kompetisi
-// Dipakai oleh NesfStepTerms.
+// TERMS — Syarat & Ketentuan per format kompetisi (Bahasa Indonesia).
+// Konstanta global dipakai semua event NESF, sama seperti IESF yang
+// pakai 1 set terms.json untuk semua event-nya.
 // ================================================================
 export const TERMS: Record<CompetitionType, string[]> = {
   offline: [
-    "Peserta merupakan pelajar aktif sesuai jenjang lomba (SD, SMP, SMA), atau umum untuk kategori MHQ, dibuktikan dengan identitas resmi yang masih berlaku.",
+    "Peserta merupakan pelajar aktif jenjang SD, SMP, SMA, atau mahasiswa aktif, dibuktikan dengan identitas resmi yang masih berlaku.",
+    "Setiap tim beranggotakan maksimal 4 orang (1 ketua & 3 anggota) dan wajib didampingi 1 pembimbing.",
     "Seluruh data yang telah diisi tidak dapat diubah setelah batas waktu pembayaran. Pastikan data yang dikirimkan sudah benar dan final.",
     "Peserta wajib menyelesaikan pembayaran sesuai ketentuan panitia. Biaya pendaftaran yang telah dibayarkan tidak dapat dikembalikan dalam kondisi apapun.",
-    "Peserta yang tidak mengumpulkan dokumen yang dipersyaratkan setelah dua kali pengingat akan dianggap mengundurkan diri secara otomatis.",
-    "Peserta wajib hadir sesuai jadwal yang telah ditetapkan. Keterlambatan dapat mengurangi waktu penampilan/pengerjaan atau menghilangkan kesempatan tampil.",
-    "Untuk DESF: peserta wajib membawa poster ukuran A0, produk, dan salinan makalah lengkap pada sesi penjurian. Presentasi dilakukan dalam Bahasa Indonesia.",
-    "Untuk DCC Tari: file musik wajib dikirimkan paling lambat H-14 sebelum acara (format MP3/WAV). Peserta wajib membawa file cadangan pada hari pelaksanaan.",
-    "Untuk DCC MHQ: peserta membawa peralatan musik sendiri dan tidak diperkenankan menggunakan peralatan elektronik saat penampilan. Seluruh peserta wajib hadir 30 menit sebelum acara.",
-    "Plagiarisme dan kecurangan dilarang keras. Jika terbukti, pendaftaran akan dibatalkan tanpa pengembalian biaya.",
+    "Setiap tim wajib membawa poster ukuran A0 dan mendekorasi booth/meja yang disediakan panitia. Perlengkapan dekorasi lain menjadi tanggung jawab peserta.",
+    "Penilaian dilakukan oleh dewan juri dalam dua tahap: review dokumen dan presentasi langsung di booth (7 menit presentasi + 8 menit tanya-jawab).",
+    "Peserta dengan skor tertinggi akan diseleksi untuk mengikuti Sesi Penjurian Privat.",
+    "Plagiarisme dan kecurangan dalam bentuk apapun dilarang keras. Jika terbukti, pendaftaran akan dibatalkan tanpa pengembalian biaya.",
     "Seluruh keputusan dewan juri bersifat final dan tidak dapat diganggu gugat.",
   ],
   online: [
+    "Peserta merupakan pelajar aktif jenjang SD, SMP, SMA, atau mahasiswa aktif, dibuktikan dengan identitas resmi yang masih berlaku.",
+    "Setiap tim beranggotakan maksimal 4 orang (1 ketua & 3 anggota) dan wajib didampingi 1 pembimbing.",
     "Seluruh data yang telah diisi tidak dapat diubah setelah batas waktu pembayaran.",
-    "Peserta wajib memastikan koneksi internet yang stabil selama sesi kompetisi online.",
-    "Peserta yang tidak mengumpulkan dokumen yang dipersyaratkan setelah dua kali pengingat akan dianggap mengundurkan diri secara otomatis.",
-    "Seluruh karya/proyek yang dikumpulkan harus merupakan karya orisinal. Plagiarisme akan mengakibatkan diskualifikasi tanpa pengembalian biaya.",
+    "Peserta wajib memastikan koneksi internet yang stabil selama sesi penjurian melalui Zoom, serta menampilkan produk saat presentasi.",
+    "Penilaian dilakukan oleh dewan juri dalam dua tahap: review dokumen dan presentasi langsung via Zoom (7 menit presentasi + 8 menit tanya-jawab).",
+    "Seluruh karya/proyek yang dikumpulkan harus orisinal. Plagiarisme mengakibatkan diskualifikasi tanpa pengembalian biaya.",
     "Seluruh keputusan dewan juri bersifat final dan tidak dapat diganggu gugat.",
     "Biaya pendaftaran yang telah dibayarkan tidak dapat dikembalikan dalam kondisi apapun.",
   ],
 };
 
-// ── Field wajib isi ───────────────────────────────────────────────
-export const REQUIRED_FIELDS: string[] = [
+// ================================================================
+// Field wajib isi — DISAMAKAN PERSIS dengan getRequired() di
+// RegistrationForm.tsx (IESF, cabang peserta Indonesia).
+// Sengaja TIDAK wajib (sama seperti IESF): SOCIAL_MEDIA, YES_NO,
+// JUDUL_PERNAH_BERPATISIPASI, FILE.
+// ================================================================
+export const getRequired = (): string[] => [
   "NAMA_LENGKAP",
-  "LEADER_WHATSAPP",
+  "LEADER_WHATSAPP_NUM",
   "LEADER_EMAIL",
+  "NISN_NIM",
   "NAMA_SEKOLAH",
+  "NPSN",
   "GRADE",
+  "PROVINCE",
   "NAME_SUPERVISOR",
-  "WHATSAPP_NUMBER_SUPERVISOR",
+  "SUPERVISOR_WA_NUM",
   "EMAIL_TEACHER_SUPERVISOR",
   "PROJECT_TITLE",
   "CATEGORIES",
   "COMPLETE_ADDRESS",
+  "INFORMATION_RESOURCES",
 ];
 
 // ================================================================
-// submitToNesfSheet
-//
-// Overload 1 — dipanggil dari NesfStepForm (2 argumen):
-//   submitToNesfSheet(competition, form)
-//   → pakai NESF_SHEET_URL dan sheetTarget otomatis "nesf-<competition>"
-//
-// Overload 2 — dipanggil dari flow per-event (4 argumen):
-//   submitToNesfSheet(competition, form, sheetUrl, sheetTarget)
-//   → pakai sheetUrl dan sheetTarget yang diberikan
-//
+// normalizePhone — rapikan nomor WhatsApp ke format +62xxxxxxxxxx.
+// NESF selalu Indonesia, jadi kode negara di-fix ke +62 (tidak perlu
+// dropdown kode negara penuh seperti di form IESF).
+// ================================================================
+export const normalizePhone62 = (raw: string): string => {
+  let digits = raw.replace(/\D/g, "");
+  if (digits.startsWith("00")) digits = digits.slice(2); // 0062xxx → 62xxx
+  if (digits.startsWith("62"))  digits = digits.slice(2); // 62xxx  → xxx
+  digits = digits.replace(/^0+/, "");                     // 0812xx → 812xx
+  return digits ? `+62${digits}` : "";
+};
+
+// ================================================================
+// submitToSheet
+// Payload key & struktur DISAMAKAN PERSIS dengan submitToSheet() di
+// registerConfig.tsx (IESF) cabang Indonesia — hanya field COUNTRY
+// yang dihilangkan (tidak relevan untuk kompetisi nasional).
+// sheetUrl & sheetTarget WAJIB dikirim oleh caller (diambil dari
+// getSheetConfig() di eventRegistry.ts).
 // Menggunakan image trick untuk bypass CORS (sama dengan IESF).
 // ================================================================
-export const submitToNesfSheet = async (
+export const submitToSheet = async (
+  sheetUrl: string,
+  sheetTarget: string,
   competition: CompetitionType,
-  form:        FormData,
-  sheetUrl?:   string,
-  sheetTarget?: string,
+  form: FormData,
 ): Promise<void> => {
-  const url    = sheetUrl    ?? NESF_SHEET_URL;
-  const target = sheetTarget ?? `nesf-${competition}`;
-  const f = (key: string) => form[key] ?? "";
+  const f = (key: string) => form[key] || "";
 
   const payload: Record<string, string> = {
-    sheetTarget:                target,
+    sheetTarget,
     timestamp:                  new Date().toISOString(),
-    CATEGORY_COMPETITION:       f("CATEGORY_COMPETITION") || competition,
-    NAMA_LENGKAP:               f("NAMA_LENGKAP"),
-    LEADER_WHATSAPP:            f("LEADER_WHATSAPP"),
-    LEADER_EMAIL:               f("LEADER_EMAIL"),
-    SOCIAL_MEDIA:               f("SOCIAL_MEDIA"),
-    NAMA_SEKOLAH:               f("NAMA_SEKOLAH"),
-    GRADE:                      f("GRADE"),
-    NISN_NIM:                   f("NISN_NIM"),
-    PROVINCE:                   f("PROVINCE"),
-    NAME_SUPERVISOR:            f("NAME_SUPERVISOR"),
-    WHATSAPP_NUMBER_SUPERVISOR: f("WHATSAPP_NUMBER_SUPERVISOR"),
-    EMAIL_TEACHER_SUPERVISOR:   f("EMAIL_TEACHER_SUPERVISOR"),
-    CATEGORIES:                 f("CATEGORIES"),
-    PROJECT_TITLE:              f("PROJECT_TITLE"),
-    PROJECT_ABSTRACT:           f("PROJECT_ABSTRACT"),
-    MEMBER_COUNT:               f("MEMBER_COUNT"),
-    DRIVE_LINK:                 f("DRIVE_LINK"),
-    YES_NO:                     f("YES_NO"),
-    JUDUL_PERNAH_BERPATISIPASI: f("JUDUL_PERNAH_BERPATISIPASI"),
-    COMPLETE_ADDRESS:           f("COMPLETE_ADDRESS"),
-    INFORMATION_RESOURCES:      f("INFORMATION_RESOURCES"),
-    FILE:                       f("FILE"),
-    CATEGORY_PRICE:             CATEGORY_PRICE_MAP[f("CATEGORY_COMPETITION")] ?? "",
+    CATEGORY_PARTICIPANT:       "indonesian",
+    CATEGORY_COMPETITION:       f("CATEGORY_COMPETITION") || FORMAT_LABEL[competition],
+    NAMA_SEKOLAH:                f("NAMA_SEKOLAH"),
+    NAMA_LENGKAP:                f("NAMA_LENGKAP"),
+    GRADE:                       f("GRADE"),
+    LEADER_EMAIL:                f("LEADER_EMAIL"),
+    LEADER_WHATSAPP:             f("LEADER_WHATSAPP"),
+    SOCIAL_MEDIA:                f("SOCIAL_MEDIA"),
+    NISN_NIM:                    f("NISN_NIM"),
+    NPSN:                        f("NPSN"),
+    PROVINCE:                    f("PROVINCE"),
+    NAME_SUPERVISOR:             f("NAME_SUPERVISOR"),
+    WHATSAPP_NUMBER_SUPERVISOR:  f("WHATSAPP_NUMBER_SUPERVISOR"),
+    EMAIL_TEACHER_SUPERVISOR:    f("EMAIL_TEACHER_SUPERVISOR"),
+    COMPLETE_ADDRESS:            f("COMPLETE_ADDRESS"),
+    INFORMATION_RESOURCES:       f("INFORMATION_RESOURCES"),
+    FILE:                        f("FILE"),
+    YES_NO:                      f("YES_NO"),
+    JUDUL_PERNAH_BERPATISIPASI:  f("JUDUL_PERNAH_BERPATISIPASI"),
+    CATEGORY_PRICE:              f("CATEGORY_PRICE"),
+    CATEGORIES:                  f("CATEGORIES"),
+    PROJECT_TITLE:               f("PROJECT_TITLE"),
   };
 
-  const fullUrl = `${url}?${new URLSearchParams(payload).toString()}`;
+  const fullUrl = `${sheetUrl}?${new URLSearchParams(payload).toString()}`;
 
   // Image trick — bypass CORS, request tetap sampai ke GAS meski browser error
   await new Promise<void>((resolve) => {
@@ -191,8 +210,8 @@ export const submitToNesfSheet = async (
 };
 
 // ================================================================
-// Komponen UI Reusable
-// (Mengikuti pola IESF: Field dengan error + fieldId, SuccessOverlay)
+// Komponen UI Reusable (pola & styling sama persis dengan
+// registerConfig.tsx IESF, teks di-Indonesia-kan)
 // ================================================================
 
 export const Field = ({

@@ -28,11 +28,12 @@ import Terms       from "@/pages/data/Terms";
 import Guide       from "@/pages/guide";
 
 // Register pages
-import NesfRegister from "./pages/NesfRegister";
-import DscfRegister from "./pages/dscf/DscfRegister"; // ✅ path yang benar
+import NesfRegister from "./pages/NesfRegister"; // ✅ flow generik — dipakai SEMUA event NESF via /register/:slug
+import DscfRegister from "./pages/dscf/DscfRegister"; // ✅ DSCF punya flow sendiri, sengaja tidak disatukan
 
 // Event detail pages
 import DSCFDetail from "@/pages/events/DSCFDetail";
+import BorneoNESFDetail from "@/pages/events/BorneoNESFDetail"; // ✅ Borneo-NESF custom detail
 
 const queryClient = new QueryClient();
 
@@ -51,16 +52,24 @@ const App = () => (
 
               {/* Events
                   ⚠️ Route spesifik WAJIB di atas route dinamis /:slug
-                  agar /events/dscf-2026 tidak tertangkap oleh /:slug */}
-              <Route path="/events"            element={<NesfUpcomingEvents />} />
-              <Route path="/past-events"       element={<PastEvents />} />
-              <Route path="/events/dscf-2026"  element={<DSCFDetail />} />   {/* ✅ spesifik dulu */}
-              <Route path="/events/:slug"      element={<EventDetail />} />   {/* ✅ catch-all belakangan */}
+                  agar /events/dscf-2026 & /events/borneonesf-2026
+                  tidak tertangkap oleh /:slug */}
+              <Route path="/events"                 element={<NesfUpcomingEvents />} />
+              <Route path="/past-events"            element={<PastEvents />} />
+              <Route path="/events/dscf-2026"       element={<DSCFDetail />} />        {/* ✅ spesifik dulu */}
+              <Route path="/events/borneo-nesf-2026" element={<BorneoNESFDetail />} />   {/* ✅ spesifik dulu */}
+              <Route path="/events/:slug"           element={<EventDetail />} />        {/* ✅ catch-all belakangan */}
 
               {/* Register
-                  ⚠️ Sama — route spesifik dulu, catch-all belakangan */}
-              <Route path="/register/dscf-2026" element={<DscfRegister />} /> {/* ✅ DSCF flow */}
-              <Route path="/register"           element={<NesfRegister />} /> {/* flow lama / event lain */}
+                  ⚠️ Route spesifik dulu, dinamis belakangan.
+                  DSCF tetap punya flow sendiri (/register/dscf-2026).
+                  SEMUA event NESF lainnya (Borneo-NESF, dan event
+                  berikutnya) otomatis lewat /register/:slug — TIDAK
+                  PERLU tambah route baru lagi tiap ada event baru,
+                  cukup tambahkan entry-nya di eventRegistry.ts. */}
+              <Route path="/register/dscf-2026" element={<DscfRegister />} />  {/* ✅ DSCF flow — jangan disatukan */}
+              <Route path="/register/:slug"     element={<NesfRegister />} />  {/* ✅ flow generik untuk semua event lain */}
+              <Route path="/register"           element={<NesfRegister />} />  {/* fallback: tanpa slug → pesan "event tidak ditemukan" */}
 
               {/* Info pages */}
               <Route path="/about"   element={<NesfAbout />} />

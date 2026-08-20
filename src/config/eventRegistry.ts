@@ -15,6 +15,11 @@
 //    konsisten dengan registry IESF dan dipakai oleh
 //    NesfUpcomingEvents.tsx / NesfIndex.tsx untuk menampilkan
 //    kartu event (termasuk DSCF) di halaman beranda & daftar event.
+//
+// ⚠️ UPDATE 2: tambahkan field opsional `pricing` (mengikuti pola
+//    IESF) — harga per kategori kompetisi, dibaca oleh
+//    borneoNesfRegisterConfig.tsx. Ditambahkan entry event baru:
+//    borneonesf-2026 (Borneo National Science Fair).
 // ================================================================
 
 export type ParticipantType = "international" | "indonesian";
@@ -66,6 +71,8 @@ export interface EventMeta {
   heroGradient?: string;
   /** Warna aksen untuk event */
   accentColor?: string;
+  /** Harga per kategori kompetisi (opsional — kalau kosong pakai default di registerConfig) */
+  pricing?: Record<string, string>;
 }
 
 // ================================================================
@@ -100,10 +107,42 @@ export const EVENTS_REGISTRY: EventMeta[] = [
     },
   },
 
+  {
+    slug:                 "borneo-nesf-2026",
+    title:                "Borneo National Science Fair",
+    subtitle:             "Borneo-NESF 2026",
+    location:             "Palangka Raya, Kalimantan Tengah, Indonesia",
+    dateRange:            "27–30 November 2026",
+    registrationDeadline: "27 Oktober 2026",
+    status:               "upcoming",
+    // ⚠️ Set true setelah sheetUrl asli & cover image sudah final
+    registrationOpen:     true,
+    route:                "/events/borneo-nesf-2026",
+    shutdown:             false,
+    coverImage:           "https://res.cloudinary.com/dwhobhexj/image/upload/v1787221796/BorneoNESF-potret_nks3ri.png",
+    coverImageLandscape:  "https://res.cloudinary.com/dwhobhexj/image/upload/v1787221796/BorneoNESF-landscape_ykbhqo.png",
+    heroGradient:         "from-slate-900 via-amber-950 to-orange-900",
+    accentColor:          "38 92% 50%",
 
-  
+    // Harga BorneoNESF — kompetisi nasional, tanpa tarif internasional (USD).
+    // Ubah bebas di sini kalau ada perubahan.
+    pricing: {
+      "Online Competition":  "Rp 750.000",
+      "Offline Competition": "Rp 3.000.000",
+    },
 
-  
+    sheet: {
+      // TODO: ganti dengan URL GAS deployment khusus BorneoNESF
+      sheetUrl: "https://script.google.com/macros/s/AKfycbwJD0Wr6hWUz0HhgXqMPq-MilC48w8dZE6lI6_nc0mazgGlX5VBg0UAL9uFo9E2moqScg/exec",
+      targets: {
+        "indo-online":   "indo-online",
+        "indo-offline":  "indo-offline",
+        "inter-online":  "",
+        "inter-offline": "",
+      },
+    },
+  },
+
 ];
 
 // ── Helper — cari event by slug ───────────────────────────────────

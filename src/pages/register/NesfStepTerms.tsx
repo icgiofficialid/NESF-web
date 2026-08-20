@@ -1,46 +1,34 @@
 // ================================================================
-// NesfStepTerms.tsx — Step 2: Terms & Conditions
+// NesfStepTerms.tsx — Langkah 2: Syarat & Ketentuan
+//
+// Generik untuk semua event NESF (dipakai lewat /register/:slug).
 // ================================================================
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { type CompetitionType, TERMS } from "./nesfRegisterConfig";
-import { useLang } from "@/components/LanguageProvider";
 
 interface Props {
+  eventTitle: string;
   competition: CompetitionType;
   onBack: () => void;
   onNext: () => void;
 }
 
-const L = {
-  step:    { en: "Step 2 of 3",          id: "Langkah 2 dari 3" },
-  title:   { en: "Terms & Conditions",   id: "Syarat & Ketentuan" },
-  online:  { en: "Online",               id: "Online" },
-  offline: { en: "Offline",              id: "Offline" },
-  intro:   { en: "Please read and agree to the following terms for", id: "Baca dan setujui syarat berikut untuk" },
-  participants: { en: "participants",    id: "peserta" },
-  check:   { en: "I have read and agree to the", id: "Saya telah membaca dan menyetujui" },
-  terms:   { en: "Terms & Conditions",   id: "Syarat & Ketentuan" },
-  back:    { en: "← Back",              id: "← Kembali" },
-  accept:  { en: "Accept & Continue →", id: "Setuju & Lanjutkan →" },
-};
-
-const NesfStepTerms = ({ competition, onBack, onNext }: Props) => {
+const NesfStepTerms = ({ eventTitle, competition, onBack, onNext }: Props) => {
   const [agreed, setAgreed] = useState(false);
-  const { lang } = useLang();
 
-  const terms        = TERMS[competition];
-  const compLabel    = competition === "offline" ? L.offline[lang] : L.online[lang];
+  const terms     = TERMS[competition];
+  const compLabel = competition === "offline" ? "Offline" : "Online";
 
   return (
     <div className="w-full max-w-2xl">
       <div className="text-center mb-8">
         <p className="text-sm uppercase tracking-[0.3em] text-primary mb-2 font-semibold">
-          {L.step[lang]}
+          Langkah 2 dari 3
         </p>
-        <h2 className="text-2xl md:text-3xl font-bold font-display">{L.title[lang]}</h2>
+        <h2 className="text-2xl md:text-3xl font-bold font-display">Syarat & Ketentuan</h2>
         <p className="text-muted-foreground mt-2 text-sm">
-          NESF 2026 · {compLabel}
+          {eventTitle} · {compLabel}
         </p>
       </div>
 
@@ -48,7 +36,7 @@ const NesfStepTerms = ({ competition, onBack, onNext }: Props) => {
         {/* Scrollable terms */}
         <div className="h-72 overflow-y-auto p-6 text-sm text-muted-foreground leading-7 border-b border-border">
           <p className="font-semibold text-foreground mb-4">
-            {L.intro[lang]} {compLabel} {L.participants[lang]}:
+            Baca dan setujui syarat berikut untuk {compLabel} peserta:
           </p>
           <ul className="space-y-3">
             {terms.map((item, i) => (
@@ -70,12 +58,12 @@ const NesfStepTerms = ({ competition, onBack, onNext }: Props) => {
             className="w-4 h-4 cursor-pointer accent-primary"
           />
           <label htmlFor="nesf-agree" className="text-sm text-muted-foreground cursor-pointer select-none">
-            {L.check[lang]}{" "}
+            Saya telah membaca dan menyetujui{" "}
             <span
               className="font-semibold underline cursor-pointer text-primary"
               onClick={() => window.open("/terms", "_blank")}
             >
-              {L.terms[lang]}
+              Syarat & Ketentuan
             </span>.
           </label>
         </div>
@@ -83,7 +71,7 @@ const NesfStepTerms = ({ competition, onBack, onNext }: Props) => {
         {/* Actions */}
         <div className="px-4 py-5 flex flex-col sm:flex-row gap-3">
           <Button variant="outline" size="lg" className="w-full sm:w-auto" onClick={onBack}>
-            {L.back[lang]}
+            ← Kembali
           </Button>
           <Button
             size="lg"
@@ -91,7 +79,7 @@ const NesfStepTerms = ({ competition, onBack, onNext }: Props) => {
             disabled={!agreed}
             onClick={onNext}
           >
-            {L.accept[lang]}
+            Setuju & Lanjutkan →
           </Button>
         </div>
       </div>
