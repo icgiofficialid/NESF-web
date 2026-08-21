@@ -121,7 +121,7 @@ export const EVENTS_REGISTRY: EventMeta[] = [
     shutdown:             false,
     coverImage:           "https://res.cloudinary.com/dwhobhexj/image/upload/v1787221796/BorneoNESF-potret_nks3ri.png",
     coverImageLandscape:  "https://res.cloudinary.com/dwhobhexj/image/upload/v1787225619/BorneoNESF-landscape_gyuaby.png",
-    heroGradient:         "from-slate-900 via-amber-950 to-orange-900",
+    heroGradient:         "from-[#0B2B1E] via-[#133326] to-[#2F6B4F]",
     accentColor:          "38 92% 50%",
 
     // Harga BorneoNESF — kompetisi nasional, tanpa tarif internasional (USD).
