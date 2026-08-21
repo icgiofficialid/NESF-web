@@ -49,9 +49,16 @@ const BorneoNESFDetail = () => {
   const data = borneonesf;
   const registrationOpen = !!meta?.registrationOpen;
 
-  const goRegister = () => {
-    navigate("/register/borneo-nesf-2026");
-  };
+const goRegister = () => {
+  navigate("/register/borneo-nesf-2026");
+};
+
+const scrollToRegister = () => {
+  document.getElementById("borneo-register-section")?.scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+  });
+};
 
   const rankedAwards  = data.awards.slice(0, 4);
   const specialAwards = data.awards.slice(4);
@@ -61,11 +68,14 @@ const BorneoNESFDetail = () => {
   return (
     <SiteShell>
       {/* Font khusus halaman ini — Bricolage Grotesque (display) + Work Sans (body) */}
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=Work+Sans:wght@400;500;600;700&display=swap');
-        .borneo-page { font-family: 'Work Sans', ui-sans-serif, system-ui, sans-serif; }
-        .borneo-display { font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif; }
-      `}</style>
+    <style>{`
+      @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;600;700;800&family=Work+Sans:wght@400;500;600;700&display=swap');
+      .borneo-page { font-family: 'Work Sans', ui-sans-serif, system-ui, sans-serif; }
+      .borneo-display { font-family: 'Bricolage Grotesque', ui-sans-serif, system-ui, sans-serif; }
+      @keyframes borneo-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+      .borneo-marquee-track { animation: borneo-marquee 34s linear infinite; }
+      .borneo-marquee-track:hover { animation-play-state: paused; }
+    `}</style>
 
       <div className="borneo-page w-full min-h-screen" style={{ background: C.bark }}>
 
@@ -121,13 +131,13 @@ const BorneoNESFDetail = () => {
               <p className="text-white/70 text-base md:text-lg mb-10 mt-6">{meta?.dateRange ?? "27–30 November 2026"} · Palangka Raya, Kalimantan Tengah</p>
 
               <div className="flex flex-wrap items-center gap-3">
-                {registrationOpen ? (
-                  <Button size="lg" onClick={goRegister} style={{ background: C.amber, color: C.canopy }} className="hover:opacity-90 border-0 font-bold">
-                    Daftar Sekarang <ArrowRight className="w-4 h-4 ml-1" />
-                  </Button>
-                ) : (
-                  <Button size="lg" disabled className="opacity-60">Pendaftaran saat ini ditutup</Button>
-                )}
+              {registrationOpen ? (
+                <Button size="lg" onClick={scrollToRegister} style={{ background: C.amber, color: C.canopy }} className="hover:opacity-90 border-0 font-bold">
+                  Daftar Sekarang <ArrowRight className="w-4 h-4 ml-1" />
+                </Button>
+              ) : (
+                <Button size="lg" disabled className="opacity-60">Pendaftaran saat ini ditutup</Button>
+              )}
                 {data.guidebookUrl && (
                   <Button
                     size="lg" variant="outline"
@@ -164,18 +174,33 @@ const BorneoNESFDetail = () => {
           </div>
         </section>
 
-        {/* ── Diselenggarakan oleh ────────────────────────────────── */}
+        {/* ── Diselenggarakan oleh — marquee loop, tanpa card, tanpa celah kanan ── */}
         {data.organizers && data.organizers.length > 0 && (
-          <section className="max-w-6xl mx-auto px-4 py-10">
-            <p className="text-[11px] font-bold uppercase tracking-[0.25em] mb-4 text-center" style={{ color: `${C.canopy}80` }}>
+          <section className="py-10 overflow-hidden">
+            <p className="text-[11px] font-bold uppercase tracking-[0.25em] mb-6 text-center" style={{ color: `${C.canopy}80` }}>
               Diselenggarakan oleh
             </p>
-            <div className="flex flex-wrap items-center justify-center gap-4">
-              {data.organizers.map((org) => (
-                <div key={org.name} className="rounded-xl px-6 py-4 bg-white flex items-center justify-center" style={{ border: `1px solid ${C.canopy}1A` }}>
-                  <img src={org.logo} alt={org.name} className="h-8 w-auto object-contain opacity-90" />
-                </div>
-              ))}
+            <div
+              className="relative"
+              style={{
+                maskImage: `linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%)`,
+                WebkitMaskImage: `linear-gradient(90deg, transparent 0%, black 8%, black 92%, transparent 100%)`,
+              }}
+            >
+              <div className="borneo-marquee-track flex gap-16 w-max px-4 items-center">
+                {Array.from({ length: 4 }).map((_, dup) => (
+                  <div key={dup} className="flex gap-16 items-center">
+                    {data.organizers.map((org) => (
+                      <img
+                        key={`${dup}-${org.name}`}
+                        src={org.logo}
+                        alt={org.name}
+                        className="h-24 w-auto max-w-[220px] object-contain opacity-90 hover:opacity-100 transition-opacity shrink-0"
+                      />
+                    ))}
+                  </div>
+                ))}
+              </div>
             </div>
           </section>
         )}
@@ -401,7 +426,7 @@ const BorneoNESFDetail = () => {
         </section>
 
         {/* ── Pendaftaran ─────────────────────────────────────────── */}
-        <section className="py-16" style={{ background: `linear-gradient(180deg, ${C.bark} 0%, ${C.canopy} 100%)` }}>
+        <section id="borneo-register-section" className="py-16" style={{ background: `linear-gradient(180deg, ${C.bark} 0%, ${C.canopy} 100%)` }}>
           <div className="max-w-6xl mx-auto px-4">
             <p className="text-xs font-bold uppercase tracking-[0.25em] mb-3 text-center" style={{ color: C.amber }}>Bergabung di Fair Ini</p>
             <h2 className="borneo-display text-2xl md:text-3xl font-extrabold mb-10 text-center" style={{ color: C.canopy }}>Cara Mendaftar</h2>

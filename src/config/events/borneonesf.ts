@@ -21,11 +21,15 @@ const borneonesf: EventDetailData = {
   // TODO: lengkapi logo mitra lain (lihat halaman "Partnership" guidebook).
   organizers: [
     { name: "ICGI", logo: "https://res.cloudinary.com/dwhobhexj/image/upload/v1778572483/Logo_ICGI_Bg_Transparant_1_rdvff1.png" },
+    { name: "Borneo-NESF", logo: "https://res.cloudinary.com/dwhobhexj/image/upload/v1787297080/BorneoNESF_osr6mv.png" },
+    { name: "IYSA", logo: "https://res.cloudinary.com/dwhobhexj/image/upload/v1778572483/logo_IYSA_bagus_e6uai3.png" },
+    { name: "CBSO", logo: "https://res.cloudinary.com/dwhobhexj/image/upload/v1787287795/cbso_cbywxn.png" },
+    { name: "FMIPA-UPR", logo: "https://res.cloudinary.com/dwhobhexj/image/upload/v1787295792/fmipa-upr_icjami.png" },
   ],
 
   // TODO: ganti dengan link guidebook BorneoNESF versi Bahasa Indonesia
   // setelah kamu selesai menerjemahkan PDF-nya.
-  guidebookUrl: "",
+  guidebookUrl: "https://drive.google.com/file/d/1Djzmohs2lNZk9qBXLmUSsrer_SQyhORi/view?usp=drive_link",
 
   email:   "icgi.official.id@gmail.com",
   website: "icgi.or.id",
