@@ -22,6 +22,8 @@
 //    borneonesf-2026 (Borneo National Science Fair).
 // ================================================================
 
+import { fluentValidationResolver } from "@hookform/resolvers/fluentvalidation-ts";
+
 export type ParticipantType = "international" | "indonesian";
 export type CompetitionType = "online" | "offline";
 
@@ -86,8 +88,8 @@ export const EVENTS_REGISTRY: EventMeta[] = [
     location:             "Depok, Indonesia",
     dateRange:            "29 September – 2 Oktober 2026",
     registrationDeadline: "24 Agustus 2026",
-    status:               "upcoming",
-    registrationOpen:     true,
+    status:               "past",
+    registrationOpen:     false,
     route:                "/events/dscf-2026",
     shutdown:             false,
     heroGradient:         "from-amber-700 via-yellow-600 to-amber-800",
@@ -127,8 +129,12 @@ export const EVENTS_REGISTRY: EventMeta[] = [
     // Harga BorneoNESF — kompetisi nasional, tanpa tarif internasional (USD).
     // Ubah bebas di sini kalau ada perubahan.
     pricing: {
-      "Online Competition":  "Rp 750.000",
-      "Offline Competition": "Rp 3.000.000",
+      "Online Competition":                                                                                                       "IDR 750.000",
+      "Offline Competition":                                                                                                      "IDR 3.000.000",
+      "Online Competition (E-Certificate Only)":                                                                                  "USD 50",
+      "Online Competition + one medal/team and Certificate for each member + shipping fee (SOUTH EAST ASIA)":                     "USD 225",
+      "Online Competition + one medal/team and Certificate for each member + shipping fee (Exclude SOUTH EAST ASIA)":             "USD 275",
+      "Offline Competition (International)":                                                                                      "USD 400",
     },
 
     sheet: {
