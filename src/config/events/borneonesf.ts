@@ -29,7 +29,7 @@ const borneonesf: EventDetailData = {
 
   // TODO: ganti dengan link guidebook BorneoNESF versi Bahasa Indonesia
   // setelah kamu selesai menerjemahkan PDF-nya.
-  guidebookUrl: "https://drive.google.com/file/d/1Djzmohs2lNZk9qBXLmUSsrer_SQyhORi/view?usp=drive_link",
+  guidebookUrl: "https://drive.google.com/file/d/1NgrvwYV_BpRQSFqCpwFJC4ucpIyPX6fM/view?usp=drive_link",
 
   email:   "icgi.official.id@gmail.com",
   website: "icgi.or.id",
