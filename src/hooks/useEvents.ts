@@ -15,7 +15,7 @@
 // ================================================================
 
 import { useState, useEffect } from "react";
-import { fetchEvents, fetchEventBySlug, type ICCEvent } from "../lib/gasClient";
+import { fetchEvents, fetchEventBySlug, fetchDashboardEvents, type ICCEvent } from "../lib/gasClient";
 import { localNesfEvents } from "../components/nesf/NesfEventsData";
 import { EVENTS_REGISTRY, type EventMeta } from "../config/eventRegistry";
 
@@ -73,6 +73,11 @@ function buildCombinedFallback(): ICCEvent[] {
 
 const combinedFallback: ICCEvent[] = buildCombinedFallback();
 
+// Akronim event yang dashboard-nya diisi — dipakai fetchDashboardEvents.
+const dashboardAcronyms: string[] = EVENTS_REGISTRY
+  .filter(e => !e.shutdown && e.dashboardAcronym)
+  .map(e => e.dashboardAcronym!.toUpperCase());
+
 // ── useEvents ─────────────────────────────────────────────────────
 /**
  * Hook untuk mengambil semua NESF events.
@@ -93,9 +98,13 @@ export function useEvents(platform?: string) {
       setLoading(true);
       setError(null);
       try {
-        const data = await fetchEvents(platform, combinedFallback);
+        const [gasData, dashData] = await Promise.all([
+          fetchEvents(platform, combinedFallback),
+          fetchDashboardEvents(dashboardAcronyms),
+        ]);
+        const merged = [...dashData, ...gasData];
         if (!cancelled) {
-          setEvents(data.length > 0 ? data : combinedFallback);
+          setEvents(merged.length > 0 ? merged : combinedFallback);
         }
       } catch (_e: unknown) {
         if (!cancelled) {

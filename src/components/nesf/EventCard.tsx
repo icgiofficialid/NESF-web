@@ -40,7 +40,7 @@ const EventCard = ({
       <motion.div
         whileHover={{ y: -6 }}
         transition={{ duration: 0.22 }}
-        onClick={() => navigate(`/events/${event.slug}`)}
+        onClick={() => navigate(isPast ? `/past-events/${event.slug}` : `/events/${event.slug}`)}
         className={`group relative h-full cursor-pointer rounded-2xl overflow-hidden border border-border/70 bg-panel shadow-sm hover:shadow-xl transition-all duration-300 ${
           isPast ? "opacity-80 grayscale hover:grayscale-0 hover:opacity-100" : ""
         }`}

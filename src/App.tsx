@@ -34,6 +34,7 @@ import DscfRegister from "./pages/dscf/DscfRegister"; // ✅ DSCF punya flow sen
 // Event detail pages
 import DSCFDetail from "@/pages/events/DSCFDetail";
 import BorneoNESFDetail from "@/pages/events/BorneoNESFDetail"; // ✅ Borneo-NESF custom detail
+import PastEventGallery from "./pages/PastEventGallery";
 
 const queryClient = new QueryClient();
 
@@ -84,6 +85,9 @@ const App = () => (
 
               {/* 404 */}
               <Route path="*" element={<NotFound />} />
+
+              <Route path="/past-events"       element={<PastEvents />} />
+              <Route path="/past-events/:slug" element={<PastEventGallery />} />
             </Routes>
           </BrowserRouter>
         </TooltipProvider>

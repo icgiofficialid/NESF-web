@@ -179,6 +179,7 @@ const NesfRegister = () => {
   }
 
   const sheetConfig = competition ? getSheetConfig(slug, "indonesian", competition) : null;
+  const isDashboardEvent = Boolean(eventMeta.dashboardAcronym);
 
   // ── Step 4 — Ringkasan pendaftaran (setelah submit sukses) ────────
   if (step === 4 && summaryData) {
@@ -214,19 +215,20 @@ const NesfRegister = () => {
           />
         )}
 
-        {step === 3 && competition && sheetConfig && (
+        {step === 3 && competition && (sheetConfig || isDashboardEvent) && (
           <NesfStepForm
             eventSlug={slug}
             eventTitle={eventTitle}
             competition={competition}
-            sheetUrl={sheetConfig.sheetUrl}
-            sheetTarget={sheetConfig.sheetTarget}
+            sheetUrl={sheetConfig?.sheetUrl ?? ""}
+            sheetTarget={sheetConfig?.sheetTarget ?? ""}
+            dashboardAcronym={eventMeta.dashboardAcronym}
             pricing={eventMeta.pricing}
             onBack={() => setStep(2)}
             onSuccess={handleSuccess}
           />
         )}
-        {step === 3 && competition && !sheetConfig && (
+        {step === 3 && competition && !sheetConfig && !isDashboardEvent && (
           <EventUnavailable message="Konfigurasi pendaftaran event ini belum lengkap. Hubungi panitia." />
         )}
       </section>

@@ -40,6 +40,16 @@ export interface SheetConfig {
   };
 }
 
+export interface GalleryAlbum {
+  title: string;
+  /** Foto cover card (URL Cloudinary dsb.) */
+  coverImage: string;
+  /** Link folder Google Drive */
+  driveUrl: string;
+  description?: string;
+  photos?: string[];
+}
+
 // ── Tipe meta event (untuk listing, card, dsb.) ───────────────────
 export interface EventMeta {
   /** Unik slug — dipakai di URL /events/<slug> */
@@ -75,6 +85,16 @@ export interface EventMeta {
   accentColor?: string;
   /** Harga per kategori kompetisi (opsional — kalau kosong pakai default di registerConfig) */
   pricing?: Record<string, string>;
+  /**
+   * Kalau diisi, event ini pendaftaran & detailnya ambil dari dashboard ICGI
+   * (bukan Google Sheet) — isi dengan akronim event tsb di dashboard, mis.
+   * "BORNEONESF". SENGAJA TIDAK diisi untuk dscf-2026 & borneo-nesf-2026
+   * yang sekarang — appscript yang sudah jalan untuk keduanya dibiarkan
+   * apa adanya.
+   */
+  dashboardAcronym?: string;
+    /** Album dokumentasi (dipakai halaman /past-events/:slug) */
+  gallery?: GalleryAlbum[];
 }
 
 // ================================================================
@@ -96,6 +116,29 @@ export const EVENTS_REGISTRY: EventMeta[] = [
     accentColor:          "38 92% 50%", 
     coverImage:           "https://res.cloudinary.com/dwhobhexj/image/upload/v1783324813/dscf-potret_idalof.jpg",
     coverImageLandscape:  "https://res.cloudinary.com/dwhobhexj/image/upload/v1783324812/dscf-landscape_lygnsu.jpg",
+    gallery: [
+      {
+        title: "Album DSCF 2026",
+        description: "29 September – 2 Oktober 2026",
+        coverImage: "https://res.cloudinary.com/dwhobhexj/image/upload/v1783324813/dscf-potret_idalof.jpg",
+        driveUrl: "https://drive.google.com/drive/u/0/folders/1Y8-YysJttsW7Vn-hPj11JvRKt_R_XUMx",
+        photos: [
+          "https://drive.google.com/file/d/1N0wDtGv4BJUMPXmAz-fiyqNq_t7gHfFj/view?usp=drive_link",
+          "https://drive.google.com/file/d/1XhC4CyZzUzCFED1a7YAMjEWpjNNk45U_/view?usp=drive_link",
+          "https://drive.google.com/file/d/1diz2NQ_-382l-seb8IeXd1-n0NlpZ6yk/view?usp=drive_link",
+          "https://drive.google.com/file/d/1Ez7VutO8mKWaHk5Czbg_QBORJSMthGiN/view?usp=drive_link",
+          "https://drive.google.com/file/d/1qznbPV2Gj1tZMPJ4bvaM7vc960X3UN4T/view?usp=drive_link",
+          "https://drive.google.com/file/d/1dZy9gROFQzMioibI6LRm0b7gl6hBa5ly/view?usp=drive_link",
+          "https://drive.google.com/file/d/1hE4VEfxScQwEqsLcw4ptzs7lGl3yz-p2/view?usp=drive_link",
+          "https://drive.google.com/file/d/12aZ3I7M-lIhNLZdLcPy4pgtUqM2tafNX/view?usp=drive_link",
+          "https://drive.google.com/file/d/1iwx2VhJYeyJ_ynHuGJIf9LF_JrqV315P/view?usp=drive_link",
+          "https://drive.google.com/file/d/1YyRoirP5fXGsDRrTZKyRFLIY2QqUdyPG/view?usp=drive_link",
+          "https://drive.google.com/file/d/10NdBXROLfOOnoBjc_ypwIRj5bJnTxz2A/view?usp=drive_link",
+          "https://drive.google.com/file/d/1hxnp37Yx9cAxVjfr6bZZguxGlLvlUpGZ/view?usp=drive_link",
+
+        ],
+      },
+    ],
     sheet: {
       // Ganti dengan URL GAS deploymen milik DSCF
       sheetUrl: "https://script.google.com/macros/s/AKfycbzz8NDKfyJgcTkGOqwY_-ZkQpFWbJbzERlUK1rUzmcB_aRUJ8hXtG_Z1kI6C0xcZJkA/exec",

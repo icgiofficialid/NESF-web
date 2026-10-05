@@ -12,6 +12,8 @@ import IccShell from "@/components/nesf/NesfShell";
 import SectionReveal from "@/components/nesf/SectionReveal";
 import { useLang } from "@/components/LanguageProvider";
 import { useEvent } from "@/hooks/useEvents";
+import { getEventMeta } from "@/config/eventRegistry";
+import DashboardEventDetailPage from "./DashboardEventDetailPage";
 import {
   competitionCategories, divisions, iccJudgingCriteria,
   awards, itinerary, domesticSongs,
@@ -40,6 +42,23 @@ function GradientText({ children, style }: { children: React.ReactNode; style?: 
 
 export default function EventDetail() {
   const { slug }           = useParams<{ slug: string }>();
+  const navigate           = useNavigate();
+  const { lang }           = useLang();
+
+  // ── Event dashboard (dashboardAcronym diisi) — jalur baru, generik,
+  //    kontennya dari /api/public/v1/:acronym, bukan NesfData.ts. ────
+  const meta = slug ? getEventMeta(slug) : undefined;
+  if (meta?.dashboardAcronym) {
+    return <DashboardEventDetailPage slug={slug!} acronym={meta.dashboardAcronym} />;
+  }
+
+  // ── Event lama (DSCF/Borneo-NESF sudah punya route sendiri lebih
+  //    spesifik di App.tsx; ini fallback untuk event lain) — TIDAK
+  //    diubah sama sekali dari sini ke bawah. ─────────────────────
+  return <EventDetailLegacy slug={slug} />;
+}
+
+function EventDetailLegacy({ slug }: { slug?: string }) {
   const { event, loading } = useEvent(slug ?? "");
   const navigate           = useNavigate();
   const { lang }           = useLang();

@@ -152,3 +152,68 @@ export async function fetchEventBySlug(
     return fallback;
   }
 }
+// ================================================================
+// ── BARU: khusus event yang dashboardAcronym-nya diisi ───────────
+// TIDAK mengubah fetchEvents/fetchEventBySlug di atas — dua-duanya
+// tetap 100% melayani DSCF & Borneo-NESF seperti sekarang.
+// ================================================================
+
+const BE_ICGI_API_URL = import.meta.env.VITE_BE_ICGI_API_URL as string | undefined;
+
+function computeSeriStatus(mulai: string, selesai: string): EventStatus {
+  const now = new Date();
+  const s = mulai ? new Date(mulai) : null;
+  const e = selesai ? new Date(selesai) : s;
+  if (s && now < s) return "upcoming";
+  if (e && now > e) return "past";
+  return "ongoing";
+}
+
+function mapSeriToEvent(r: Record<string, any>): ICCEvent {
+  return {
+    id: r.id,
+    slug: r.slug,
+    type: "Competition",
+    status: computeSeriStatus(r.mulai, r.selesai),
+    title: r.nama,
+    subtitle: r.akronim,
+    location: "",
+    country: "Indonesia",
+    dateRange: r.mulai && r.selesai
+      ? `${new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(new Date(r.mulai))} – ${new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" }).format(new Date(r.selesai))}`
+      : "TBA",
+    year: r.tahun ? Number(r.tahun) : new Date().getFullYear(),
+    registrationDeadline: r.pendaftaran_tutup || "TBA",
+    coverGradient: "from-cyan-900 via-blue-900 to-indigo-900",
+    accentColor: "hsl(38 92% 50%)",
+    description: "",
+    tags: ["Science", "National"],
+    platform: "nesf",
+    posterUrl: "",
+    guidebookUrl: "",
+    registrationUrl: `/register/${r.slug}`,
+    spreadsheetId: "",
+    coverImage: r.banner || undefined,
+  };
+}
+
+/**
+ * @param acronyms  Akronim event dashboard yang jadi milik portal ini
+ *                  (dari EVENTS_REGISTRY yang dashboardAcronym-nya diisi).
+ */
+export async function fetchDashboardEvents(acronyms: string[]): Promise<ICCEvent[]> {
+  if (!BE_ICGI_API_URL || acronyms.length === 0) return [];
+  try {
+    const res = await fetch(`${BE_ICGI_API_URL}/api/public/v1/_seri`, { cache: "no-store" });
+    if (!res.ok) return [];
+    const json = await res.json();
+    if (json.status === "error") return [];
+    const seri: any[] = json?.data?.seri ?? [];
+    return seri
+      .filter(s => acronyms.includes(String(s.akronim).toUpperCase()))
+      .map(mapSeriToEvent);
+  } catch (err) {
+    console.error("[gasClient-nesf] Gagal fetch dashboard events:", err);
+    return [];
+  }
+}

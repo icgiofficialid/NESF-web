@@ -19,6 +19,10 @@ import {
   DEFAULT_CATEGORY_PRICE_MAP, PROJECT_CATEGORIES, GRADE_OPTIONS, INFO_SOURCES,
   FORMAT_LABEL,
 } from "./nesfRegisterConfig";
+import {
+  fetchEventRegoMeta, requestVerificationCode, verifyCodeAndGetTicket,
+  submitTeamRegistration, buildNesfTeamPayload, type RegoMeta,
+} from "@/lib/dashboardRegistration";
 
 // ── Input WhatsApp nasional — prefix +62 tetap (NESF = peserta
 //    Indonesia saja, jadi tidak perlu dropdown kode negara penuh
@@ -60,12 +64,16 @@ interface Props {
   competition: CompetitionType;
   sheetUrl: string;
   sheetTarget: string;
+  /** Diisi kalau event ini pakai jalur dashboard (bukan Google Sheet) — akronim di dashboard. */
+  dashboardAcronym?: string;
   pricing?: Record<string, string>; // ← harga khusus event ini (dari eventRegistry); fallback DEFAULT_CATEGORY_PRICE_MAP kalau tidak diisi
   onBack: () => void;
   onSuccess: (data: SummaryData) => void;
 }
 
-const NesfStepForm = ({ eventTitle, competition, sheetUrl, sheetTarget, pricing, onBack, onSuccess }: Props) => {
+type Phase = "form" | "sending-code" | "enter-code" | "submitting";
+
+const NesfStepForm = ({ eventTitle, eventSlug, competition, sheetUrl, sheetTarget, dashboardAcronym, pricing, onBack, onSuccess }: Props) => {
   const priceMap = { ...DEFAULT_CATEGORY_PRICE_MAP, ...(pricing ?? {}) };
 
   const [form, setForm]           = useState<FormData>({});
@@ -73,6 +81,11 @@ const NesfStepForm = ({ eventTitle, competition, sheetUrl, sheetTarget, pricing,
   const [submitted, setSubmitted] = useState(false);
   const [error, setError]         = useState("");
   const [errors, setErrors]       = useState<Record<string, boolean>>({});
+
+  // ── Khusus jalur dashboard — verifikasi email sebelum submit ──────
+  const [phase, setPhase]   = useState<Phase>("form");
+  const [code, setCode]     = useState("");
+  const [regoMeta, setRegoMeta] = useState<RegoMeta | null>(null);
 
   const set = (key: string) => (v: string) => {
     setForm(p => ({ ...p, [key]: v }));
@@ -103,7 +116,7 @@ const NesfStepForm = ({ eventTitle, competition, sheetUrl, sheetTarget, pricing,
     }
 
     setErrors({});
-    setLoading(true); setError("");
+    setError("");
 
     const resolvedCatComp = f("CATEGORY_COMPETITION") || cLabel;
 
@@ -114,7 +127,25 @@ const NesfStepForm = ({ eventTitle, competition, sheetUrl, sheetTarget, pricing,
       CATEGORY_COMPETITION:       resolvedCatComp,
       CATEGORY_PRICE:             priceMap[resolvedCatComp] ?? "",
     };
+    setForm(finalForm);
 
+    // ── Jalur dashboard: kirim kode verifikasi dulu, jangan submit langsung ──
+    if (dashboardAcronym) {
+      setPhase("sending-code");
+      try {
+        const meta = regoMeta ?? await fetchEventRegoMeta(dashboardAcronym);
+        setRegoMeta(meta);
+        await requestVerificationCode(finalForm["LEADER_EMAIL"] || f("LEADER_EMAIL"), meta.eventId);
+        setPhase("enter-code");
+      } catch (e) {
+        setError(e instanceof Error ? e.message : "Gagal mengirim kode verifikasi.");
+        setPhase("form");
+      }
+      return;
+    }
+
+    // ── Jalur lama: langsung submit ke Google Sheet, TIDAK diubah ──
+    setLoading(true);
     try {
       await submitToSheet(sheetUrl, sheetTarget, competition, finalForm);
       setSubmitted(true);
@@ -133,8 +164,56 @@ const NesfStepForm = ({ eventTitle, competition, sheetUrl, sheetTarget, pricing,
     }
   };
 
+  const handleVerifyAndSubmit = async () => {
+    if (!dashboardAcronym || !regoMeta) return;
+    setError(""); setPhase("submitting");
+    try {
+      const tiket = await verifyCodeAndGetTicket(f("LEADER_EMAIL"), code, regoMeta.eventId);
+      const payload = buildNesfTeamPayload(dashboardAcronym, competition, form, regoMeta);
+      await submitTeamRegistration(dashboardAcronym, tiket, payload);
+      setSubmitted(true);
+      setTimeout(() => onSuccess({
+        namaLengkap:  f("NAMA_LENGKAP"),
+        namaSekolah:  f("NAMA_SEKOLAH"),
+        categories:   f("CATEGORIES"),
+        projectTitle: f("PROJECT_TITLE"),
+        grade:        f("GRADE"),
+        competitionCategory: f("CATEGORY_COMPETITION") || cLabel,
+      }), 2000);
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Verifikasi/pendaftaran gagal.");
+      setPhase("enter-code");
+    }
+  };
+
+  // ── Layar kode verifikasi (khusus jalur dashboard) ─────────────────
+  if (phase === "enter-code" || phase === "submitting") {
+    return (
+      <div className="w-full max-w-md mx-auto text-center bg-card border border-border rounded-2xl p-8">
+        <h2 className="text-xl font-bold mb-2 text-foreground">Cek Email Kamu</h2>
+        <p className="text-sm text-muted-foreground mb-6">
+          Kode 6 digit sudah dikirim ke <b>{f("LEADER_EMAIL")}</b>
+        </p>
+        <Input
+          value={code} onChange={e => setCode(e.target.value)}
+          placeholder="Kode 6 digit" maxLength={8}
+          className="text-center text-lg tracking-widest mb-4"
+        />
+        {error && <p className="text-sm text-rose-500 mb-4">{error}</p>}
+        <Button
+          className="w-full"
+          disabled={phase === "submitting" || code.length < 4}
+          onClick={handleVerifyAndSubmit}
+        >
+          {phase === "submitting" ? "Memverifikasi…" : "Verifikasi & Kirim"}
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full md:w-[88%] xl:w-[82%] max-w-[1200px] mx-auto">
+      {phase === "sending-code" && <SpinnerOverlay />}
 
       <div className="text-center mb-8">
         <p className="text-sm uppercase tracking-[0.3em] text-primary mb-2">Langkah 3 dari 3</p>
