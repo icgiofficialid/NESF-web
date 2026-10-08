@@ -17,7 +17,10 @@ import NesfAbout          from "./pages/NesfAbout";
 import NesfFaq            from "./pages/NesfFaq";
 import NesfContact        from "./pages/NesfContact";
 import NesfUpcomingEvents from "./pages/NesfUpcomingEvents";
-import News               from "@/pages/News";
+import NewsArchive        from "@/pages/NewsArchive";       // /news — semua berita per tahun
+import WinnersArchive     from "@/pages/WinnersArchive";    // /winners
+import CertificatesArchive from "@/pages/CertificatesArchive"; // /certificates
+import CurationArchive    from "@/pages/CurationArchive";   // /curation
 import NewsDetailPage     from "@/pages/NewsDetailPage";
 
 // Shared pages
@@ -35,6 +38,10 @@ import DscfRegister from "./pages/dscf/DscfRegister"; // ✅ DSCF punya flow sen
 import DSCFDetail from "@/pages/events/DSCFDetail";
 import BorneoNESFDetail from "@/pages/events/BorneoNESFDetail"; // ✅ Borneo-NESF custom detail
 import PastEventGallery from "./pages/PastEventGallery";
+import PastEventNews from "./pages/PastEventNews";
+import PastEventWinners from "./pages/PastEventWinners";
+import PastEventCertificates from "./pages/PastEventCertificates";
+import PastEventCuration from "./pages/PastEventCuration";
 
 const queryClient = new QueryClient();
 
@@ -57,6 +64,12 @@ const App = () => (
                   tidak tertangkap oleh /:slug */}
               <Route path="/events"                 element={<NesfUpcomingEvents />} />
               <Route path="/past-events"            element={<PastEvents />} />
+              {/* Halaman pasca-event — semua dibaca dari eventRegistry */}
+              <Route path="/past-events/:slug"              element={<PastEventGallery />} />
+              <Route path="/past-events/:slug/news"         element={<PastEventNews />} />
+              <Route path="/past-events/:slug/winners"      element={<PastEventWinners />} />
+              <Route path="/past-events/:slug/certificates" element={<PastEventCertificates />} />
+              <Route path="/past-events/:slug/curation"     element={<PastEventCuration />} />
               <Route path="/events/dscf-2026"       element={<DSCFDetail />} />        {/* ✅ spesifik dulu */}
               <Route path="/events/borneo-nesf-2026" element={<BorneoNESFDetail />} />   {/* ✅ spesifik dulu */}
               <Route path="/events/:slug"           element={<EventDetail />} />        {/* ✅ catch-all belakangan */}
@@ -80,14 +93,17 @@ const App = () => (
               <Route path="/guide"   element={<Guide />} />
 
               {/* News */}
-              <Route path="/news"       element={<News />} />
+              <Route path="/news"       element={<NewsArchive />} />
               <Route path="/news/:slug" element={<NewsDetailPage />} />
+
+              {/* Arsip lintas event (navbar utama) — dipilih per tahun */}
+              <Route path="/winners"      element={<WinnersArchive />} />
+              <Route path="/certificates" element={<CertificatesArchive />} />
+              <Route path="/curation"     element={<CurationArchive />} />
 
               {/* 404 */}
               <Route path="*" element={<NotFound />} />
 
-              <Route path="/past-events"       element={<PastEvents />} />
-              <Route path="/past-events/:slug" element={<PastEventGallery />} />
             </Routes>
           </BrowserRouter>
         </TooltipProvider>

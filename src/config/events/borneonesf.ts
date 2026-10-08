@@ -135,8 +135,7 @@ const borneonesf: EventDetailData = {
   awards: [
     { place: "Juara 1", medal: "Sertifikat & Medali", extra: "Skor: 86–100" },
     { place: "Juara 2", medal: "Sertifikat & Medali", extra: "Skor: 71–85"  },
-    { place: "Juara 3", medal: "Sertifikat & Medali", extra: "Skor: 55–70"  },
-    { place: "Juara 4", medal: "Sertifikat & Medali", extra: "Skor: ≤54"    },
+    { place: "Juara 3", medal: "Sertifikat & Medali", extra: "Skor: 0-70"  },
   ],
 
   scheduleOffline: [

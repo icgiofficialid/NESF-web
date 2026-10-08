@@ -3,6 +3,7 @@ import { ArrowLeft, FolderOpen, ExternalLink, ImageOff, Images } from "lucide-re
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 import NesfShell from "@/components/nesf/NesfShell";
 import SectionReveal from "@/components/nesf/SectionReveal";
+import PastEventSubNav from "@/components/nesf/PastEventSubNav";
 import { getEventMeta } from "@/config/eventRegistry";
 
 /**
@@ -157,6 +158,10 @@ const PastEventGallery = () => {
             </div>
           </SectionReveal>
         </section>
+
+        <div className="container relative pb-8">
+          <PastEventSubNav slug={meta.slug} />
+        </div>
 
         <section className="container relative pb-24">
           {albums.length === 0 ? (

@@ -20,9 +20,12 @@
 //    IESF) — harga per kategori kompetisi, dibaca oleh
 //    borneoNesfRegisterConfig.tsx. Ditambahkan entry event baru:
 //    borneonesf-2026 (Borneo National Science Fair).
+//
+// ⚠️ UPDATE 3: tambahkan data halaman pasca-event (hanya dipakai
+//    event berstatus "past"): `newsSlugs`, `winners` (online/offline
+//    per jenjang), `certificates`, `curation`. Semua dibaca oleh
+//    halaman /past-events/:slug/{news,winners,certificates,curation}.
 // ================================================================
-
-import { fluentValidationResolver } from "@hookform/resolvers/fluentvalidation-ts";
 
 export type ParticipantType = "international" | "indonesian";
 export type CompetitionType = "online" | "offline";
@@ -50,6 +53,36 @@ export interface GalleryAlbum {
   photos?: string[];
 }
 
+// ── Data halaman pasca-event ──────────────────────────────────────
+// Semua `driveUrl` boleh dikosongkan ("") — kartunya tetap tampil
+// dengan label "Segera hadir" dan tidak bisa diklik.
+
+/** Satu jenjang pada daftar pemenang (1 jenjang = 1 file/folder Drive) */
+export interface WinnerLevel {
+  /** Nama jenjang, mis. "Sekolah Dasar (SD)" */
+  level: string;
+  /** Keterangan kecil, mis. "Tingkat SD" (opsional) */
+  age?: string;
+  /** Link file/folder Google Drive daftar pemenang jenjang ini */
+  driveUrl: string;
+  description?: string;
+}
+
+/** Daftar pemenang dipisah per mode kompetisi */
+export interface WinnerLists {
+  online?:  WinnerLevel[];
+  offline?: WinnerLevel[];
+}
+
+/** Item generik untuk halaman Sertifikat & Kurasi (link ke Drive) */
+export interface DriveResource {
+  title: string;
+  driveUrl: string;
+  description?: string;
+  /** Opsional: untuk memberi label Online / Offline pada kartu */
+  mode?: "online" | "offline" | "all";
+}
+
 // ── Tipe meta event (untuk listing, card, dsb.) ───────────────────
 export interface EventMeta {
   /** Unik slug — dipakai di URL /events/<slug> */
@@ -62,6 +95,8 @@ export interface EventMeta {
   location: string;
   /** Rentang tanggal */
   dateRange: string;
+  /** Opsional: tahun event. Kalau kosong, otomatis diambil dari `dateRange` (mis. "… 2026") */
+  year?: number;
   /** Deadline pendaftaran */
   registrationDeadline: string;
   /** Konfigurasi Google Sheets per kombinasi peserta × format */
@@ -95,6 +130,14 @@ export interface EventMeta {
   dashboardAcronym?: string;
     /** Album dokumentasi (dipakai halaman /past-events/:slug) */
   gallery?: GalleryAlbum[];
+  /** Slug berita (dari newsData.ts) yang ditampilkan di /past-events/:slug/news */
+  newsSlugs?: string[];
+  /** Daftar pemenang per mode (online/offline) × jenjang → /past-events/:slug/winners */
+  winners?: WinnerLists;
+  /** Link sertifikat → /past-events/:slug/certificates */
+  certificates?: DriveResource[];
+  /** Link hasil kurasi → /past-events/:slug/curation */
+  curation?: DriveResource[];
 }
 
 // ================================================================
@@ -139,6 +182,41 @@ export const EVENTS_REGISTRY: EventMeta[] = [
         ],
       },
     ],
+    // ── Pasca-event ────────────────────────────────────────────────
+    // Isi driveUrl dengan link file/folder Drive. Kosong = "Segera hadir".
+    newsSlugs: [
+      // "slug-berita-dari-newsData",
+    ],
+    winners: {
+      online: [
+        { level: " DESF Sekolah Menengah (SMP/SMA)", age: "Tingkat SMP/SMA", driveUrl: "https://drive.google.com/file/d/1X6JH83W4IbO8hpOASHZAuXFEuFuhVSGQ/view?usp=drive_link" },
+        { level: " DMO Sekolah Dasar (SD)",         age: "Tingkat SD",      driveUrl: "https://drive.google.com/file/d/1pu5Qdj5xPB2ESH6eQcuAChWV77LXEH1X/view?usp=drive_link" },
+        { level: " DMO Sekolah Menengah (SMP/SMA)", age: "Tingkat SMP/SMA", driveUrl: "https://drive.google.com/file/d/1ph3O0-k2OcYcKwuH7IRpk99h5MH1VosZ/view?usp=drive_link" },
+
+      ],
+      offline: [
+        { level: " DESF Sekolah Dasar (SD)",         age: "Tingkat SD",      driveUrl: "https://drive.google.com/file/d/1SfFxs-IhY6QL-z6FCD0ROPYKvYKI8lYX/view?usp=drive_link" },
+        { level: " DESF Sekolah Menengah (SMP/SMA)", age: "Tingkat SMP/SMA", driveUrl: "https://drive.google.com/file/d/1UG0xTQO3_euV-cmTXQA0ujQ3UeeMDfuE/view?usp=drive_link" },
+        { level: " DMO Sekolah Dasar (SD)",         age: "Tingkat SD",      driveUrl: "https://drive.google.com/file/d/1I4iOLBkFsYsh5jJ9-K22sV-xAYaHrD9K/view?usp=drive_link" },
+        { level: " DMO Sekolah Menengah (SMP/SMA)", age: "Tingkat SMP/SMA", driveUrl: "https://drive.google.com/file/d/1w_xxsUH9CmM4SKSKsNLMCucxH2H-1GgK/view?usp=drive_link" },
+        { level: " DCC Sekolah Dasar (SD)",         age: "Tingkat SD,SMP/SMA dan UMUM",      driveUrl: "https://drive.google.com/file/d/11kx5dPIFRhdxGmU-UKF-S-fsXVz5Qicj/view?usp=drive_link" },
+
+      ],
+    },
+    certificates: [
+      { title: "Sertifikat Juri DESF",  mode: "online",  driveUrl: "https://drive.google.com/file/d/1YLtmyeuEbvh4nPaTUA4xzuWdaIDcncyC/view?usp=drive_link" },
+      { title: "Sertifikat Juri DESF",  mode: "online",  driveUrl: "https://drive.google.com/file/d/1xwFFnV85HWflAMj5V5sFoxTgznXAFP8O/view?usp=drive_link" },
+      { title: "Sertifikat Juri DESF",  mode: "offline",  driveUrl: "https://drive.google.com/file/d/1YLtmyeuEbvh4nPaTUA4xzuWdaIDcncyC/view?usp=drive_link" },
+      { title: "Sertifikat Juri DESF",  mode: "offline",  driveUrl: "https://drive.google.com/file/d/1xwFFnV85HWflAMj5V5sFoxTgznXAFP8O/view?usp=drive_link" },
+      { title: "Sertifikat Juri DCC",  mode: "offline",  driveUrl: "https://drive.google.com/file/d/1eTzuf4TOxHe5z_kY4BIT59W6jLJnHHtK/view?usp=drive_link" },
+      { title: "Sertifikat Juri DCC",  mode: "offline",  driveUrl: "https://drive.google.com/file/d/16rnHWEnEvYxjrHWzA1TIwj9rm5fFRdLK/view?usp=drive_link" },
+
+    ],
+    curation: [
+      { title: "Hasil Kurasi Online",  mode: "online",  driveUrl: "" },
+      { title: "Hasil Kurasi Offline", mode: "offline", driveUrl: "" },
+    ],
+
     sheet: {
       // Ganti dengan URL GAS deploymen milik DSCF
       sheetUrl: "https://script.google.com/macros/s/AKfycbzz8NDKfyJgcTkGOqwY_-ZkQpFWbJbzERlUK1rUzmcB_aRUJ8hXtG_Z1kI6C0xcZJkA/exec",
@@ -221,3 +299,28 @@ export const getSheetConfig = (
     sheetTarget: meta.sheet.targets[key],
   };
 };
+
+// ── Helper — arsip lintas event, dikelompokkan per tahun ──────────
+// Dipakai halaman navbar utama: /news, /winners, /certificates, /curation.
+// Tahun baru (2027, dst.) muncul otomatis begitu ada event dengan tahun itu.
+
+/** Tahun sebuah event: field `year` kalau ada, jika tidak diambil dari `dateRange` */
+export const getEventYear = (meta: EventMeta): number | undefined => {
+  if (meta.year) return meta.year;
+  const found = meta.dateRange.match(/\b(20\d{2})\b/g);
+  return found ? Number(found[found.length - 1]) : undefined;
+};
+
+/** Semua tahun yang punya event (terbaru dulu) */
+export const getEventYears = (): number[] =>
+  Array.from(
+    new Set(
+      EVENTS_REGISTRY.filter(e => !e.shutdown)
+        .map(getEventYear)
+        .filter((y): y is number => typeof y === "number")
+    )
+  ).sort((a, b) => b - a);
+
+/** Semua event (tidak di-shutdown) pada tahun tertentu */
+export const getEventsByYear = (year: number): EventMeta[] =>
+  EVENTS_REGISTRY.filter(e => !e.shutdown && getEventYear(e) === year);

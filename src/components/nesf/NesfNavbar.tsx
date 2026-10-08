@@ -12,6 +12,10 @@ import { motion, AnimatePresence } from "framer-motion";
 const NAV_ITEMS = [
   { label: { en: "Upcoming Events", id: "Event Mendatang" }, href: "/events" },
   { label: { en: "Past Events",     id: "Event Lalu"      }, href: "/past-events" },
+  { label: { en: "News",            id: "Berita"          }, href: "/news" },
+  { label: { en: "Winners",         id: "Daftar Pemenang" }, href: "/winners" },
+  { label: { en: "Certificates",    id: "Sertifikat"      }, href: "/certificates" },
+  { label: { en: "Curation",        id: "Kurasi"          }, href: "/curation" },
   { label: { en: "FAQ",             id: "FAQ"             }, href: "/faq" },
   { label: { en: "Contact Us",      id: "Kontak"          }, href: "/contact" },
 ];
@@ -110,7 +114,7 @@ const NesfNavbar = () => {
         </button>
 
         {/* DESKTOP NAV */}
-        <div className="hidden items-center gap-6 text-sm text-muted-foreground lg:flex">
+        <div className="hidden items-center gap-5 text-sm text-muted-foreground lg:flex">
           {NAV_ITEMS.map((item, i) => (
             <motion.div key={item.href} initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 + i * 0.06, duration: 0.4 }}>
               <NavLink
