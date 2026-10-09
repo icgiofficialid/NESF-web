@@ -1,24 +1,49 @@
 // ================================================================
 // NesfNavbar.tsx — Industrial-futuristic · cyan accent
 // ================================================================
-import { Menu, X, Sun, Moon } from "lucide-react";
+import { Menu, X, Sun, Moon, ChevronDown } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { useTheme } from "@/components/ThemeProvider";
 import { NavLink } from "@/components/NavLink";
 import { useLang } from "@/components/LanguageProvider";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { getEventYears } from "@/config/eventRegistry";
 
-const NAV_ITEMS = [
+type NavChild = { label: string; href: string };
+type NavItem = { label: { en: string; id: string }; href: string; children?: NavChild[] };
+
+const NAV_ITEMS: NavItem[] = [
   { label: { en: "Upcoming Events", id: "Event Mendatang" }, href: "/events" },
   { label: { en: "Past Events",     id: "Event Lalu"      }, href: "/past-events" },
-  { label: { en: "News",            id: "Berita"          }, href: "/news" },
+  { label: { en: "Liputan media",   id: "Liputan media"   }, href: "/news" },
   { label: { en: "Winners",         id: "Daftar Pemenang" }, href: "/winners" },
   { label: { en: "Certificates",    id: "Sertifikat"      }, href: "/certificates" },
   { label: { en: "Curation",        id: "Kurasi"          }, href: "/curation" },
   { label: { en: "FAQ",             id: "FAQ"             }, href: "/faq" },
   { label: { en: "Contact Us",      id: "Kontak"          }, href: "/contact" },
 ];
+
+// Menu "Berita" jadi dropdown: Berita + Pesan Siaran per tahun.
+// Tahun diambil otomatis dari eventRegistry (2026, 2027, …).
+const buildNavItems = (lang: "en" | "id"): NavItem[] => {
+  const years = getEventYears();
+  return NAV_ITEMS.map((item) =>
+    item.href !== "/news"
+      ? item
+      : {
+          ...item,
+          children: [
+            { label: lang === "id" ? "Berita" : "News", href: "/news" },
+            ...years.map((y) => ({
+              label: `${lang === "id" ? "Pesan Siaran" : "Press Release"} ${y}`,
+              href: `/press-releases/${y}`,
+            })),
+          ],
+        }
+  );
+};
 
 // Atom/molecule mark — science logo
 const AtomMark = ({ size = 20 }: { size?: number }) => (
@@ -45,7 +70,12 @@ const ThemeToggle = () => {
 const NesfNavbar = () => {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [mobileSub, setMobileSub] = useState<string | null>(null);
   const { lang } = useLang();
+  const { pathname } = useLocation();
+  const items = buildNavItems(lang);
+  const isGroupActive = (item: NavItem) =>
+    item.children?.some((c) => pathname === c.href || pathname.startsWith(`${c.href}/`)) ?? false;
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -115,19 +145,55 @@ const NesfNavbar = () => {
 
         {/* DESKTOP NAV */}
         <div className="hidden items-center gap-5 text-sm text-muted-foreground lg:flex">
-          {NAV_ITEMS.map((item, i) => (
+          {items.map((item, i) => (
             <motion.div key={item.href} initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 + i * 0.06, duration: 0.4 }}>
-              <NavLink
-                to={item.href}
-                className="relative font-medium transition-colors hover:text-foreground group"
-                activeClassName="text-foreground"
-              >
-                {item.label[lang]}
-                <span
-                  className="absolute -bottom-0.5 left-0 h-px w-0 transition-all duration-300 group-hover:w-full"
-                  style={{ background: "hsl(195 100% 50%)" }}
-                />
-              </NavLink>
+              {item.children ? (
+                <div className="group relative">
+                  <button
+                    type="button"
+                    aria-haspopup="menu"
+                    className={cn(
+                      "relative inline-flex items-center gap-1 font-medium transition-colors hover:text-foreground",
+                      isGroupActive(item) && "text-foreground"
+                    )}
+                  >
+                    {item.label[lang]}
+                    <ChevronDown className="h-3.5 w-3.5 transition-transform duration-200 group-hover:rotate-180 group-focus-within:rotate-180" />
+                    <span
+                      className="absolute -bottom-0.5 left-0 h-px w-0 transition-all duration-300 group-hover:w-full"
+                      style={{ background: "hsl(195 100% 50%)" }}
+                    />
+                  </button>
+                  <div className="invisible absolute left-1/2 top-full z-50 w-60 -translate-x-1/2 pt-3 opacity-0 transition-all duration-200 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+                    <div className="rounded-xl border border-border/80 bg-background/95 p-1.5 shadow-xl backdrop-blur-2xl">
+                      {item.children.map((child) => (
+                        <NavLink
+                          key={child.href}
+                          to={child.href}
+                          end
+                          onClick={(e) => (e.currentTarget as HTMLElement).blur()}
+                          className="block rounded-lg px-3 py-2 font-medium transition-colors hover:bg-surface hover:text-foreground"
+                          activeClassName="bg-surface text-foreground"
+                        >
+                          {child.label}
+                        </NavLink>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <NavLink
+                  to={item.href}
+                  className="relative font-medium transition-colors hover:text-foreground group"
+                  activeClassName="text-foreground"
+                >
+                  {item.label[lang]}
+                  <span
+                    className="absolute -bottom-0.5 left-0 h-px w-0 transition-all duration-300 group-hover:w-full"
+                    style={{ background: "hsl(195 100% 50%)" }}
+                  />
+                </NavLink>
+              )}
             </motion.div>
           ))}
         </div>
@@ -155,16 +221,59 @@ const NesfNavbar = () => {
             className="border-t border-border/60 bg-background/96 backdrop-blur-2xl lg:hidden overflow-hidden"
           >
             <div className="container grid gap-1.5 py-4 text-sm text-muted-foreground">
-              {NAV_ITEMS.map((item, i) => (
+              {items.map((item, i) => (
                 <motion.div key={item.href} initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.05, duration: 0.3 }}>
-                  <NavLink
-                    to={item.href}
-                    className="block rounded-xl border border-transparent px-3 py-2.5 font-medium transition-colors hover:border-border hover:bg-surface hover:text-foreground"
-                    activeClassName="border-border bg-surface text-foreground"
-                    onClick={() => setOpen(false)}
-                  >
-                    {item.label[lang]}
-                  </NavLink>
+                  {item.children ? (
+                    <>
+                      <button
+                        type="button"
+                        aria-expanded={mobileSub === item.href}
+                        onClick={() => setMobileSub((cur) => (cur === item.href ? null : item.href))}
+                        className={cn(
+                          "flex w-full items-center justify-between rounded-xl border border-transparent px-3 py-2.5 font-medium transition-colors hover:border-border hover:bg-surface hover:text-foreground",
+                          (mobileSub === item.href || isGroupActive(item)) && "border-border bg-surface text-foreground"
+                        )}
+                      >
+                        {item.label[lang]}
+                        <ChevronDown className={cn("h-4 w-4 transition-transform duration-200", mobileSub === item.href && "rotate-180")} />
+                      </button>
+                      <AnimatePresence initial={false}>
+                        {mobileSub === item.href && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.2 }}
+                            className="overflow-hidden"
+                          >
+                            <div className="ml-3 mt-1.5 grid gap-1 border-l border-border/60 pl-3">
+                              {item.children.map((child) => (
+                                <NavLink
+                                  key={child.href}
+                                  to={child.href}
+                                  end
+                                  className="block rounded-lg px-3 py-2 font-medium transition-colors hover:bg-surface hover:text-foreground"
+                                  activeClassName="bg-surface text-foreground"
+                                  onClick={() => { setOpen(false); setMobileSub(null); }}
+                                >
+                                  {child.label}
+                                </NavLink>
+                              ))}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </>
+                  ) : (
+                    <NavLink
+                      to={item.href}
+                      className="block rounded-xl border border-transparent px-3 py-2.5 font-medium transition-colors hover:border-border hover:bg-surface hover:text-foreground"
+                      activeClassName="border-border bg-surface text-foreground"
+                      onClick={() => setOpen(false)}
+                    >
+                      {item.label[lang]}
+                    </NavLink>
+                  )}
                 </motion.div>
               ))}
               <div className="flex items-center gap-1 pt-1 border-t border-border/40 mt-1">

@@ -6,10 +6,10 @@
 // Dokumentasi · Berita · Daftar Pemenang · Sertifikat · Kurasi
 // ================================================================
 import { Link, useLocation } from "react-router-dom";
-import { Award, ClipboardCheck, Images, Newspaper, Trophy, type LucideIcon } from "lucide-react";
+import { Award, ClipboardCheck, Images, Megaphone, Newspaper, Trophy, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export type PastEventSectionKey = "gallery" | "news" | "winners" | "certificates" | "curation";
+export type PastEventSectionKey = "gallery" | "news" | "press" | "winners" | "certificates" | "curation";
 
 export const PAST_EVENT_SECTIONS: {
   key: PastEventSectionKey;
@@ -19,7 +19,7 @@ export const PAST_EVENT_SECTIONS: {
   icon: LucideIcon;
 }[] = [
   { key: "gallery",      label: "Dokumentasi",     path: "",              icon: Images },
-  { key: "news",         label: "Berita",          path: "/news",         icon: Newspaper },
+  { key: "press",        label: "Pesan Siaran",    path: "/press-release", icon: Megaphone },
   { key: "winners",      label: "Daftar Pemenang", path: "/winners",      icon: Trophy },
   { key: "certificates", label: "Sertifikat",      path: "/certificates", icon: Award },
   { key: "curation",     label: "Kurasi",          path: "/curation",     icon: ClipboardCheck },

@@ -138,6 +138,8 @@ export interface EventMeta {
   certificates?: DriveResource[];
   /** Link hasil kurasi → /past-events/:slug/curation */
   curation?: DriveResource[];
+
+  pressReleaseUrl?: string;
 }
 
 // ================================================================
@@ -216,6 +218,8 @@ export const EVENTS_REGISTRY: EventMeta[] = [
       { title: "Hasil Kurasi Online",  mode: "online",  driveUrl: "" },
       { title: "Hasil Kurasi Offline", mode: "offline", driveUrl: "" },
     ],
+
+    pressReleaseUrl: "https://drive.google.com/file/d/1xGu5h7AifRSxJmNegUPp3guPSw5vcwr_/view?usp=drive_link",
 
     sheet: {
       // Ganti dengan URL GAS deploymen milik DSCF

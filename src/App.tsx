@@ -21,6 +21,7 @@ import NewsArchive        from "@/pages/NewsArchive";       // /news — semua b
 import WinnersArchive     from "@/pages/WinnersArchive";    // /winners
 import CertificatesArchive from "@/pages/CertificatesArchive"; // /certificates
 import CurationArchive    from "@/pages/CurationArchive";   // /curation
+import PressReleases      from "@/pages/PressReleases";     // /press-releases/:year
 import NewsDetailPage     from "@/pages/NewsDetailPage";
 
 // Shared pages
@@ -42,6 +43,7 @@ import PastEventNews from "./pages/PastEventNews";
 import PastEventWinners from "./pages/PastEventWinners";
 import PastEventCertificates from "./pages/PastEventCertificates";
 import PastEventCuration from "./pages/PastEventCuration";
+import PastEventPressRelease from "./pages/PastEventPressRelease";
 
 const queryClient = new QueryClient();
 
@@ -100,6 +102,8 @@ const App = () => (
               <Route path="/winners"      element={<WinnersArchive />} />
               <Route path="/certificates" element={<CertificatesArchive />} />
               <Route path="/curation"     element={<CurationArchive />} />
+              <Route path="/press-releases/:year" element={<PressReleases />} />
+              <Route path="/past-events/:slug/press-release" element={<PastEventPressRelease />} />
 
               {/* 404 */}
               <Route path="*" element={<NotFound />} />
