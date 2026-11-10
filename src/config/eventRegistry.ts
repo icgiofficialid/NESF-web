@@ -243,7 +243,7 @@ export const EVENTS_REGISTRY: EventMeta[] = [
     registrationDeadline: "27 Oktober 2026",
     status:               "upcoming",
     // ⚠️ Set true setelah sheetUrl asli & cover image sudah final
-    registrationOpen:     true,
+    registrationOpen:     false,
     route:                "/events/borneo-nesf-2026",
     shutdown:             false,
     coverImage:           "https://res.cloudinary.com/dwhobhexj/image/upload/v1787221796/BorneoNESF-potret_nks3ri.png",
