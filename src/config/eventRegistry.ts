@@ -134,6 +134,14 @@ export interface EventMeta {
    * edisi tahun itu (`?tahun=`), bukan edisi yang sedang dipin.
    */
   dashboardYear?: string;
+  /**
+   * Akronim seri & tahun edisi di dashboard, diisi lib/dashboardIcgi.ts untuk
+   * SEMUA event yang ada di dashboard (termasuk DSCF/Borneo-NESF). Dipakai
+   * halaman Kurasi (Proses Kurasi + dokumen kurasi); tidak mengubah alur
+   * detail maupun pendaftaran.
+   */
+  seriDashboard?: string;
+  seriTahun?: string;
     /** Album dokumentasi (dipakai halaman /past-events/:slug) */
   gallery?: GalleryAlbum[];
   /** Slug berita (dari newsData.ts) yang ditampilkan di /past-events/:slug/news */

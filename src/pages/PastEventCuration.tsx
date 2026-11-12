@@ -7,6 +7,8 @@
 import { ClipboardCheck } from "lucide-react";
 import PastEventPage, { PastEventEmpty } from "@/components/nesf/PastEventPage";
 import DriveLinkCard from "@/components/nesf/DriveLinkCard";
+import ProsesKurasi from "@/components/kurasi/ProsesKurasi";
+import DokumenKurasi from "@/components/kurasi/DokumenKurasi";
 
 const MODE_LABEL = { online: "Online", offline: "Offline", all: "Semua peserta" } as const;
 
@@ -17,6 +19,15 @@ const PastEventCuration = () => (
     description="Hasil kurasi karya peserta. Buka tautan untuk melihat dokumennya di Google Drive."
   >
     {(meta) => {
+      // Event yang ada di dashboard ICGI: Proses Kurasi + dokumen kurasi edisinya.
+      if (meta.seriDashboard && meta.seriTahun) {
+        return (
+          <div className="space-y-10">
+            <ProsesKurasi akronim={meta.seriDashboard} tahun={meta.seriTahun} />
+            <DokumenKurasi akronim={meta.seriDashboard} tahun={meta.seriTahun} bahasa="id" />
+          </div>
+        );
+      }
       const items = meta.curation ?? [];
       if (items.length === 0) {
         return (

@@ -43,6 +43,7 @@ const SEKSI = "identitas,pendaftaran,publikasi,dokumentasi,berkas_kurasi";
 // ── Tipe data API publik (yang dipakai saja) ──────────────────────
 interface Seri {
   akronim: string;
+  nama?: string;
   slug: string;
   tahun: string;
   situs: string;
@@ -229,6 +230,8 @@ function metaDari(akronim: string, sections: Seksi[], dipin: boolean): { meta: E
     coverImageLandscape: id.banner || undefined,
     dashboardAcronym: akronim,
     dashboardYear: tahun || undefined,
+    seriDashboard: akronim,
+    seriTahun: tahun || undefined,
     gallery: albumDari(s("dokumentasi") ?? [], rentangIndo(id.mulai, id.selesai)),
     pressReleaseUrl: pesanSiaranDari(s("publikasi") ?? []),
     curation: kurasiDari(s("berkas_kurasi") ?? []),
@@ -246,7 +249,14 @@ function gabungKeStatis(statis: EventMeta, dash: EventMeta) {
   const kurasiKosong = (statis.curation ?? []).every(c => !c.driveUrl);
   if (kurasiKosong && (dash.curation ?? []).length) statis.curation = dash.curation;
   if (!statis.year && dash.year) statis.year = dash.year;
+  // Seri & tahun di dashboard — untuk Proses Kurasi. Sengaja BUKAN
+  // dashboardAcronym: itu memindahkan detail & pendaftaran ke dashboard.
+  statis.seriDashboard = dash.seriDashboard;
+  statis.seriTahun = dash.seriTahun;
 }
+
+/** Seri dashboard milik portal ini (untuk halaman Kurasi), urut akronim. */
+export const seriPortal: Array<{ akronim: string; nama: string }> = [];
 
 let sudahDimuat: Promise<void> | null = null;
 
@@ -264,6 +274,10 @@ export function muatEventDashboard(): Promise<void> {
       const { seri } = await ambil<{ seri: Seri[] }>(`/api/public/v1/_seri?lembaga=${LEMBAGA}`, ctrl.signal);
       const milikPortal = seri.filter(x =>
         String(x.lembaga ?? LEMBAGA).toUpperCase() === LEMBAGA && hostSitus(x.situs) === HOST_PORTAL);
+
+      for (const x of milikPortal) {
+        seriPortal.push({ akronim: x.akronim.toUpperCase(), nama: String(x.nama || x.akronim).replace(/\s+20\d{2}\s*$/, "") });
+      }
 
       const per = await Promise.all(milikPortal.map(async (x) => {
         const akronim = x.akronim.toUpperCase();
