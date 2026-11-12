@@ -24,6 +24,7 @@ export interface LangkahKurasi {
   nada: "selesai" | "berjalan" | "gagal" | "belum";
   terjadi_pada: string | null;
   catatan: string | null;
+  diperbarui?: string | null;
   bintang: number | null;
   skor: number | null;
 }
@@ -106,6 +107,9 @@ export const TEKS = {
     memuat: "Memuat…",
     dokumentasi: "Dokumentasi",
     kembali: "← Kurasi",
+    tutup: "Tutup",
+    diperbaruiLabel: "Diperbarui",
+    pilihSeri: "Pilih event",
   },
   en: {
     judul: "Curation Process",
@@ -127,6 +131,9 @@ export const TEKS = {
     memuat: "Loading…",
     dokumentasi: "Documentation",
     kembali: "← Curation",
+    tutup: "Close",
+    diperbaruiLabel: "Last updated",
+    pilihSeri: "Choose event",
   },
 } as const;
 
@@ -144,4 +151,29 @@ export function tanggalKurasi(iso: string, bahasa: Bahasa): string {
       day: "numeric", month: "short", year: "numeric", timeZone: "Asia/Jakarta",
     });
   } catch { return String(iso).slice(0, 10); }
+}
+
+/** Langkah tercatat paling jauh satu edisi — penentu warna dan "Langkah n". */
+export function ringkasEdisi(ed: EdisiKurasi) {
+  const tercatat = ed.isi.filter((k) => k.tercatat !== false);
+  const terakhir = tercatat[tercatat.length - 1] ?? ed.isi[0];
+  const nomor = tercatat.length ? ed.isi.indexOf(terakhir) + 1 : 0;
+  const warna = ed.persiapan || !tercatat.length ? NADA.belum : (NADA[terakhir?.nada ?? "berjalan"] ?? NADA.berjalan);
+  return { terakhir, nomor, warna };
+}
+
+/** "3 bulan yang lalu" — dihitung di peramban supaya tetap benar dari cache. */
+export function berselang(iso: string, bahasa: Bahasa): string {
+  const d = new Date(iso).getTime();
+  if (!d) return "";
+  const detik = Math.max(0, (Date.now() - d) / 1000);
+  const satuan: Array<[number, string, string]> = [
+    [31536000, "tahun", "year"], [2592000, "bulan", "month"], [604800, "minggu", "week"],
+    [86400, "hari", "day"], [3600, "jam", "hour"], [60, "menit", "minute"],
+  ];
+  for (const [n, id, en] of satuan) {
+    const k = Math.floor(detik / n);
+    if (k >= 1) return bahasa === "en" ? `${k} ${en}${k > 1 ? "s" : ""} ago` : `${k} ${id} yang lalu`;
+  }
+  return bahasa === "en" ? "just now" : "baru saja";
 }
