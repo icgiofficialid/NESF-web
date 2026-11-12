@@ -21,7 +21,7 @@ function Predikat({ bintang, skor, bahasa }: { bintang: number | null; skor: num
   );
 }
 
-function Linimasa({ ed, bahasa }: { ed: EdisiKurasi; bahasa: Bahasa }) {
+export function Linimasa({ ed, bahasa }: { ed: EdisiKurasi; bahasa: Bahasa }) {
   const t = TEKS[bahasa];
   return (
     <div>

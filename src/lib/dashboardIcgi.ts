@@ -257,6 +257,8 @@ function gabungKeStatis(statis: EventMeta, dash: EventMeta) {
 
 /** Seri dashboard milik portal ini (untuk halaman Kurasi), urut akronim. */
 export const seriPortal: Array<{ akronim: string; nama: string }> = [];
+/** Slug edisi → akronim seri dashboard (gelembung Proses Kurasi mengikuti halaman). */
+export const slugKeSeri: Record<string, string> = {};
 
 let sudahDimuat: Promise<void> | null = null;
 
@@ -300,6 +302,7 @@ export function muatEventDashboard(): Promise<void> {
       for (const hasil of per.flat()) {
         if (!hasil) continue;
         const { meta, berita } = hasil;
+        if (meta.seriDashboard) slugKeSeri[meta.slug] = meta.seriDashboard;
         for (const b of berita) if (!newsItems.some(n => n.slug === b.slug)) newsItems.push(b);
         const statis = EVENTS_REGISTRY.find(e => e.slug === meta.slug);
         if (statis) gabungKeStatis(statis, meta);
