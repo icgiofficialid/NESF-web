@@ -20,7 +20,8 @@ import NesfUpcomingEvents from "./pages/NesfUpcomingEvents";
 import NewsArchive        from "@/pages/NewsArchive";       // /news — semua berita per tahun
 import WinnersArchive     from "@/pages/WinnersArchive";    // /winners
 import CertificatesArchive from "@/pages/CertificatesArchive"; // /certificates
-import CurationArchive    from "@/pages/CurationArchive";   // /curation
+import CurationProcess    from "@/pages/CurationProcess";   // /curation — Proses Kurasi per seri (dashboard ICGI)
+import CurationEdisi      from "@/pages/CurationEdisi";     // /curation/:akronim/:tahun
 import PressReleases      from "@/pages/PressReleases";     // /press-releases/:year
 import NewsDetailPage     from "@/pages/NewsDetailPage";
 
@@ -101,7 +102,8 @@ const App = () => (
               {/* Arsip lintas event (navbar utama) — dipilih per tahun */}
               <Route path="/winners"      element={<WinnersArchive />} />
               <Route path="/certificates" element={<CertificatesArchive />} />
-              <Route path="/curation"     element={<CurationArchive />} />
+              <Route path="/curation"     element={<CurationProcess />} />
+              <Route path="/curation/:akronim/:tahun" element={<CurationEdisi />} />
               <Route path="/press-releases/:year" element={<PressReleases />} />
               <Route path="/past-events/:slug/press-release" element={<PastEventPressRelease />} />
 
