@@ -15,7 +15,7 @@
 // ================================================================
 
 import { useState, useEffect } from "react";
-import { fetchEvents, fetchEventBySlug, fetchDashboardEvents, type ICCEvent } from "../lib/gasClient";
+import { fetchEvents, fetchEventBySlug, type ICCEvent } from "../lib/gasClient";
 import { localNesfEvents } from "../components/nesf/NesfEventsData";
 import { EVENTS_REGISTRY, type EventMeta } from "../config/eventRegistry";
 
@@ -31,6 +31,7 @@ const GRADIENT_POOL = [
 ];
 
 function registryToNesfEvent(meta: EventMeta, index: number): ICCEvent {
+  const tahun = meta.year ?? (Number(meta.dateRange.match(/\b(20\d{2})\b/g)?.pop() ?? "") || new Date().getFullYear());
   return {
     id:                   meta.slug,
     slug:                 meta.slug,
@@ -41,7 +42,7 @@ function registryToNesfEvent(meta: EventMeta, index: number): ICCEvent {
     location:             meta.location,
     country:              meta.location.split(",").pop()?.trim() ?? "Indonesia",
     dateRange:            meta.dateRange,
-    year:                 new Date().getFullYear(),
+    year:                 tahun,
     registrationDeadline: meta.registrationDeadline,
     coverGradient:        meta.heroGradient ?? GRADIENT_POOL[index % GRADIENT_POOL.length],
     accentColor:          "hsl(195 100% 50%)",
@@ -73,11 +74,6 @@ function buildCombinedFallback(): ICCEvent[] {
 
 const combinedFallback: ICCEvent[] = buildCombinedFallback();
 
-// Akronim event yang dashboard-nya diisi — dipakai fetchDashboardEvents.
-const dashboardAcronyms: string[] = EVENTS_REGISTRY
-  .filter(e => !e.shutdown && e.dashboardAcronym)
-  .map(e => e.dashboardAcronym!.toUpperCase());
-
 // ── useEvents ─────────────────────────────────────────────────────
 /**
  * Hook untuk mengambil semua NESF events.
@@ -98,11 +94,15 @@ export function useEvents(platform?: string) {
       setLoading(true);
       setError(null);
       try {
-        const [gasData, dashData] = await Promise.all([
-          fetchEvents(platform, combinedFallback),
-          fetchDashboardEvents(dashboardAcronyms),
-        ]);
-        const merged = [...dashData, ...gasData];
+        // Event dari dashboard ICGI sudah digabungkan ke EVENTS_REGISTRY oleh
+        // lib/dashboardIcgi.ts sebelum aplikasi dimuat, jadi sudah ada di
+        // combinedFallback. Kalau GAS aktif, event registry yang belum ada di
+        // GAS tetap ikut supaya event dashboard tidak hilang.
+        const gasData = await fetchEvents(platform, combinedFallback);
+        const slugGas = new Set(gasData.map(e => e.slug));
+        const merged = gasData === combinedFallback
+          ? gasData
+          : [...registryFallback.filter(e => !slugGas.has(e.slug)), ...gasData];
         if (!cancelled) {
           setEvents(merged.length > 0 ? merged : combinedFallback);
         }

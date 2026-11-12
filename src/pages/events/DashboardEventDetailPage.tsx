@@ -4,8 +4,7 @@ import SiteShell from '@/components/nesf/NesfShell';
 import EventDetailPage from './EventDetailPage';
 import type { EventDetailData } from '../../config/eventDetailTypes';
 import { groupTimelineByDay } from '../../lib/scheduleUtils';
-
-const BE_ICGI_API_URL = import.meta.env.VITE_BE_ICGI_API_URL as string | undefined;
+import { DASHBOARD_API } from '../../lib/dashboardIcgi';
 
 function mapEventApiToDetailData(sections: any[], slug: string): EventDetailData {
   const s = (key: string) => sections.find(x => x.key === key)?.isi;
@@ -59,9 +58,11 @@ function mapEventApiToDetailData(sections: any[], slug: string): EventDetailData
 interface Props {
   slug: string;
   acronym: string;
+  /** Tahun edisi; kosong = edisi yang sedang dipin di dashboard. */
+  year?: string;
 }
 
-const DashboardEventDetailPage = ({ slug, acronym }: Props) => {
+const DashboardEventDetailPage = ({ slug, acronym, year }: Props) => {
   const navigate = useNavigate();
   const [data, setData] = useState<EventDetailData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -73,9 +74,9 @@ const DashboardEventDetailPage = ({ slug, acronym }: Props) => {
       setLoading(true);
       setError(null);
       try {
-        if (!BE_ICGI_API_URL) throw new Error("VITE_BE_ICGI_API_URL belum di-set.");
+        const tahun = year ? `?tahun=${encodeURIComponent(year)}` : '';
         const res = await fetch(
-          `${BE_ICGI_API_URL}/api/public/v1/${acronym}`,
+          `${DASHBOARD_API}/api/public/v1/${encodeURIComponent(acronym)}${tahun}`,
           { cache: 'no-store' },
         );
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -92,7 +93,7 @@ const DashboardEventDetailPage = ({ slug, acronym }: Props) => {
     }
     load();
     return () => { cancelled = true; };
-  }, [acronym, slug]);
+  }, [acronym, slug, year]);
 
   if (loading) {
     return (

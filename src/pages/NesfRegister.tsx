@@ -28,6 +28,7 @@ import NesfStepForm, { type SummaryData } from "./register/NesfStepForm";
 import { getEventMeta, getSheetConfig } from "@/config/eventRegistry";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2 } from "lucide-react";
+import FormulirDashboard from "@/components/nesf/FormulirDashboard";
 
 // ── Step indicator ────────────────────────────────────────────────
 const STEP_LABELS = ["Format", "Syarat", "Formulir"];
@@ -162,6 +163,23 @@ const NesfRegister = () => {
       <SiteShell>
         <section className="container min-h-screen py-24 md:py-32 flex flex-col items-center justify-center">
           <EventUnavailable message="Event tidak ditemukan. Silakan daftar melalui halaman event." />
+        </section>
+      </SiteShell>
+    );
+  }
+
+  // ── Event dari dashboard ICGI → formulir resmi dashboard ──────────
+  //    Formulir sisipan menampilkan sendiri status buka/tutupnya, termasuk
+  //    tanggal rencana buka, jadi tidak disaring registrationOpen di sini.
+  if (eventMeta.dashboardAcronym) {
+    return (
+      <SiteShell>
+        <section className="container min-h-screen py-24 md:py-32 flex flex-col items-center gap-8">
+          <div className="text-center space-y-2">
+            <p className="text-sm font-semibold text-primary">{eventMeta.subtitle}</p>
+            <h1 className="text-3xl md:text-4xl font-bold text-foreground">Pendaftaran {eventMeta.title}</h1>
+          </div>
+          <FormulirDashboard akronim={eventMeta.dashboardAcronym} />
         </section>
       </SiteShell>
     );

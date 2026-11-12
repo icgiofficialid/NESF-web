@@ -19,6 +19,7 @@ export const PAST_EVENT_SECTIONS: {
   icon: LucideIcon;
 }[] = [
   { key: "gallery",      label: "Dokumentasi",     path: "",              icon: Images },
+  { key: "news",         label: "Berita",          path: "/news",          icon: Newspaper },
   { key: "press",        label: "Pesan Siaran",    path: "/press-release", icon: Megaphone },
   { key: "winners",      label: "Daftar Pemenang", path: "/winners",      icon: Trophy },
   { key: "certificates", label: "Sertifikat",      path: "/certificates", icon: Award },

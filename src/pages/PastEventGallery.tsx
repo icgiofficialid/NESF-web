@@ -179,13 +179,23 @@ const PastEventGallery = () => {
                 // Durasi disesuaikan dengan jumlah foto & dibuat sedikit berbeda tiap card
                 const duration = Math.max(30, Math.max(photos.length, MIN_TILES) * 5) + (i % 3) * 6;
 
+                // Album dari Dokumentasi dashboard bisa tanpa tautan, atau tautannya bukan Drive.
+                const adaTautan = Boolean(album.driveUrl);
+                const diDrive = /drive\.google\.com|docs\.google\.com/.test(album.driveUrl || "");
+                const Kartu = adaTautan ? motion.a : motion.div;
+                const atributTautan = adaTautan
+                  ? {
+                      href: album.driveUrl,
+                      target: "_blank",
+                      rel: "noopener noreferrer",
+                      "aria-label": `${diDrive ? "Buka folder Google Drive" : "Buka tautan"}: ${album.title}`,
+                    }
+                  : {};
+
                 return (
-                  <SectionReveal key={album.driveUrl} delay={i * 0.08}>
-                    <motion.a
-                      href={album.driveUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={`Buka folder Google Drive: ${album.title}`}
+                  <SectionReveal key={`${album.title}-${album.driveUrl}-${i}`} delay={i * 0.08}>
+                    <Kartu
+                      {...atributTautan}
                       whileHover={{ y: -4 }}
                       transition={{ duration: 0.25 }}
                       className="nesf-album group relative block overflow-hidden rounded-[2rem] border border-border/70 bg-panel shadow-sm outline-none transition-shadow duration-300 hover:shadow-2xl focus-visible:ring-2 focus-visible:ring-primary"
@@ -195,16 +205,20 @@ const PastEventGallery = () => {
                         <PhotoMarquee photos={photos} fallbackGradient={gradient} duration={duration} />
 
                         {/* Pill "Google Drive" */}
-                        <span className="absolute left-6 top-6 z-10 inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-black/40 px-3 py-1 text-xs font-semibold text-white backdrop-blur-md md:left-8 md:top-8">
-                          <FolderOpen className="h-3.5 w-3.5" /> Google Drive
-                        </span>
+                        {diDrive && (
+                          <span className="absolute left-6 top-6 z-10 inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-black/40 px-3 py-1 text-xs font-semibold text-white backdrop-blur-md md:left-8 md:top-8">
+                            <FolderOpen className="h-3.5 w-3.5" /> Google Drive
+                          </span>
+                        )}
 
                         {/* Muncul saat hover: ajakan membuka folder */}
-                        <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
-                          <span className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-slate-900 shadow-xl">
-                            Buka semua foto <ExternalLink className="h-4 w-4" />
-                          </span>
-                        </div>
+                        {adaTautan && (
+                          <div className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
+                            <span className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-slate-900 shadow-xl">
+                              {diDrive ? "Buka semua foto" : "Buka tautan"} <ExternalLink className="h-4 w-4" />
+                            </span>
+                          </div>
+                        )}
                       </div>
 
                       {/* Info album */}
@@ -216,12 +230,14 @@ const PastEventGallery = () => {
                           )}
                         </div>
 
-                        <span className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-transform duration-300 group-hover:scale-105">
-                          Lihat di Drive
-                          <ExternalLink className="h-4 w-4" />
-                        </span>
+                        {adaTautan && (
+                          <span className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-transform duration-300 group-hover:scale-105">
+                            {diDrive ? "Lihat di Drive" : "Buka tautan"}
+                            <ExternalLink className="h-4 w-4" />
+                          </span>
+                        )}
                       </div>
-                    </motion.a>
+                    </Kartu>
                   </SectionReveal>
                 );
               })}

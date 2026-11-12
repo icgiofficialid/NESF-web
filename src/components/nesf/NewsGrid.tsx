@@ -8,7 +8,16 @@
 import { ArrowRight, Calendar, Newspaper } from "lucide-react";
 import { Link } from "react-router-dom";
 import SectionReveal from "@/components/nesf/SectionReveal";
+import type { ReactNode } from "react";
 import type { NewsItem } from "@/config/newsData";
+
+/** Kartu berita: berita dashboard membuka tautan aslinya di tab baru, berita lokal ke /news/:slug. */
+const KeBerita = ({ item, className, children }: { item: NewsItem; className: string; children: ReactNode }) =>
+  item.externalUrl ? (
+    <a href={item.externalUrl} target="_blank" rel="noopener noreferrer" className={className}>{children}</a>
+  ) : (
+    <Link to={`/news/${item.slug}`} className={className}>{children}</Link>
+  );
 
 const NewsGrid = ({ items }: { items: NewsItem[] }) => {
   if (items.length === 0) return null;
@@ -17,8 +26,8 @@ const NewsGrid = ({ items }: { items: NewsItem[] }) => {
   return (
     <div className="space-y-6">
       <SectionReveal>
-        <Link
-          to={`/news/${featured.slug}`}
+        <KeBerita
+          item={featured}
           className="group grid overflow-hidden rounded-3xl border border-border/70 bg-panel shadow-sm outline-none transition-[border-color,box-shadow] duration-300 hover:border-primary/50 hover:shadow-2xl focus-visible:ring-2 focus-visible:ring-primary md:grid-cols-5"
         >
           <div className="relative h-56 bg-primary/5 md:col-span-2 md:h-full md:min-h-[18rem]">
@@ -39,18 +48,18 @@ const NewsGrid = ({ items }: { items: NewsItem[] }) => {
             <h2 className="text-2xl font-bold leading-snug text-foreground transition-colors group-hover:text-primary md:text-3xl">{featured.title}</h2>
             <p className="leading-7 text-muted-foreground">{featured.excerpt}</p>
             <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary">
-              Baca selengkapnya <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              {featured.externalUrl ? "Buka tautan" : "Baca selengkapnya"} <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
             </span>
           </div>
-        </Link>
+        </KeBerita>
       </SectionReveal>
 
       {rest.length > 0 && (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {rest.map((item, i) => (
             <SectionReveal key={item.slug} delay={i * 0.06} className="h-full">
-              <Link
-                to={`/news/${item.slug}`}
+              <KeBerita
+                item={item}
                 className="group flex h-full flex-col overflow-hidden rounded-2xl border border-border/70 bg-panel shadow-sm outline-none transition-[border-color,box-shadow] duration-300 hover:border-primary/50 hover:shadow-xl focus-visible:ring-2 focus-visible:ring-primary"
               >
                 <div className="relative h-44 bg-primary/5">
@@ -68,7 +77,7 @@ const NewsGrid = ({ items }: { items: NewsItem[] }) => {
                   <h3 className="font-bold leading-snug text-foreground transition-colors group-hover:text-primary">{item.title}</h3>
                   <p className="line-clamp-3 text-sm leading-6 text-muted-foreground">{item.excerpt}</p>
                 </div>
-              </Link>
+              </KeBerita>
             </SectionReveal>
           ))}
         </div>

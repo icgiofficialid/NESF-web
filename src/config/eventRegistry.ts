@@ -128,6 +128,12 @@ export interface EventMeta {
    * apa adanya.
    */
   dashboardAcronym?: string;
+  /**
+   * Tahun edisi di dashboard. Diisi otomatis oleh lib/dashboardIcgi.ts untuk
+   * event yang dimuat dari dashboard; dipakai halaman detail untuk meminta
+   * edisi tahun itu (`?tahun=`), bukan edisi yang sedang dipin.
+   */
+  dashboardYear?: string;
     /** Album dokumentasi (dipakai halaman /past-events/:slug) */
   gallery?: GalleryAlbum[];
   /** Slug berita (dari newsData.ts) yang ditampilkan di /past-events/:slug/news */

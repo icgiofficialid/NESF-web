@@ -12,6 +12,13 @@ export interface NewsItem {
   content: string;
   coverImage?: string;
   tags: string[];
+  /**
+   * Berita dari Publikasi dashboard (lib/dashboardIcgi.ts): kartunya membuka
+   * tautan aslinya (YouTube, Instagram, liputan media) di tab baru.
+   */
+  externalUrl?: string;
+  /** Slug event asal berita dari dashboard. */
+  eventSlug?: string;
 }
 
 export const newsItems: NewsItem[] = [

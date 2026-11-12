@@ -7,7 +7,8 @@
 // appscript-nya tetap jalan lewat nesfRegisterConfig.tsx.submitToSheet.
 // ================================================================
 
-const BE_ICGI_API_URL = import.meta.env.VITE_BE_ICGI_API_URL as string | undefined;
+const BE_ICGI_API_URL: string | undefined =
+  (import.meta.env.VITE_BE_ICGI_API_URL as string | undefined) || "https://api-dashboard.iysa.or.id";
 
 export interface RegoMeta {
   eventId: string;

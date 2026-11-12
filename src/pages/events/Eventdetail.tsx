@@ -49,7 +49,7 @@ export default function EventDetail() {
   //    kontennya dari /api/public/v1/:acronym, bukan NesfData.ts. ────
   const meta = slug ? getEventMeta(slug) : undefined;
   if (meta?.dashboardAcronym) {
-    return <DashboardEventDetailPage slug={slug!} acronym={meta.dashboardAcronym} />;
+    return <DashboardEventDetailPage slug={slug!} acronym={meta.dashboardAcronym} year={meta.dashboardYear} />;
   }
 
   // ── Event lama (DSCF/Borneo-NESF sudah punya route sendiri lebih
